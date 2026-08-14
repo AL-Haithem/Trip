@@ -1,0 +1,106 @@
+{
+  "auth": {
+    "credentials": [
+      {
+        "email": "company@demo.com",
+        "password": "demo123"
+      }
+    ],
+    "companies": [
+      {
+        "id": "company_demo",
+        "name": "رحلات الجزائر للاستكشاف",
+        "email": "company@demo.com",
+        "phone": "+213 555 12 34 56",
+        "description": "شركة متخصصة في تنظيم الرحات الاستكشافية داخل التراب الوطني.",
+        "totalTours": 12,
+        "totalTravelers": 340,
+        "rating": 4.7,
+        "logo": null
+      }
+    ]
+  },
+  "tours": [
+    {
+      "id": "tour_demo_1",
+      "title": "رحلة الشمال الكبير",
+      "description": "رحلة من الجزائر العاصمة نحو المدن الساحلية الشمالية مع محطات سياحية متنوعة.",
+      "price": 15000,
+      "seats": 30,
+      "includedServices": ["الإطعام", "المبيت", "المواصلات", "المرشد السياحي"],
+      "notIncludedServices": ["الألعاب", "التأمين"],
+      "distanceKm": 412.5,
+      "createdAt": 1717000000000,
+      "companyId": "company_demo",
+      "route": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "polyline",
+              "paths": [
+                [[3.0, 36.75], [3.5, 36.8], [4.0, 36.7], [4.8, 36.9]]
+              ]
+            },
+            "properties": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "tour_demo_2",
+      "title": "استكشاف الهضاب العليا",
+      "description": "رحلة نحو المناطق الداخلية لاكتشاف الطبيعة والواحات.",
+      "price": 22000,
+      "seats": 20,
+      "includedServices": ["الإطعام", "المبيت", "المسبح", "المواصلات"],
+      "notIncludedServices": ["التأمين", "المرشد السياحي"],
+      "distanceKm": 680.2,
+      "createdAt": 1718000000000,
+      "companyId": "company_demo",
+      "route": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "polyline",
+              "paths": [
+                [[2.5, 36.0], [2.0, 35.5], [1.5, 34.8], [0.8, 34.0]]
+              ]
+            },
+            "properties": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "tour_demo_3",
+      "title": "المسار الساحلي الجنوبي",
+      "description": "رحلة استجمام على الشواطئ مع أنشطة ترفيهية عائلية.",
+      "price": 9500,
+      "seats": 45,
+      "includedServices": ["المبيت", "الحدائق", "الألعاب"],
+      "notIncludedServices": ["الإطعام", "التأمين"],
+      "distanceKm": 230.8,
+      "createdAt": 1719000000000,
+      "companyId": "company_demo",
+      "route": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "polyline",
+              "paths": [
+                [[4.5, 35.0], [4.8, 34.7], [5.0, 34.4], [5.2, 34.0]]
+              ]
+            },
+            "properties": {}
+          }
+        ]
+      }
+    }
+  ]
+}
