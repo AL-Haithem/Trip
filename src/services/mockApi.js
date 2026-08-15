@@ -1,34 +1,28 @@
-const MOCK_FILE_URL = "/TempFiles/mock-data.json";
+const MOCK_API_URL = "/api/mock";
 const SESSION_KEY = "geo_session";
-const SAVED_TOURS_KEY = "geo_tours_mock";
 
 async function loadMockFile() {
   try {
-    const res = await fetch(MOCK_FILE_URL);
+    const res = await fetch(MOCK_API_URL, {cache: "no-store"});
     if (!res.ok) throw new Error("Failed to load mock data");
     return await res.json();
   } catch (e) {
-    console.error("mockApi: could not load", MOCK_FILE_URL, e);
+    console.error("mockApi: could not load", MOCK_API_URL, e);
     return {auth: {credentials: [], companies: []}, tours: []};
   }
 }
 
-function loadSavedTours() {
+async function writeMockFile(mock) {
   try {
-    const raw = localStorage.getItem(SAVED_TOURS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    console.error("mockApi: failed to read saved tours", e);
-    return [];
-  }
-}
-
-function persistSavedTours(tours) {
-  try {
-    localStorage.setItem(SAVED_TOURS_KEY, JSON.stringify(tours));
+    const res = await fetch(MOCK_API_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(mock),
+    });
+    if (!res.ok) throw new Error("Failed to write mock data");
     return true;
   } catch (e) {
-    console.error("mockApi: failed to persist saved tours", e);
+    console.error("mockApi: could not write mock file", e);
     return false;
   }
 }
@@ -80,9 +74,7 @@ export function getSession() {
 
 export async function getTours() {
   const mock = await loadMockFile();
-  const baseTours = mock.tours || [];
-  const savedTours = loadSavedTours();
-  return [...savedTours, ...baseTours];
+  return mock.tours || [];
 }
 
 export async function getTour(id) {
@@ -90,19 +82,39 @@ export async function getTour(id) {
   return tours.find((t) => t.id === id) || null;
 }
 
+async function persistTours(tours) {
+  const mock = await loadMockFile();
+  mock.tours = tours;
+  return writeMockFile(mock);
+}
+
 export async function saveTour(tour) {
-  const saved = loadSavedTours();
-  const idx = saved.findIndex((t) => t.id === tour.id);
+  const tours = await getTours();
+  const idx = tours.findIndex((t) => t.id === tour.id);
   if (idx >= 0) {
-    saved[idx] = tour;
+    tours[idx] = tour;
   } else {
-    saved.push(tour);
+    tours.push(tour);
   }
-  persistSavedTours(saved);
+  await persistTours(tours);
   return tour;
 }
 
 export async function createTour(tour) {
+  return saveTour(tour);
+}
+
+export async function deleteTour(id) {
+  const tours = await getTours();
+  const next = tours.filter((t) => t.id !== id);
+  await persistTours(next);
+  return true;
+}
+
+export async function setPublished(id, published) {
+  const tour = await getTour(id);
+  if (!tour) return null;
+  tour.published = published;
   return saveTour(tour);
 }
 

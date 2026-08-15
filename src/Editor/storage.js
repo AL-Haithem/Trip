@@ -33,7 +33,7 @@ export function clearTrip() {
 export function graphicsToGeoJSON(graphics) {
   return graphics.map((g) => ({
     type: "Feature",
-    geometry: g.geometry.toJSON(),
+    geometry: { ...g.geometry.toJSON(), type: g.geometry.type },
     properties: { ...(g.attributes || {}), symbol: g.symbol.toJSON() },
   }));
 }

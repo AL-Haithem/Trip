@@ -21,16 +21,36 @@ function MainMap({onViewReady}) {
       scale: 250 * 100000,
       constraints: {
         minScale: 1600 * 100000,
-        maxScale: 39 * 100000
+        maxScale: 5 * 100000
       },
-      background: {color: "#243656"}
+      background: {color: "#0d1117"}
     })
 
     map.add(WorldLayer())
     map.add(CountryLayer("DZA"))
+
+    const MAX_LAT = 85
+    const clampLat = (lat) => Math.max(-MAX_LAT, Math.min(MAX_LAT, lat))
+    let adjusting = false
+    view.watch("center", (center) => {
+      if (!center || adjusting) return
+      const lat = center.latitude
+      if (lat > MAX_LAT || lat < -MAX_LAT) {
+        adjusting = true
+        view.center = [center.longitude, clampLat(lat)]
+        adjusting = false
+      }
+    })
+
     if (onViewReady) onViewReady(view)
 
-    return () => {view.destroy()}
+    return () => {
+      try {
+        view.destroy()
+      } catch (err) {
+        console.error("MainMap: failed to destroy view", err)
+      }
+    }
 
   }, [])
 
@@ -38,8 +58,8 @@ function MainMap({onViewReady}) {
     <div
       ref={mapRef}
       style={{
-        width: "80%",
-        height: "819px"
+        width: "100%",
+        height: "900px",
       }}
     />
   )

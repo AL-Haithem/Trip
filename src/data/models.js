@@ -1,12 +1,12 @@
 export const DEFAULT_SERVICES = [
-  "الإطعام",
-  "المبيت",
-  "المسبح",
-  "الحدائق",
-  "الألعاب",
-  "المواصلات",
-  "المرشد السياحي",
-  "التأمين",
+  "Food",
+  "Lodging",
+  "Pool",
+  "Gardens",
+  "Playground",
+  "Transport",
+  "Tour Guide",
+  "Insurance",
 ];
 
 export function createEmptyTour() {
@@ -20,6 +20,7 @@ export function createEmptyTour() {
     notIncludedServices: [],
     route: null,
     distanceKm: 0,
+    published: false,
     createdAt: Date.now(),
   };
 }

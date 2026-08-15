@@ -9,10 +9,10 @@
     "companies": [
       {
         "id": "company_demo",
-        "name": "رحلات الجزائر للاستكشاف",
+        "name": "Algeria Exploration Tours",
         "email": "company@demo.com",
         "phone": "+213 555 12 34 56",
-        "description": "شركة متخصصة في تنظيم الرحات الاستكشافية داخل التراب الوطني.",
+        "description": "A company specialized in organizing exploratory trips across the national territory.",
         "totalTours": 12,
         "totalTravelers": 340,
         "rating": 4.7,
@@ -22,85 +22,232 @@
   },
   "tours": [
     {
-      "id": "tour_demo_1",
-      "title": "رحلة الشمال الكبير",
-      "description": "رحلة من الجزائر العاصمة نحو المدن الساحلية الشمالية مع محطات سياحية متنوعة.",
-      "price": 15000,
-      "seats": 30,
-      "includedServices": ["الإطعام", "المبيت", "المواصلات", "المرشد السياحي"],
-      "notIncludedServices": ["الألعاب", "التأمين"],
-      "distanceKm": 412.5,
-      "createdAt": 1717000000000,
-      "companyId": "company_demo",
+      "id": "tour_1786758829218_pvjksj",
+      "title": "Trip",
+      "description": "TripTrip Trip TripTrip TripTripTrip ",
+      "price": 1500,
+      "seats": 24,
+      "includedServices": [
+        "Food",
+        "Pool",
+        "Transport"
+      ],
+      "notIncludedServices": [
+        "Pool",
+        "Tour Guide"
+      ],
       "route": {
         "type": "FeatureCollection",
         "features": [
           {
             "type": "Feature",
             "geometry": {
-              "type": "polyline",
+              "spatialReference": {
+                "wkid": 4326
+              },
               "paths": [
-                [[3.0, 36.75], [3.5, 36.8], [4.0, 36.7], [4.8, 36.9]]
-              ]
+                [
+                  [
+                    1.909853867207292,
+                    32.2398685261408
+                  ],
+                  [
+                    -0.33221097006527006,
+                    33.91695777969117
+                  ],
+                  [
+                    -0.6195712153811261,
+                    34.727442677000205
+                  ],
+                  [
+                    -0.5215078307625735,
+                    35.41475706599999
+                  ],
+                  [
+                    0.486805512134189,
+                    35.573717319934225
+                  ]
+                ]
+              ],
+              "type": "polyline"
             },
-            "properties": {}
-          }
-        ]
-      }
-    },
-    {
-      "id": "tour_demo_2",
-      "title": "استكشاف الهضاب العليا",
-      "description": "رحلة نحو المناطق الداخلية لاكتشاف الطبيعة والواحات.",
-      "price": 22000,
-      "seats": 20,
-      "includedServices": ["الإطعام", "المبيت", "المسبح", "المواصلات"],
-      "notIncludedServices": ["التأمين", "المرشد السياحي"],
-      "distanceKm": 680.2,
-      "createdAt": 1718000000000,
-      "companyId": "company_demo",
-      "route": {
-        "type": "FeatureCollection",
-        "features": [
+            "properties": {
+              "symbol": {
+                "type": "esriSLS",
+                "color": [
+                  12,
+                  255,
+                  37,
+                  255
+                ],
+                "width": 3,
+                "style": "esriSLSSolid"
+              }
+            }
+          },
           {
             "type": "Feature",
             "geometry": {
-              "type": "polyline",
-              "paths": [
-                [[2.5, 36.0], [2.0, 35.5], [1.5, 34.8], [0.8, 34.0]]
-              ]
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": 4.752345697947224,
+              "y": 30.919573077959157,
+              "type": "point"
             },
-            "properties": {}
-          }
-        ]
-      }
-    },
-    {
-      "id": "tour_demo_3",
-      "title": "المسار الساحلي الجنوبي",
-      "description": "رحلة استجمام على الشواطئ مع أنشطة ترفيهية عائلية.",
-      "price": 9500,
-      "seats": 45,
-      "includedServices": ["المبيت", "الحدائق", "الألعاب"],
-      "notIncludedServices": ["الإطعام", "التأمين"],
-      "distanceKm": 230.8,
-      "createdAt": 1719000000000,
-      "companyId": "company_demo",
-      "route": {
-        "type": "FeatureCollection",
-        "features": [
+            "properties": {
+              "symbol": {
+                "type": "esriSMS",
+                "color": [
+                  184,
+                  76,
+                  255,
+                  255
+                ],
+                "angle": 0,
+                "xoffset": 0,
+                "yoffset": 0,
+                "size": 26,
+                "style": "esriSMSPath",
+                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
+                "outline": {
+                  "type": "esriSLS",
+                  "color": [
+                    6,
+                    33,
+                    11,
+                    255
+                  ],
+                  "width": 1.5,
+                  "style": "esriSLSSolid"
+                }
+              },
+              "waypointType": "camp",
+              "waypointLabel": "مخيم"
+            }
+          },
           {
             "type": "Feature",
             "geometry": {
-              "type": "polyline",
-              "paths": [
-                [[4.5, 35.0], [4.8, 34.7], [5.0, 34.4], [5.2, 34.0]]
-              ]
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": -0.2215091293556135,
+              "y": 28.36832857602365,
+              "type": "point"
             },
-            "properties": {}
+            "properties": {
+              "symbol": {
+                "type": "esriSMS",
+                "color": [
+                  12,
+                  255,
+                  37,
+                  255
+                ],
+                "angle": 0,
+                "xoffset": 0,
+                "yoffset": 0,
+                "size": 26,
+                "style": "esriSMSPath",
+                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
+                "outline": {
+                  "type": "esriSLS",
+                  "color": [
+                    6,
+                    33,
+                    11,
+                    255
+                  ],
+                  "width": 1.5,
+                  "style": "esriSLSSolid"
+                }
+              }
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": 4.1949309328184565,
+              "y": 26.481693986357058,
+              "type": "point"
+            },
+            "properties": {
+              "symbol": {
+                "type": "esriSMS",
+                "color": [
+                  12,
+                  255,
+                  37,
+                  255
+                ],
+                "angle": 0,
+                "xoffset": 0,
+                "yoffset": 0,
+                "size": 26,
+                "style": "esriSMSPath",
+                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
+                "outline": {
+                  "type": "esriSLS",
+                  "color": [
+                    6,
+                    33,
+                    11,
+                    255
+                  ],
+                  "width": 1.5,
+                  "style": "esriSLSSolid"
+                }
+              }
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": 2.595844533274006,
+              "y": 32.68705083715875,
+              "type": "point"
+            },
+            "properties": {
+              "symbol": {
+                "type": "esriSMS",
+                "color": [
+                  12,
+                  255,
+                  37,
+                  255
+                ],
+                "angle": 0,
+                "xoffset": 0,
+                "yoffset": 0,
+                "size": 26,
+                "style": "esriSMSPath",
+                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
+                "outline": {
+                  "type": "esriSLS",
+                  "color": [
+                    6,
+                    33,
+                    11,
+                    255
+                  ],
+                  "width": 1.5,
+                  "style": "esriSLSSolid"
+                }
+              }
+            }
           }
         ]
-      }
+      },
+      "distanceKm": 543.68,
+      "published": false,
+      "createdAt": 1786758829218
     }
   ]
 }

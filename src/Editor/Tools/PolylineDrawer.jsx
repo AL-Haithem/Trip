@@ -12,6 +12,8 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
   const sketchRef = useRef(null)
   const selectedGraphicRef = useRef(null)
   const distanceRef = useRef(null)
+  const initialRouteRef = useRef(initialRoute)
+  initialRouteRef.current = initialRoute
   const [distance, setDistance] = useState(null)
 
   const updateTotalDistance = (layer) => {
@@ -53,6 +55,10 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
     return distanceRef.current ? parseFloat(distanceRef.current) : 0;
   };
 
+  const startDraw = () => {
+    if (sketchRef.current) sketchRef.current.create("polyline");
+  };
+
   const deleteSelected = () => {
     if (selectedGraphicRef.current && layerRef.current) {
       layerRef.current.remove(selectedGraphicRef.current);
@@ -61,14 +67,35 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
     }
   };
 
+  const drawRoute = (route) => {
+    if (!layerRef.current || !sketchRef.current) return;
+    layerRef.current.removeAll();
+    if (!route || !route.features) {
+      updateTotalDistance(layerRef.current);
+      return;
+    }
+    route.features.forEach(feature => {
+      const g = feature.geometry;
+      if (g && (g.type === "polyline" || (g.paths !== undefined && !g.rings))) {
+        const graphic = new Graphic({
+          geometry: new Polyline(g),
+          symbol: sketchRef.current.polylineSymbol,
+          attributes: feature.properties || {},
+        });
+        layerRef.current.add(graphic);
+      }
+    });
+    updateTotalDistance(layerRef.current);
+  };
+
   useEffect(() => {
     if (onRegister && toolId) {
-      onRegister(toolId, {getGraphics, getDistance, clear: clearGraphics});
+      onRegister(toolId, {getGraphics, getDistance, clear: clearGraphics, startDraw});
     }
   }, [onRegister, toolId]);
 
   useEffect(() => {
-    if (!view || !active) return;
+    if (!view) return;
 
     const layer = new GraphicsLayer({id: "polyline-draw-layer"});
     view.map.add(layer);
@@ -85,28 +112,18 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
       defaultUpdateOptions: {
         enableRotation: false,
         enableScaling: false,
+        enableMove: false,
       },
     });
     sketchRef.current = sketch;
 
-    if (initialRoute && initialRoute.features && initialRoute.features.length > 0) {
-      initialRoute.features.forEach(feature => {
-        if (feature.geometry && feature.geometry.type === "polyline") {
-          const graphic = new Graphic({
-            geometry: new Polyline(feature.geometry),
-            symbol: sketch.polylineSymbol,
-            attributes: feature.properties || {},
-          });
-          layer.add(graphic);
-        }
-      });
-      updateTotalDistance(layer);
-    }
+    const UPDATE_OPTIONS = {tool: "reshape", enableMove: false, enableRotation: false, enableScaling: false, toggleToolOnClick: false};
+
+    drawRoute(initialRouteRef.current);
 
     sketch.on("create", (event) => {
       if (event.state === "complete") {
         updateTotalDistance(layer);
-        sketch.create("polyline");
       }
     });
 
@@ -116,6 +133,9 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
       }
       if (event.graphics && event.graphics.length > 0) {
         selectedGraphicRef.current = event.graphics[0];
+        if (event.tool === "transform") {
+          sketch.update(event.graphics, UPDATE_OPTIONS);
+        }
       }
     });
 
@@ -126,19 +146,35 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
     };
     window.addEventListener("keydown", handleKeyDown);
 
-    sketch.create("polyline");
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      sketch.destroy();
+      try { sketch.destroy(); } catch (err) { console.error("PolylineDrawer: sketch destroy failed", err); }
       sketchRef.current = null;
-      view.map.remove(layer);
+      try {
+        if (view && view.map) view.map.remove(layer);
+      } catch (err) {
+        console.error("PolylineDrawer: failed to remove layer", err);
+      }
       layerRef.current = null;
       selectedGraphicRef.current = null;
       setDistance(null);
     };
 
-  }, [view, active, initialRoute]);
+  }, [view]);
+
+  useEffect(() => {
+    if (!view || !sketchRef.current) return;
+    if (active) {
+      startDraw();
+    } else {
+      sketchRef.current.cancel();
+    }
+  }, [view, active]);
+
+  useEffect(() => {
+    if (!view || !layerRef.current) return;
+    drawRoute(initialRoute);
+  }, [view, initialRoute]);
 
   if (!active) return null;
 
@@ -164,8 +200,23 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
       }}
     >
       <span>
-        {distance ? `Distance: ${distance} km` : "Click on map to start drawing"}
+        {distance ? `Distance: ${distance} km` : "Click on map to start a line"}
       </span>
+      <button
+        onClick={startDraw}
+        style={{
+          padding: "4px 10px",
+          borderRadius: "4px",
+          border: "1px solid #0cff25",
+          background: "rgba(12, 255, 37, 0.15)",
+          color: "#0cff25",
+          cursor: "pointer",
+          fontSize: "12px",
+          fontWeight: "bold",
+        }}
+      >
+        Add Line
+      </button>
       {selectedGraphicRef.current && (
         <button
           onClick={deleteSelected}
