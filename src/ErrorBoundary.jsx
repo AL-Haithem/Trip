@@ -1,4 +1,6 @@
 import {Component} from "react"
+import {errorBoundary as copy} from "./content/siteContent.js"
+import "./styles/errorBoundary.css"
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -22,39 +24,13 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.error) {
       return (
-        <div
-          style={{
-            minHeight: "100vh",
-            background: "#11141c",
-            color: "#fff",
-            fontFamily: "system-ui, sans-serif",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "16px",
-            padding: "24px",
-            textAlign: "center",
-          }}
-        >
-          <h2 style={{color: "#ff4c4c", margin: 0}}>Something went wrong</h2>
-          <p style={{color: "#aab", maxWidth: "480px"}}>
+        <div className="eb-page">
+          <h2 className="eb-title">{copy.title}</h2>
+          <p className="eb-message">
             {String(this.state.error && this.state.error.message || this.state.error)}
           </p>
-          <button
-            onClick={this.handleReload}
-            style={{
-              padding: "10px 18px",
-              borderRadius: "8px",
-              border: "none",
-              background: "#0cff25",
-              color: "#06210b",
-              fontSize: "14px",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-          >
-            Reload
+          <button onClick={this.handleReload} className="eb-reload">
+            {copy.reload}
           </button>
         </div>
       )

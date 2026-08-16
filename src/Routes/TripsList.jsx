@@ -1,28 +1,36 @@
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 
-import {getTours} from "../services/mockApi.js"
+import {getTours, getSession} from "../services/mockApi.js"
 import {deleteTour, setPublished} from "../data/tourStore.js"
+import Card from "../components/ui/Card.jsx"
+import Chip from "../components/ui/Chip.jsx"
+import Button from "../components/ui/Button.jsx"
+import {tripsList as copy} from "../content/siteContent.js"
+import "../styles/tripsList.css"
 
 function TripsList() {
-
   const [tours, setTours] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const sessionCompany = getSession()?.company || null
 
   useEffect(() => {
     let mounted = true;
     getTours().then((data) => {
-      if (mounted) {
-        setTours(data);
-        setLoading(false);
-      }
+      if (!mounted) return;
+      const companyId = sessionCompany ? sessionCompany.id : null;
+      const filtered = companyId
+        ? (data || []).filter((t) => t.companyId === companyId)
+        : (data || []);
+      setTours(filtered);
+      setLoading(false);
     });
     return () => { mounted = false; };
-  }, [])
+  }, [sessionCompany])
 
   const handleDelete = async (tourId) => {
-    if (!confirm("Are you sure you want to delete this trip?")) return;
+    if (!confirm(copy.deleteConfirm)) return;
     await deleteTour(tourId);
     setTours(prev => prev.filter(t => t.id !== tourId));
   };
@@ -34,154 +42,52 @@ function TripsList() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#11141c",
-        color: "#fff",
-        fontFamily: "system-ui, sans-serif",
-        padding: "32px",
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "24px",
-        }}
-      >
-        <h1 style={{margin: 0, color: "#0cff25"}}>Trips</h1>
-        <button
-          onClick={() => navigate("/trips/create")}
-          style={{
-            padding: "10px 18px",
-            borderRadius: "8px",
-            border: "none",
-            background: "#0cff25",
-            color: "#06210b",
-            fontSize: "14px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          + Create New Tour
-        </button>
+    <div className="tl-page">
+      <div className="tl-head">
+        <div>
+          <h1 className="tl-title">{copy.title}</h1>
+          {sessionCompany && (
+            <div className="tl-managed">
+              {copy.managedBy(sessionCompany.name)}
+            </div>
+          )}
+        </div>
+        <Button variant="primary" onClick={() => navigate("/trips/create")}>{copy.createButton}</Button>
       </div>
 
       {loading ? (
-        <p style={{color: "#aab"}}>Loading tours...</p>
+        <p className="tl-msg">{copy.loading}</p>
       ) : tours.length === 0 ? (
-        <p style={{color: "#aab"}}>No tours yet. Create your first one.</p>
+        <p className="tl-msg">{copy.empty}</p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: "18px",
-          }}
-        >
+        <div className="tl-grid">
           {tours.map((tour) => (
-            <div
-              key={tour.id}
-              style={{
-                background: "#1b1f2a",
-                borderRadius: "12px",
-                padding: "20px",
-                border: "1px solid #2a2f3a",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-              }}
-            >
-              <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px"}}>
-                <h3 style={{margin: 0, color: "#fff"}}>{tour.title}</h3>
-                <span
-                  style={{
-                    padding: "3px 9px",
-                    borderRadius: "12px",
-                    fontSize: "11px",
-                    fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                    background: tour.published ? "rgba(12, 255, 37, 0.15)" : "rgba(170, 170, 187, 0.15)",
-                    color: tour.published ? "#0cff25" : "#aab",
-                  }}
-                >
-                  {tour.published ? "Published" : "Draft"}
-                </span>
+            <Card key={tour.id} className="tl-card">
+              <div className="tl-card-head">
+                <h3 className="tl-card-title">{tour.title}</h3>
+                <Chip green={tour.published}>{tour.published ? copy.published : copy.draft}</Chip>
               </div>
-              <p style={{margin: 0, color: "#aab", fontSize: "13px", minHeight: "36px"}}>
-                {tour.description || "No description."}
+              <p className="tl-card-desc">
+                {tour.description || copy.noDescription}
               </p>
-              <div style={{display: "flex", gap: "14px", fontSize: "13px", color: "#cdd"}}>
-                <span>💰 {tour.price} DA</span>
-                <span>📏 {tour.distanceKm || 0} km</span>
-                <span>💺 {tour.seats || 0}</span>
+              <div className="tl-card-meta">
+                <span>{copy.price(tour.price || 0)}</span>
+                <span>{copy.distance(tour.distanceKm || 0)}</span>
+                <span>{copy.seats(tour.seats || 0)}</span>
               </div>
-              <div style={{display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "6px"}}>
-                <button
-                  onClick={() => navigate(`/trips/edit/${tour.id}`)}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: "6px",
-                    border: "1px solid #0cff25",
-                    background: "rgba(12, 255, 37, 0.12)",
-                    color: "#0cff25",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => navigate(`/trips/draw/${tour.id}`)}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: "6px",
-                    border: "1px solid #4cff8a",
-                    background: "rgba(76, 255, 138, 0.12)",
-                    color: "#4cff8a",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  Draw On Map
-                </button>
-                <button
+              <div className="tl-card-actions">
+                <Button variant="info" size="sm" onClick={() => navigate(`/trips/edit/${tour.id}`)}>{copy.edit}</Button>
+                <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour.id}`)}>{copy.draw}</Button>
+                <Button
+                  variant={tour.published ? "warning" : "primary"}
+                  size="sm"
                   onClick={() => handleTogglePublish(tour)}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: "6px",
-                    border: tour.published ? "1px solid #ffb84c" : "1px solid #0cff25",
-                    background: tour.published ? "rgba(255, 184, 76, 0.12)" : "rgba(12, 255, 37, 0.12)",
-                    color: tour.published ? "#ffb84c" : "#0cff25",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
                 >
-                  {tour.published ? "Unpublish" : "Publish"}
-                </button>
-                <button
-                  onClick={() => handleDelete(tour.id)}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: "6px",
-                    border: "1px solid #ff4c4c",
-                    background: "rgba(255, 76, 76, 0.12)",
-                    color: "#ff4c4c",
-                    fontSize: "13px",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  Delete
-                </button>
+                  {tour.published ? copy.unpublish : copy.publish}
+                </Button>
+                <Button variant="danger" size="sm" onClick={() => handleDelete(tour.id)}>{copy.delete}</Button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

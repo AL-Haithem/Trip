@@ -1,0 +1,10 @@
+/* ── Map canvas containers ────────────────────── */
+.map-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* MainMap is rendered inside a positioned/.td-map parent and should fill it */
+.map-canvas-main {
+  height: 900px;
+}

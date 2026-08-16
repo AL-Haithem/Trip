@@ -1,182 +1,357 @@
 import {useEffect, useRef, useState} from "react"
 
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
-import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel"
 import Graphic from "@arcgis/core/Graphic"
+import Point from "@arcgis/core/geometry/Point"
 import Polyline from "@arcgis/core/geometry/Polyline"
 import {geodesicLength} from "@arcgis/core/geometry/geometryEngine"
 
-function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
+const LINE_SYMBOL = {
+  type: "simple-line",
+  color: "#0cff25",
+  width: 3,
+}
+
+function makeVertexSymbol(selected) {
+  const fill = selected ? "#ffffff" : "#0cff25"
+  const stroke = selected ? "#ff4c4c" : "#06210b"
+  const r = selected ? 9 : 7
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'>` +
+    `<circle cx='14' cy='14' r='${r}' fill='${fill}' stroke='${stroke}' stroke-width='2'/>` +
+    `</svg>`
+  return {
+    type: "picture-marker",
+    url: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg),
+    width: "28px",
+    height: "28px",
+  }
+}
+
+function PolylineDrawer({view, active, onRegister, toolId, initialRoute, onStateChange}) {
 
   const layerRef = useRef(null)
-  const sketchRef = useRef(null)
-  const selectedGraphicRef = useRef(null)
+  const polylineGraphicRef = useRef(null)
+  const vertexGraphicsRef = useRef([])
+  const verticesRef = useRef([])
+  const selectedIndexRef = useRef(null)
+  const activeRef = useRef(active)
+  activeRef.current = active
+
+  const draggingRef = useRef(null)
+  const movedRef = useRef(false)
+  const suppressClickRef = useRef(false)
+
+  const historyRef = useRef([])
+
   const distanceRef = useRef(null)
-  const initialRouteRef = useRef(initialRoute)
-  initialRouteRef.current = initialRoute
   const [distance, setDistance] = useState(null)
+  const [vertexCount, setVertexCount] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(null)
 
-  const updateTotalDistance = (layer) => {
-    if (!layer || !layer.graphics) {
-      distanceRef.current = null;
-      setDistance(null);
-      return;
+  const onStateChangeRef = useRef(onStateChange)
+  onStateChangeRef.current = onStateChange
+
+  const toXY = (point) => ({
+    x: point.x,
+    y: point.y,
+    spatialReference: point.spatialReference,
+  })
+
+  const snapshot = () => verticesRef.current.map(v => ({...v}))
+
+  const pushHistory = () => {
+    historyRef.current.push(snapshot())
+  }
+
+  const emitState = () => {
+    if (onStateChangeRef.current) {
+      onStateChangeRef.current({
+        vertexCount: verticesRef.current.length,
+        selectedIndex: selectedIndexRef.current,
+        canUndo: historyRef.current.length > 0,
+      })
     }
-    let total = 0;
-    layer.graphics.forEach(g => {
-      if (g.geometry && g.geometry.paths && g.geometry.paths.length > 0) {
-        const len = geodesicLength(g.geometry, "kilometers");
-        if (len > 0) total += len;
+  }
+
+  const syncUi = () => {
+    setVertexCount(verticesRef.current.length)
+    setSelectedIndex(selectedIndexRef.current)
+    emitState()
+  }
+
+  const updateDistance = () => {
+    const g = polylineGraphicRef.current
+    let value = null
+    if (g && g.geometry) {
+      const len = geodesicLength(g.geometry, "kilometers")
+      if (len > 0) value = len.toFixed(2)
+    }
+    distanceRef.current = value
+    setDistance(value)
+  }
+
+  const render = () => {
+    const layer = layerRef.current
+    if (!layer) return
+    const verts = verticesRef.current
+    const sr = verts[0] ? verts[0].spatialReference : (view && view.spatialReference)
+
+    if (verts.length >= 2) {
+      const poly = new Polyline({
+        spatialReference: sr,
+        paths: [[verts.map(v => [v.x, v.y])]],
+      })
+      if (!polylineGraphicRef.current) {
+        polylineGraphicRef.current = new Graphic({
+          geometry: poly,
+          symbol: LINE_SYMBOL,
+          attributes: {routePath: true},
+        })
+        layer.add(polylineGraphicRef.current)
+      } else {
+        polylineGraphicRef.current.geometry = poly
       }
-    });
-    const value = total > 0 ? total.toFixed(2) : null;
-    distanceRef.current = value;
-    setDistance(value);
-  };
-
-  const clearGraphics = () => {
-    if (layerRef.current) {
-      layerRef.current.removeAll();
-      selectedGraphicRef.current = null;
+    } else if (polylineGraphicRef.current) {
+      layer.remove(polylineGraphicRef.current)
+      polylineGraphicRef.current = null
     }
-    distanceRef.current = null;
-    setDistance(null);
-    if (sketchRef.current) {
-      sketchRef.current.cancel();
+
+    vertexGraphicsRef.current.forEach(g => layer.remove(g))
+    vertexGraphicsRef.current = []
+    for (let i = 0; i < verts.length; i++) {
+      const p = new Point({x: verts[i].x, y: verts[i].y, spatialReference: verts[i].spatialReference})
+      const sel = selectedIndexRef.current === i
+      const g = new Graphic({
+        geometry: p,
+        symbol: makeVertexSymbol(sel),
+        attributes: {vertexIndex: i},
+      })
+      vertexGraphicsRef.current.push(g)
+      layer.add(g)
     }
-  };
+  }
 
-  const getGraphics = () => {
-    if (!layerRef.current) return [];
-    return layerRef.current.graphics.toArray();
-  };
+  const clearInternal = () => {
+    const layer = layerRef.current
+    if (layer) layer.removeAll()
+    polylineGraphicRef.current = null
+    vertexGraphicsRef.current = []
+    verticesRef.current = []
+    selectedIndexRef.current = null
+  }
 
-  const getDistance = () => {
-    return distanceRef.current ? parseFloat(distanceRef.current) : 0;
-  };
+  const selectVertex = (index) => {
+    selectedIndexRef.current = index
+    render()
+    syncUi()
+  }
 
-  const startDraw = () => {
-    if (sketchRef.current) sketchRef.current.create("polyline");
-  };
+  const clearSelection = () => {
+    selectedIndexRef.current = null
+    render()
+    syncUi()
+  }
+
+  const addVertex = (point) => {
+    pushHistory()
+    verticesRef.current.push(toXY(point))
+    selectedIndexRef.current = null
+    render()
+    updateDistance()
+    syncUi()
+  }
 
   const deleteSelected = () => {
-    if (selectedGraphicRef.current && layerRef.current) {
-      layerRef.current.remove(selectedGraphicRef.current);
-      selectedGraphicRef.current = null;
-      updateTotalDistance(layerRef.current);
+    const idx = selectedIndexRef.current
+    if (idx === null) return
+    pushHistory()
+    verticesRef.current.splice(idx, 1)
+    selectedIndexRef.current = null
+    render()
+    updateDistance()
+    syncUi()
+  }
+
+  const clearAll = () => {
+    pushHistory()
+    clearInternal()
+    updateDistance()
+    syncUi()
+  }
+
+  const undo = () => {
+    if (historyRef.current.length === 0) return
+    verticesRef.current = historyRef.current.pop()
+    if (selectedIndexRef.current !== null && selectedIndexRef.current >= verticesRef.current.length) {
+      selectedIndexRef.current = null
     }
-  };
+    render()
+    updateDistance()
+    syncUi()
+  }
+
+  const getGraphics = () => {
+    const graphics = []
+    if (polylineGraphicRef.current) graphics.push(polylineGraphicRef.current)
+    return graphics
+  }
+
+  const getDistance = () => {
+    return distanceRef.current ? parseFloat(distanceRef.current) : 0
+  }
 
   const drawRoute = (route) => {
-    if (!layerRef.current || !sketchRef.current) return;
-    layerRef.current.removeAll();
+    if (!layerRef.current) return
+    clearInternal()
+    historyRef.current = []
     if (!route || !route.features) {
-      updateTotalDistance(layerRef.current);
-      return;
+      render()
+      updateDistance()
+      syncUi()
+      return
     }
-    route.features.forEach(feature => {
-      const g = feature.geometry;
-      if (g && (g.type === "polyline" || (g.paths !== undefined && !g.rings))) {
-        const graphic = new Graphic({
-          geometry: new Polyline(g),
-          symbol: sketchRef.current.polylineSymbol,
-          attributes: feature.properties || {},
-        });
-        layerRef.current.add(graphic);
+    const polyFeature = route.features.find(f =>
+      f.geometry && (f.geometry.type === "polyline" || (f.geometry.paths !== undefined && !f.geometry.rings))
+    )
+    const sr = view ? view.spatialReference : null
+
+    let verts = []
+    if (polyFeature) {
+      const g = polyFeature.geometry
+      const paths = g.paths
+      if (paths && paths[0]) {
+        verts = paths[0].map(([x, y]) => ({x, y, spatialReference: g.spatialReference || sr}))
       }
-    });
-    updateTotalDistance(layerRef.current);
-  };
+    }
+    verticesRef.current = verts
+    selectedIndexRef.current = null
+    render()
+    updateDistance()
+    syncUi()
+  }
 
   useEffect(() => {
     if (onRegister && toolId) {
-      onRegister(toolId, {getGraphics, getDistance, clear: clearGraphics, startDraw});
+      onRegister(toolId, {
+        getGraphics,
+        getDistance,
+        clear: clearAll,
+        startDraw: () => {},
+        undo,
+        deleteSelected,
+        clearSelection,
+        canUndo: () => historyRef.current.length > 0,
+      })
     }
-  }, [onRegister, toolId]);
+  }, [onRegister, toolId])
 
   useEffect(() => {
-    if (!view) return;
+    if (!view) return
 
-    const layer = new GraphicsLayer({id: "polyline-draw-layer"});
-    view.map.add(layer);
-    layerRef.current = layer;
+    const layer = new GraphicsLayer({id: "polyline-draw-layer"})
+    view.map.add(layer)
+    layerRef.current = layer
 
-    const sketch = new SketchViewModel({
-      view,
-      layer,
-      polylineSymbol: {
-        type: "simple-line",
-        color: "#0cff25",
-        width: 3
-      },
-      defaultUpdateOptions: {
-        enableRotation: false,
-        enableScaling: false,
-        enableMove: false,
-      },
-    });
-    sketchRef.current = sketch;
+    drawRoute(initialRoute)
 
-    const UPDATE_OPTIONS = {tool: "reshape", enableMove: false, enableRotation: false, enableScaling: false, toggleToolOnClick: false};
+    const findVertexGraphic = (results) => {
+      return (results || []).find(
+        r => r.graphic && r.graphic.layer === layerRef.current &&
+          r.graphic.attributes && r.graphic.attributes.vertexIndex !== undefined
+      )
+    }
 
-    drawRoute(initialRouteRef.current);
-
-    sketch.on("create", (event) => {
-      if (event.state === "complete") {
-        updateTotalDistance(layer);
-      }
-    });
-
-    sketch.on("update", (event) => {
-      if (event.state === "complete") {
-        updateTotalDistance(layer);
-      }
-      if (event.graphics && event.graphics.length > 0) {
-        selectedGraphicRef.current = event.graphics[0];
-        if (event.tool === "transform") {
-          sketch.update(event.graphics, UPDATE_OPTIONS);
+    const handlePointerDown = (event) => {
+      if (!activeRef.current) return
+      view.hitTest(event).then((response) => {
+        const hit = findVertexGraphic(response.results)
+        if (hit) {
+          draggingRef.current = {index: hit.graphic.attributes.vertexIndex}
+          selectVertex(hit.graphic.attributes.vertexIndex)
         }
+      }).catch(() => {})
+    }
+
+    const handlePointerMove = (event) => {
+      if (!draggingRef.current) return
+      const point = view.toMap({x: event.x, y: event.y})
+      if (!point) return
+      if (!movedRef.current) {
+        pushHistory()
+        movedRef.current = true
       }
-    });
+      const idx = draggingRef.current.index
+      verticesRef.current[idx] = toXY(point)
+      render()
+      updateDistance()
+    }
+
+    const handlePointerUp = () => {
+      if (draggingRef.current) {
+        draggingRef.current = null
+        if (movedRef.current) {
+          suppressClickRef.current = true
+        }
+        movedRef.current = false
+        syncUi()
+      }
+    }
+
+    const handleClick = (event) => {
+      if (!activeRef.current) {
+        clearSelection()
+        return
+      }
+      if (suppressClickRef.current) {
+        suppressClickRef.current = false
+        return
+      }
+      const point = view.toMap({x: event.x, y: event.y})
+      if (!point) return
+      view.hitTest(event).then((response) => {
+        const hit = findVertexGraphic(response.results)
+        if (hit) {
+          selectVertex(hit.graphic.attributes.vertexIndex)
+          return
+        }
+        addVertex(point)
+      }).catch(() => {})
+    }
 
     const handleKeyDown = (e) => {
       if (e.key === "Delete" || e.key === "Backspace") {
-        deleteSelected();
+        deleteSelected()
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
+    }
+
+    const pointerDownHandle = view.on("pointer-down", handlePointerDown)
+    const pointerMoveHandle = view.on("pointer-move", handlePointerMove)
+    const pointerUpHandle = view.on("pointer-up", handlePointerUp)
+    const clickHandle = view.on("click", handleClick)
+    window.addEventListener("keydown", handleKeyDown)
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      try { sketch.destroy(); } catch (err) { console.error("PolylineDrawer: sketch destroy failed", err); }
-      sketchRef.current = null;
-      try {
-        if (view && view.map) view.map.remove(layer);
-      } catch (err) {
-        console.error("PolylineDrawer: failed to remove layer", err);
-      }
-      layerRef.current = null;
-      selectedGraphicRef.current = null;
-      setDistance(null);
-    };
-
-  }, [view]);
-
-  useEffect(() => {
-    if (!view || !sketchRef.current) return;
-    if (active) {
-      startDraw();
-    } else {
-      sketchRef.current.cancel();
+      window.removeEventListener("keydown", handleKeyDown)
+      try { pointerDownHandle.remove() } catch (err) {}
+      try { pointerMoveHandle.remove() } catch (err) {}
+      try { pointerUpHandle.remove() } catch (err) {}
+      try { clickHandle.remove() } catch (err) {}
+      try { view.map.remove(layer) } catch (err) {}
+      layerRef.current = null
+      polylineGraphicRef.current = null
+      vertexGraphicsRef.current = []
+      verticesRef.current = []
+      selectedIndexRef.current = null
     }
-  }, [view, active]);
+  }, [view])
 
   useEffect(() => {
-    if (!view || !layerRef.current) return;
-    drawRoute(initialRoute);
-  }, [view, initialRoute]);
-
-  if (!active) return null;
+    if (!view) return
+    if (verticesRef.current.length === 0 && historyRef.current.length === 0) {
+      drawRoute(initialRoute)
+    }
+  }, [view, initialRoute])
 
   return (
     <div
@@ -185,55 +360,18 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute}) {
         bottom: "20px",
         left: "50%",
         transform: "translateX(-50%)",
-        background: "rgba(0, 0, 0, 0.75)",
+        background: "var(--bg-panel-solid)",
         padding: "10px 18px",
         borderRadius: "8px",
-        color: "#0cff25",
+        color: "var(--green)",
         fontSize: "14px",
         fontWeight: "bold",
         fontFamily: "monospace",
-        display: "flex",
-        gap: "18px",
-        alignItems: "center",
         zIndex: 10,
         border: "1px solid rgba(12, 255, 37, 0.3)",
       }}
     >
-      <span>
-        {distance ? `Distance: ${distance} km` : "Click on map to start a line"}
-      </span>
-      <button
-        onClick={startDraw}
-        style={{
-          padding: "4px 10px",
-          borderRadius: "4px",
-          border: "1px solid #0cff25",
-          background: "rgba(12, 255, 37, 0.15)",
-          color: "#0cff25",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontWeight: "bold",
-        }}
-      >
-        Add Line
-      </button>
-      {selectedGraphicRef.current && (
-        <button
-          onClick={deleteSelected}
-          style={{
-            padding: "4px 10px",
-            borderRadius: "4px",
-            border: "1px solid #ff4c4c",
-            background: "rgba(255, 76, 76, 0.15)",
-            color: "#ff4c4c",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "bold",
-          }}
-        >
-          Delete Selected
-        </button>
-      )}
+      <span>{distance ? `Distance: ${distance} km` : "Route"}</span>
     </div>
   )
 }

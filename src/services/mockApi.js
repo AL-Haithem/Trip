@@ -37,13 +37,54 @@ export async function login(email, password) {
     err.code = "AUTH_INVALID";
     throw err;
   }
-  const company = (mock.auth?.email === email)
-    ? mock.auth
-    : (mock.auth?.companies || []).find((c) => c.email === email) || null;
+  const role = cred.role || "user";
+  const profile =
+    role === "company"
+      ? (mock.auth?.companies || []).find((c) => c.email === email) || null
+      : (mock.auth?.users || []).find((u) => u.email === email) || null;
 
   const session = {
     email,
-    company,
+    role,
+    company: role === "company" ? profile : null,
+    user: role === "user" ? profile : null,
+    loggedInAt: Date.now(),
+  };
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch (e) {
+    console.error("mockApi: failed to store session", e);
+  }
+  return session;
+}
+
+export async function register({email, password, name, phone}) {
+  const mock = await loadMockFile();
+  const creds = mock.auth?.credentials || [];
+
+  if (creds.some((c) => c.email === email)) {
+    const err = new Error("Email already registered");
+    err.code = "AUTH_EXISTS";
+    throw err;
+  }
+
+  const id = `user_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const profile = {id, name, email, phone: phone || ""};
+  mock.auth.users = [...(mock.auth.users || []), profile];
+
+  mock.auth.credentials = [...creds, {email, password, role: "user"}];
+
+  const ok = await writeMockFile(mock);
+  if (!ok) {
+    const err = new Error("Failed to save account");
+    err.code = "AUTH_WRITE";
+    throw err;
+  }
+
+  const session = {
+    email,
+    role: "user",
+    user: profile,
     loggedInAt: Date.now(),
   };
   try {
@@ -121,4 +162,50 @@ export async function setPublished(id, published) {
 export async function getCompanies() {
   const mock = await loadMockFile();
   return mock.auth?.companies || [];
+}
+
+// Temporary in-memory OTP store for password reset (no real email service).
+const resetCodes = new Map();
+
+export async function requestPasswordReset(email) {
+  const mock = await loadMockFile();
+  const cred = (mock.auth?.credentials || []).find(
+    (c) => c.email === email.trim().toLowerCase()
+  );
+  if (!cred) {
+    const err = new Error("Email not found");
+    err.code = "AUTH_NOTFOUND";
+    throw err;
+  }
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  resetCodes.set(email.trim().toLowerCase(), code);
+  return {code};
+}
+
+export async function confirmPasswordReset(email, code, newPassword) {
+  const key = email.trim().toLowerCase();
+  const expected = resetCodes.get(key);
+  if (!expected || expected !== String(code).trim()) {
+    const err = new Error("Invalid or expired code");
+    err.code = "AUTH_BADCODE";
+    throw err;
+  }
+  const mock = await loadMockFile();
+  const creds = mock.auth?.credentials || [];
+  const cred = creds.find((c) => c.email === key);
+  if (!cred) {
+    const err = new Error("Email not found");
+    err.code = "AUTH_NOTFOUND";
+    throw err;
+  }
+  cred.password = newPassword;
+  mock.auth.credentials = creds;
+  const ok = await writeMockFile(mock);
+  if (!ok) {
+    const err = new Error("Failed to save password");
+    err.code = "AUTH_WRITE";
+    throw err;
+  }
+  resetCodes.delete(key);
+  return true;
 }

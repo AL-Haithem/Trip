@@ -1,0 +1,158 @@
+/* ── Trip draw / map editor ───────────────────── */
+.td-loading {
+  background: var(--bg);
+  color: var(--text);
+  padding: 32px;
+  font-family: system-ui, sans-serif;
+}
+
+.td-wrap {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+.td-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  height: 98%;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  color: var(--text);
+  padding: 24px;
+  margin: 2px;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+.td-title {
+  margin-top: 0;
+  color: var(--green);
+}
+
+.td-subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.td-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.td-status-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  background: var(--chip-bg);
+  color: var(--text-muted);
+}
+
+.td-status-published {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.td-endpoints {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.td-endpoint {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--chip-bg);
+}
+
+.td-endpoint-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.td-endpoint-label {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.td-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.td-dot-start {
+  background: var(--green);
+}
+
+.td-dot-end {
+  background: var(--red);
+}
+
+.td-endpoint-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--btn-icon-border);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.td-active-start {
+  border: 2px solid var(--green);
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.td-active-end {
+  border: 2px solid var(--red);
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.td-save {
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--green);
+  color: var(--green-ink);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.td-back {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--btn-icon-border);
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.td-saved {
+  color: var(--green);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.td-map {
+  flex: 1;
+  position: relative;
+}

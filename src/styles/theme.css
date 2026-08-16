@@ -1,0 +1,106 @@
+/* ════════════════════════════════════════════════════════════
+   GEO · Trips — Theme tokens ONLY
+   Dark mode is the default; light mode overrides tokens below.
+   Shared component classes live in components.css.
+   ════════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme="dark"] {
+  /* Surfaces (dark) */
+  --bg: #0d1117;
+  --bg-elevated: #161b24;
+  --bg-panel: rgba(22, 27, 36, 0.72);
+  --bg-panel-solid: #11151c;
+  --bg-input: #0d1117;
+  --line: #2a2f3a;
+
+  /* Text (dark) */
+  --text: #e8edf2;
+  --text-muted: #9aa7b5;
+  --text-dim: #5b6675;
+
+  /* Accent (primary) */
+  --green: #0cff25;
+  --green-dim: #0a9c19;
+  --green-ink: #06210b;
+  --green-tint: rgba(12, 255, 37, 0.15);
+
+  /* Context tints (fill / border / text share the hue) */
+  --blue: #4c9fff;
+  --blue-tint: rgba(76, 159, 255, 0.15);
+  --orange: #ff9a1f;
+  --orange-tint: rgba(255, 154, 31, 0.15);
+  --red: #ff4c4c;
+  --red-tint: rgba(255, 76, 76, 0.15);
+
+  --btn-icon-bg: #2a2a2a;
+  --btn-icon-border: #555;
+  --chip-bg: rgba(255, 255, 255, 0.04);
+
+  /* Map (dark) */
+  --map-bg: #0d1117;
+  --map-land: #3e4e35;
+  --map-land-outline: rgba(0, 0, 0, 0.85);
+  --map-label: #ffffff;
+  --map-label-halo: #101114;
+  --map-country-outline: rgba(255, 255, 255, 0.3);
+  --map-country-label: rgba(255, 255, 255, 0.77);
+  --map-pin-bg: #0d1117;
+  --map-pin-ink: #06210b;
+  --map-route-idle: #2f7d4a;
+
+  /* Shape */
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="light"] {
+  /* Surfaces (warm cream) */
+  --bg: #f7f3ec;
+  --bg-elevated: #fffdf8;
+  --bg-panel: rgba(255, 253, 248, 0.82);
+  --bg-panel-solid: #fffdf8;
+  --bg-input: #fffdf8;
+  --line: #e4dccd;
+
+  /* Text (warm dark) */
+  --text: #3a2f25;
+  --text-muted: #7a6f60;
+  --text-dim: #a89c89;
+
+  /* Accent (primary) — darker green for cream contrast */
+  --green: #0a8f17;
+  --green-dim: #076b12;
+  --green-ink: #06210b;
+  --green-tint: rgba(10, 143, 23, 0.12);
+
+  --blue: #2f7de0;
+  --blue-tint: rgba(47, 125, 224, 0.12);
+  --orange: #b3620a;
+  --orange-tint: rgba(179, 98, 10, 0.12);
+  --red: #c23333;
+  --red-tint: rgba(194, 51, 51, 0.12);
+
+  --btn-icon-bg: #efe9dd;
+  --btn-icon-border: #d2c8b6;
+  --chip-bg: rgba(58, 47, 37, 0.05);
+
+  /* Map (light, warm) */
+  --map-bg: #efe9df;
+  --map-land: #d8e4cf;
+  --map-land-outline: rgba(58, 47, 37, 0.45);
+  --map-label: #3a2f25;
+  --map-label-halo: rgba(255, 253, 248, 0.9);
+  --map-country-outline: rgba(58, 47, 37, 0.4);
+  --map-country-label: rgba(58, 47, 37, 0.7);
+  --map-pin-bg: #fffdf8;
+  --map-pin-ink: #06210b;
+  --map-route-idle: #2f9d5a;
+
+  --shadow: 0 4px 14px rgba(80, 66, 45, 0.14);
+  --shadow-lg: 0 32px 80px rgba(80, 66, 45, 0.2);
+}

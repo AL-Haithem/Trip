@@ -1,0 +1,33 @@
+/* ── Not found ────────────────────────────────── */
+.nf-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: system-ui, sans-serif;
+  padding: 24px;
+}
+
+.nf-panel {
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  padding: 48px 32px;
+}
+
+.nf-code {
+  font-size: 64px;
+  font-weight: bold;
+  color: var(--green);
+}
+
+.nf-title {
+  margin: 8px 0 4px;
+  color: var(--text);
+}
+
+.nf-text {
+  margin: 0 0 24px;
+  color: var(--text-muted);
+}

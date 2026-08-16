@@ -1,0 +1,174 @@
+/* ── Landing page ─────────────────────────────── */
+.lp-page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+}
+
+/* HERO */
+.lp-hero-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(12, 255, 37, 0.4);
+  background: rgba(12, 255, 37, 0.08);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.lp-hero-title {
+  margin: 22px 0 0;
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.05;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.lp-hero-highlight {
+  color: var(--green);
+}
+
+.lp-hero-subtitle {
+  margin: 18px auto 0;
+  max-width: 620px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.lp-hero-actions {
+  margin-top: 34px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* SECTIONS */
+.lp-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.lp-section-alt {
+  background: var(--bg-panel-solid);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.lp-eyebrow {
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+.lp-section-title {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 34px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.lp-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 40px;
+}
+
+.lp-grid-sm {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.lp-grid-md {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.lp-card {
+  padding: 22px;
+}
+
+.lp-card-icon {
+  font-size: 28px;
+}
+
+.lp-card-title {
+  margin: 12px 0 6px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.lp-card-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+/* WAYPOINT LEGEND */
+.lp-waypoint-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.lp-waypoint-emoji {
+  font-size: 18px;
+}
+
+/* CTA */
+.lp-cta-section {
+  padding: 0 24px 100px;
+}
+
+.lp-cta {
+  max-width: 920px;
+  margin: 0 auto;
+  border-radius: 20px;
+  border: 1px solid rgba(12, 255, 37, 0.35);
+  background: linear-gradient(135deg, rgba(12, 255, 37, 0.10), rgba(12, 255, 37, 0.02));
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.lp-cta-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.lp-cta-text {
+  margin: 12px auto 28px;
+  max-width: 540px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* FOOTER */
+.lp-footer {
+  border-top: 1px solid var(--line);
+  padding: 28px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}

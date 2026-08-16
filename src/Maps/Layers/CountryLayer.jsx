@@ -1,10 +1,12 @@
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer"
+import {getMapColors} from "../mapTheme.js"
 
-function CountryLayer(countryCode) {
+function CountryLayer(theme, fileUrl) {
+  const c = getMapColors(theme)
 
   return new GeoJSONLayer({
 
-    url: `/TempFiles/${countryCode}.json`,
+    url: fileUrl,
 
     minScale: 10000000,
     maxScale: 0,
@@ -15,8 +17,8 @@ function CountryLayer(countryCode) {
       symbol: {
         type: "simple-fill",
         color: [0, 0, 0, 0],
-        outline: {color: "rgba(255, 255, 255, 0.3)", width: 0.9}
-      }
+        outline: {color: c.countryOutline, width: 0.9},
+      },
     },
 
     labelingInfo: [{
@@ -29,19 +31,19 @@ function CountryLayer(countryCode) {
 
       symbol: {
         type: "text",
-        color: "rgba(255, 255, 255, 0.77)",
-        haloColor: "rgba(0, 0, 0, 0.45)",
+        color: c.countryLabel,
+        haloColor: c.labelHalo,
         haloSize: 1,
 
         font: {
           family: "Arial",
           size: 8,
-          weight: "bold"
-        }
-      }
+          weight: "bold",
+        },
+      },
     }],
 
-    labelsVisible: true
+    labelsVisible: true,
   })
 }
 

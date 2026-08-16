@@ -3,31 +3,37 @@ import {useEffect, useRef} from "react"
 import Map from "@arcgis/core/Map"
 import MapView from "@arcgis/core/views/MapView"
 
-import WorldLayer from "./Layers/BackMapLayer.jsx"
+import WorldLayer from "./Layers/WorldLayer.jsx"
 import CountryLayer from "./Layers/CountryLayer.jsx"
+import {SUPPORTED_COUNTRIES} from "./countries.js"
+import {getMapColors} from "./mapTheme.js"
 
 function MainMap({onViewReady}) {
 
   const mapRef = useRef(null)
 
   useEffect(() => {
+    const c = getMapColors("dark")
 
     const map = new Map({basemap: null})
 
     const view = new MapView({
       container: mapRef.current,
       map,
-      center: [3, 25],
-      scale: 250 * 100000,
+      center: [10, 20],
+      scale: 1200 * 100000,
       constraints: {
-        minScale: 1600 * 100000,
+        minScale: 4000 * 100000,
         maxScale: 5 * 100000
       },
-      background: {color: "#0d1117"}
+      background: {color: c.bg}
     })
 
-    map.add(WorldLayer())
-    map.add(CountryLayer("DZA"))
+    map.add(WorldLayer("dark"))
+
+    SUPPORTED_COUNTRIES.filter(country => country.enabled).forEach(country => {
+      map.add(CountryLayer("dark", country.file))
+    })
 
     const MAX_LAT = 85
     const clampLat = (lat) => Math.max(-MAX_LAT, Math.min(MAX_LAT, lat))
@@ -52,15 +58,12 @@ function MainMap({onViewReady}) {
       }
     }
 
-  }, [])
+  }, [onViewReady])
 
   return (
     <div
       ref={mapRef}
-      style={{
-        width: "100%",
-        height: "900px",
-      }}
+      className="map-canvas map-canvas-main"
     />
   )
 }

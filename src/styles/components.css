@@ -1,0 +1,243 @@
+/* ════════════════════════════════════════════════════════════
+   GEO · Trips — Shared component classes
+   Theme tokens are defined in theme.css.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Panels (glass) ─────────────────────────────── */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.panel-solid {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow);
+}
+
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+/* ── Buttons (translucent tinted) ───────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--chip-bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.btn:hover {
+  border-color: var(--text-muted);
+}
+
+.btn-primary {
+  background: var(--green-tint);
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+.btn-primary:hover {
+  filter: brightness(1.12);
+}
+
+.btn-info {
+  background: var(--blue-tint);
+  border: 1px solid var(--blue);
+  color: var(--blue);
+}
+.btn-info:hover {
+  background: rgba(76, 159, 255, 0.25);
+}
+
+.btn-warning {
+  background: var(--orange-tint);
+  border: 1px solid var(--orange);
+  color: var(--orange);
+}
+.btn-warning:hover {
+  background: rgba(255, 184, 76, 0.25);
+}
+
+.btn-danger {
+  background: var(--red-tint);
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+.btn-danger:hover {
+  background: rgba(255, 76, 76, 0.25);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--text-muted);
+}
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.btn-sm { padding: 7px 12px; font-size: 13px; }
+.btn-lg { padding: 13px 22px; font-size: 15px; }
+.btn-block { width: 100%; }
+
+/* ── Icon / tool buttons (square) ───────────────── */
+.btn-icon {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: var(--r-md);
+  border: 1px solid var(--btn-icon-border);
+  background: var(--btn-icon-bg);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.btn-icon:hover {
+  border-color: var(--text-muted);
+}
+.btn-icon.active {
+  border: 2px solid var(--green);
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+/* ── Chips / badges ─────────────────────────────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--chip-bg);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+.chip-green {
+  border-color: rgba(10, 156, 25, 0.4);
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+/* ── Inputs ─────────────────────────────────────── */
+.input,
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.input:focus,
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--green);
+}
+.input::placeholder,
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-dim);
+}
+
+.field {
+  margin-bottom: 16px;
+}
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Spinner ────────────────────────────────────── */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: geo-spin 0.7s linear infinite;
+  display: inline-block;
+}
+[data-theme="light"] .spinner {
+  border-color: rgba(58, 47, 37, 0.25);
+}
+@keyframes geo-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Utility ────────────────────────────────────── */
+.glass {
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.text-muted { color: var(--text-muted); }
+
+/* ── Landing hero (theme-aware gradient) ──────── */
+.hero {
+  position: relative;
+  padding: 120px 24px 90px;
+  background: radial-gradient(120% 90% at 30% 0%, #10202c 0%, #0a1219 60%, #070b10 100%);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+[data-theme="light"] .hero {
+  background: radial-gradient(120% 90% at 30% 0%, #f3ede2 0%, #f6f1e8 60%, #f9f5ee 100%);
+}
+
+/* ── Navbar / Side panel (theme-aware glass) ──── */
+.navbar,
+.side-panel {
+  background: var(--bg-panel);
+}

@@ -1,10 +1,41 @@
 import {useState, useRef, useEffect} from "react"
 import {useParams, useNavigate} from "react-router"
+import {webMercatorToGeographic} from "@arcgis/core/geometry/support/webMercatorUtils"
+import Point from "@arcgis/core/geometry/Point"
 
 import MainMap from "../Maps/MainMap.jsx"
 import EditMode from "../Editor/EditMode.jsx"
+import StartEndDrawer from "../Editor/Tools/StartEndDrawer.jsx"
 import {getTour, saveTour} from "../data/tourStore.js"
-import {graphicsToGeoJSON} from "../Editor/storage.js"
+import {tripDraw as copy} from "../content/siteContent.js"
+import "../styles/tripDraw.css"
+
+function to4326(geometry) {
+  if (!geometry) return null
+  const sr = geometry.spatialReference
+  const isWebMercator = sr && (sr.isWebMercator || sr.wkid === 102100 || sr.latestWkid === 3857)
+  if (isWebMercator) return webMercatorToGeographic(geometry)
+  return geometry
+}
+
+function toGeoJSONPoint(geometry) {
+  if (!geometry) return null
+  const normalized = to4326(geometry)
+  return {
+    type: "Feature",
+    geometry: {...normalized.toJSON(), type: "Point"},
+    properties: {kind: "endpoint"},
+  }
+}
+
+function fcToGeom(fc) {
+  if (!fc) return null
+  const features = fc.features || (fc.type === "Feature" ? [fc] : [])
+  const feature = features[0]
+  const g = feature ? (feature.geometry || feature) : null
+  if (!g || (g.x === undefined && g.longitude === undefined)) return null
+  return new Point(g)
+}
 
 function TripDraw() {
 
@@ -15,6 +46,9 @@ function TripDraw() {
   const [tour, setTour] = useState(null)
   const [initialRoute, setInitialRoute] = useState(null)
   const [saved, setSaved] = useState(false)
+  const [pointMode, setPointMode] = useState(null)
+  const [startPoint, setStartPoint] = useState(null)
+  const [endPoint, setEndPoint] = useState(null)
   const toolRef = useRef({})
 
   useEffect(() => {
@@ -23,6 +57,8 @@ function TripDraw() {
       if (mounted && data) {
         setTour(data);
         setInitialRoute(data.route || null);
+        setStartPoint(fcToGeom(data.startPoint));
+        setEndPoint(fcToGeom(data.endPoint));
       }
     });
     return () => { mounted = false; };
@@ -40,9 +76,17 @@ function TripDraw() {
     const pointGraphics = pointApi ? pointApi.getGraphics() : [];
 
     const allGraphics = [...polylineGraphics, ...pointGraphics];
-    return allGraphics.length > 0
-      ? {type: "FeatureCollection", features: graphicsToGeoJSON(allGraphics)}
-      : null;
+    if (allGraphics.length === 0) return null;
+    const features = allGraphics.map((g) => {
+      const norm = to4326(g.geometry)
+      const json = norm.toJSON()
+      return {
+        type: "Feature",
+        geometry: {type: norm.type, ...json},
+        properties: {...(g.attributes || {}), symbol: g.symbol.toJSON()},
+      }
+    })
+    return {type: "FeatureCollection", features};
   };
 
   const handleSaveRoute = async () => {
@@ -55,6 +99,8 @@ function TripDraw() {
       ...tour,
       route: route !== null ? route : tour.route,
       distanceKm: distanceKm || tour.distanceKm,
+      startPoint: {type: "FeatureCollection", features: startPoint ? [toGeoJSONPoint(startPoint)] : []},
+      endPoint: {type: "FeatureCollection", features: endPoint ? [toGeoJSONPoint(endPoint)] : []},
     };
 
     await saveTour(finalTour);
@@ -63,99 +109,87 @@ function TripDraw() {
     setTimeout(() => setSaved(false), 1500);
   };
 
+  const handleEndpointChange = ({start, end}) => {
+    setStartPoint(start || null);
+    setEndPoint(end || null);
+  };
+
   if (!tour) {
     return (
-      <div style={{background: "#11141c", color: "#fff", padding: "32px", fontFamily: "system-ui"}}>
+      <div className="td-loading">
         Loading tour...
       </div>
     );
   }
 
   return (
-    <div style={{display: "flex", width: "100%", height: "100vh"}}>
+    <div className="td-wrap">
 
-      <div
-        style={{
-          width: "320px",
-          flexShrink: 0,
-          height: "98%",
-          overflowY: "auto",
-          background: "#1b1f2a",
-          color: "#fff",
-          padding: "24px",
-          margin: "2px",
-          boxSizing: "border-box",
-          fontFamily: "system-ui, sans-serif",
-        }}
-      >
-        <h2 style={{marginTop: 0, color: "#0cff25"}}>Trip Map Editor</h2>
-        <p style={{color: "#aab", fontSize: "13px"}}>{tour.title}</p>
+      <div className="td-sidebar">
+        <h2 className="td-title">{copy.editorTitle}</h2>
+        <p className="td-subtitle">{tour.title}</p>
 
-        <div style={{display: "flex", alignItems: "center", marginBottom: 0}}>
-          <span
-            style={{
-              padding: "4px 10px",
-              borderRadius: "12px",
-              fontSize: "12px",
-              fontWeight: "bold",
-              background: tour.published ? "rgba(12, 255, 37, 0.15)" : "rgba(170, 170, 187, 0.15)",
-              color: tour.published ? "#0cff25" : "#aab",
-            }}
-          >
-            {tour.published ? "Published" : "Draft"}
+        <div className="td-status">
+          <span className={tour.published ? "td-status-chip td-status-published" : "td-status-chip"}>
+            {tour.published ? copy.published : copy.draft}
           </span>
         </div>
 
-        <button
-          onClick={handleSaveRoute}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "8px",
-            borderRadius: "8px",
-            border: "none",
-            background: saved ? "#4cff8a" : "#0cff25",
-            color: "#06210b",
-            fontSize: "15px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          {saved ? "Saved ✓" : "Save"}
+        <div className="td-endpoints">
+          <div className="td-endpoint">
+            <div className="td-endpoint-head">
+              <span className="td-dot td-dot-start" />
+              <span className="td-endpoint-label">{copy.startLabel}</span>
+            </div>
+            <button
+              onClick={() => setPointMode(pointMode === "start" ? null : "start")}
+              className={pointMode === "start" ? "td-endpoint-btn td-active-start" : "td-endpoint-btn"}
+            >
+              {pointMode === "start" ? copy.startClick : startPoint ? copy.startChange : copy.startAdd}
+            </button>
+          </div>
+
+          <div className="td-endpoint">
+            <div className="td-endpoint-head">
+              <span className="td-dot td-dot-end" />
+              <span className="td-endpoint-label">{copy.endLabel}</span>
+            </div>
+            <button
+              onClick={() => setPointMode(pointMode === "end" ? null : "end")}
+              className={pointMode === "end" ? "td-endpoint-btn td-active-end" : "td-endpoint-btn"}
+            >
+              {pointMode === "end" ? copy.endClick : endPoint ? copy.endChange : copy.endAdd}
+            </button>
+          </div>
+        </div>
+
+        <button onClick={handleSaveRoute} className="td-save">
+          {saved ? copy.saved : copy.save}
         </button>
 
-        <button
-          onClick={() => navigate("/trips")}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "10px",
-            borderRadius: "8px",
-            border: "1px solid #555",
-            background: "transparent",
-            color: "#fff",
-            fontSize: "15px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Back to Trips
+        <button onClick={() => navigate("/trips")} className="td-back">
+          {copy.back}
         </button>
 
         {saved && (
-          <p style={{color: "#4cff8a", fontSize: "13px", marginTop: "10px" }}>
-            Route saved.
-          </p>
+          <p className="td-saved">{copy.savedMessage}</p>
         )}
       </div>
 
-      <div style={{flex: 1, position: "relative"}}>
+      <div className="td-map">
         <MainMap onViewReady={setView} />
         <EditMode
           view={view}
           onRegister={registerTool}
           initialRoute={initialRoute}
           defaultTool={null}
+        />
+        <StartEndDrawer
+          view={view}
+          mode={pointMode}
+          initialStart={startPoint}
+          initialEnd={endPoint}
+          onChange={handleEndpointChange}
         />
       </div>
 

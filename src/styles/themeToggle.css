@@ -1,0 +1,19 @@
+/* ── Theme toggle button ──────────────────────── */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--chip-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 16px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--text-muted);
+}

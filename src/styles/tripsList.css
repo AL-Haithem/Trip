@@ -1,0 +1,82 @@
+/* ── Trips list ───────────────────────────────── */
+.tl-page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.tl-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tl-title {
+  margin: 0;
+  color: var(--green);
+}
+
+.tl-managed {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tl-managed span {
+  color: var(--text);
+  font-weight: bold;
+}
+
+.tl-msg {
+  color: var(--text-muted);
+}
+
+.tl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.tl-card {
+  padding: 20px;
+  gap: 10px;
+}
+
+.tl-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.tl-card-title {
+  margin: 0;
+  color: var(--text);
+}
+
+.tl-card-desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  min-height: 36px;
+}
+
+.tl-card-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.tl-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}

@@ -1,0 +1,53 @@
+/* ── Trip form ────────────────────────────────── */
+.tf-page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.tf-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.tf-title {
+  margin-top: 0;
+  color: var(--green);
+}
+
+.tf-label {
+  display: block;
+  font-size: 13px;
+  margin: 14px 0 6px;
+  color: var(--text-muted);
+}
+
+.tf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tf-chip {
+  cursor: pointer;
+}
+
+.tf-chip-excluded {
+  border-color: var(--red);
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.tf-submit {
+  margin-top: 8px;
+}
+
+.tf-saved {
+  color: var(--green);
+  font-size: 13px;
+  margin-top: 10px;
+}

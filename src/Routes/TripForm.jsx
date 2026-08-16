@@ -3,15 +3,21 @@ import {useParams, useNavigate} from "react-router"
 
 import {createEmptyTour, DEFAULT_SERVICES} from "../data/models.js"
 import {saveTour, getTour} from "../data/tourStore.js"
+import {getSession} from "../services/mockApi.js"
+import {Input, TextArea} from "../components/ui/Input.jsx"
+import Button from "../components/ui/Button.jsx"
+import Chip from "../components/ui/Chip.jsx"
+import {tripForm as copy} from "../content/siteContent.js"
+import "../styles/tripForm.css"
 
 function TripForm() {
-
   const {id} = useParams()
   const isEdit = Boolean(id)
   const navigate = useNavigate()
 
   const [tour, setTour] = useState(createEmptyTour())
   const [saved, setSaved] = useState(false)
+  const sessionCompany = getSession()?.company || null
 
   useEffect(() => {
     if (!id) return;
@@ -41,146 +47,65 @@ function TripForm() {
 
   const handleSave = async () => {
     if (!tour.title || tour.title.trim().length === 0) {
-      alert("Please provide a title before saving.");
+      alert(copy.titleRequired);
       return;
     }
-    await saveTour(tour);
+    const companyId = tour.companyId || (sessionCompany ? sessionCompany.id : null);
+    await saveTour({...tour, companyId});
     setSaved(true);
     navigate("/trips");
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#11141c",
-        color: "#fff",
-        fontFamily: "system-ui, sans-serif",
-        padding: "32px",
-        boxSizing: "border-box",
-      }}
-    >
-      <div style={{maxWidth: "640px", margin: "0 auto"}}>
-        <h1 style={{marginTop: 0, color: "#0cff25"}}>
-          {isEdit ? "Edit Tour" : "Create Tour"}
-        </h1>
+    <div className="tf-page">
+      <div className="tf-inner">
+        <h1 className="tf-title">{isEdit ? copy.editTitle : copy.createTitle}</h1>
 
-        <label style={labelStyle}>Title</label>
-        <input
-          style={inputStyle}
-          value={tour.title}
-          onChange={(e) => updateField("title", e.target.value)}
-          placeholder="e.g. Northern Algeria Adventure"
-        />
+        <Input label={copy.titleLabel} value={tour.title} onChange={(e) => updateField("title", e.target.value)} placeholder={copy.titlePlaceholder} />
+        <TextArea label={copy.descriptionLabel} value={tour.description} onChange={(e) => updateField("description", e.target.value)} placeholder={copy.descriptionPlaceholder} />
+        <Input label={copy.priceLabel} type="number" min="0" value={tour.price} onChange={(e) => updateField("price", parseFloat(e.target.value) || 0)} />
+        <Input label={copy.seatsLabel} type="number" min="0" value={tour.seats} onChange={(e) => updateField("seats", parseInt(e.target.value) || 0)} />
 
-        <label style={labelStyle}>Description</label>
-        <textarea
-          style={{...inputStyle, minHeight: "90px", resize: "vertical"}}
-          value={tour.description}
-          onChange={(e) => updateField("description", e.target.value)}
-          placeholder="Describe the trip program..."
-        />
-
-        <label style={labelStyle}>Price (per person)</label>
-        <input
-          style={inputStyle}
-          type="number"
-          min="0"
-          value={tour.price}
-          onChange={(e) => updateField("price", parseFloat(e.target.value) || 0)}
-        />
-
-        <label style={labelStyle}>Seats</label>
-        <input
-          style={inputStyle}
-          type="number"
-          min="0"
-          value={tour.seats}
-          onChange={(e) => updateField("seats", parseInt(e.target.value) || 0)}
-        />
-
-        <label style={labelStyle}>Included Services</label>
-        <div style={{display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px"}}>
+        <label className="tf-label">{copy.includedLabel}</label>
+        <div className="tf-chips">
           {DEFAULT_SERVICES.map(service => (
-            <button
+            <Chip
               key={service}
-              type="button"
+              green={tour.includedServices.includes(service)}
               onClick={() => toggleService(service, "includedServices")}
-              style={chipStyle(tour.includedServices.includes(service))}
+              className="tf-chip"
             >
               {service}
-            </button>
+            </Chip>
           ))}
         </div>
 
-        <label style={labelStyle}>Not Included Services</label>
-        <div style={{display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px"}}>
-          {DEFAULT_SERVICES.map(service => (
-            <button
-              key={service}
-              type="button"
-              onClick={() => toggleService(service, "notIncludedServices")}
-              style={chipStyle(tour.notIncludedServices.includes(service), "#ff4c4c")}
-            >
-              {service}
-            </button>
-          ))}
+        <label className="tf-label">{copy.notIncludedLabel}</label>
+        <div className="tf-chips">
+          {DEFAULT_SERVICES.map(service => {
+            const active = tour.notIncludedServices.includes(service)
+            return (
+              <Chip
+                key={service}
+                onClick={() => toggleService(service, "notIncludedServices")}
+                className={active ? "tf-chip tf-chip-excluded" : "tf-chip"}
+              >
+                {service}
+              </Chip>
+            )
+          })}
         </div>
 
-        <button
-          onClick={handleSave}
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginTop: "8px",
-            borderRadius: "8px",
-            border: "none",
-            background: saved ? "#4cff8a" : "#0cff25",
-            color: "#06210b",
-            fontSize: "15px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          {saved ? "Saved ✓" : "Save"}
-        </button>
+        <Button variant="primary" block onClick={handleSave} className="tf-submit">
+          {saved ? copy.saved : copy.save}
+        </Button>
 
         {saved && (
-          <p style={{color: "#4cff8a", fontSize: "13px", marginTop: "10px"}}>
-            Tour saved.
-          </p>
+          <p className="tf-saved">{copy.savedMessage}</p>
         )}
       </div>
     </div>
   )
 }
-
-const labelStyle = {
-  display: "block",
-  fontSize: "13px",
-  margin: "14px 0 6px",
-  color: "#aab",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #444",
-  background: "#1b1f2a",
-  color: "#fff",
-  fontSize: "14px",
-  boxSizing: "border-box",
-};
-
-const chipStyle = (active, color = "#0cff25") => ({
-  padding: "6px 10px",
-  borderRadius: "14px",
-  border: active ? `1px solid ${color}` : "1px solid #444",
-  background: active ? `${color}22` : "transparent",
-  color: active ? color : "#ccc",
-  fontSize: "12px",
-  cursor: "pointer",
-});
 
 export default TripForm

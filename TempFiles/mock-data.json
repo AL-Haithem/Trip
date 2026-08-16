@@ -3,13 +3,14 @@
     "credentials": [
       {
         "email": "company@demo.com",
-        "password": "demo123"
+        "password": "demo1234",
+        "role": "company"
       }
     ],
     "companies": [
       {
         "id": "company_demo",
-        "name": "Algeria Exploration Tours",
+        "name": "Tours Agency",
         "email": "company@demo.com",
         "phone": "+213 555 12 34 56",
         "description": "A company specialized in organizing exploratory trips across the national territory.",
@@ -18,25 +19,105 @@
         "rating": 4.7,
         "logo": null
       }
-    ]
+    ],
+    "travelers": [],
+    "users": []
   },
   "tours": [
     {
-      "id": "tour_1786758829218_pvjksj",
-      "title": "Trip",
-      "description": "TripTrip Trip TripTrip TripTripTrip ",
+      "id": "tour_1786821469331_e746vj",
+      "title": "Tri[",
+      "description": "Create Tou Title",
+      "companyId": "company_demo",
       "price": 1500,
-      "seats": 24,
+      "seats": 54,
       "includedServices": [
-        "Food",
-        "Pool",
-        "Transport"
+        "Insurance"
       ],
       "notIncludedServices": [
-        "Pool",
-        "Tour Guide"
+        "Lodging"
       ],
       "route": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "point",
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": 1.4478991437418305,
+              "y": 32.910777498703865
+            },
+            "properties": {
+              "waypointType": "camp",
+              "waypointLabel": "Camp",
+              "symbol": {
+                "type": "esriPMS",
+                "angle": 0,
+                "xoffset": 0,
+                "yoffset": 0,
+                "contentType": "image/svg+xml;charset=utf-8",
+                "imageData": "%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2234%22%20height%3D%2234%22%20viewBox%3D%220%200%2034%2034%22%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2217%22%20r%3D%2216%22%20fill%3D%22%230d1117%22%20stroke%3D%22%2306210b%22%20stroke-width%3D%221.5%22%2F%3E%3Ctext%20x%3D%2217%22%20y%3D%2223%22%20font-size%3D%2220%22%20text-anchor%3D%22middle%22%3E%E2%9B%BA%3C%2Ftext%3E%3C%2Fsvg%3E",
+                "height": 30,
+                "width": 30
+              }
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "point",
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": 3.2698271318415877,
+              "y": 32.04000309262678
+            },
+            "properties": {
+              "waypointType": "rest",
+              "waypointLabel": "Rest",
+              "symbol": {
+                "type": "esriPMS",
+                "angle": 0,
+                "xoffset": 0,
+                "yoffset": 0,
+                "contentType": "image/svg+xml;charset=utf-8",
+                "imageData": "%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2234%22%20height%3D%2234%22%20viewBox%3D%220%200%2034%2034%22%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2217%22%20r%3D%2216%22%20fill%3D%22%230d1117%22%20stroke%3D%22%2306210b%22%20stroke-width%3D%221.5%22%2F%3E%3Ctext%20x%3D%2217%22%20y%3D%2223%22%20font-size%3D%2220%22%20text-anchor%3D%22middle%22%3E%E2%98%95%3C%2Ftext%3E%3C%2Fsvg%3E",
+                "height": 25.5,
+                "width": 25.5
+              }
+            }
+          },
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "point",
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": 4.306632517947731,
+              "y": 35.2650193984395
+            },
+            "properties": {
+              "waypointType": "restaurant",
+              "waypointLabel": "Restaurant",
+              "symbol": {
+                "type": "esriPMS",
+                "angle": 0,
+                "xoffset": 0,
+                "yoffset": 0,
+                "contentType": "image/svg+xml;charset=utf-8",
+                "imageData": "%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2234%22%20height%3D%2234%22%20viewBox%3D%220%200%2034%2034%22%3E%3Ccircle%20cx%3D%2217%22%20cy%3D%2217%22%20r%3D%2216%22%20fill%3D%22%230d1117%22%20stroke%3D%22%2306210b%22%20stroke-width%3D%221.5%22%2F%3E%3Ctext%20x%3D%2217%22%20y%3D%2223%22%20font-size%3D%2220%22%20text-anchor%3D%22middle%22%3E%F0%9F%8D%BD%EF%B8%8F%3C%2Ftext%3E%3C%2Fsvg%3E",
+                "height": 25.5,
+                "width": 25.5
+              }
+            }
+          }
+        ]
+      },
+      "startPoint": {
         "type": "FeatureCollection",
         "features": [
           {
@@ -45,209 +126,36 @@
               "spatialReference": {
                 "wkid": 4326
               },
-              "paths": [
-                [
-                  [
-                    1.909853867207292,
-                    32.2398685261408
-                  ],
-                  [
-                    -0.33221097006527006,
-                    33.91695777969117
-                  ],
-                  [
-                    -0.6195712153811261,
-                    34.727442677000205
-                  ],
-                  [
-                    -0.5215078307625735,
-                    35.41475706599999
-                  ],
-                  [
-                    0.486805512134189,
-                    35.573717319934225
-                  ]
-                ]
-              ],
-              "type": "polyline"
+              "x": 1.7649780702821223,
+              "y": 34.94832934170431,
+              "type": "Point"
             },
             "properties": {
-              "symbol": {
-                "type": "esriSLS",
-                "color": [
-                  12,
-                  255,
-                  37,
-                  255
-                ],
-                "width": 3,
-                "style": "esriSLSSolid"
-              }
-            }
-          },
-          {
-            "type": "Feature",
-            "geometry": {
-              "spatialReference": {
-                "wkid": 4326
-              },
-              "x": 4.752345697947224,
-              "y": 30.919573077959157,
-              "type": "point"
-            },
-            "properties": {
-              "symbol": {
-                "type": "esriSMS",
-                "color": [
-                  184,
-                  76,
-                  255,
-                  255
-                ],
-                "angle": 0,
-                "xoffset": 0,
-                "yoffset": 0,
-                "size": 26,
-                "style": "esriSMSPath",
-                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
-                "outline": {
-                  "type": "esriSLS",
-                  "color": [
-                    6,
-                    33,
-                    11,
-                    255
-                  ],
-                  "width": 1.5,
-                  "style": "esriSLSSolid"
-                }
-              },
-              "waypointType": "camp",
-              "waypointLabel": "مخيم"
-            }
-          },
-          {
-            "type": "Feature",
-            "geometry": {
-              "spatialReference": {
-                "wkid": 4326
-              },
-              "x": -0.2215091293556135,
-              "y": 28.36832857602365,
-              "type": "point"
-            },
-            "properties": {
-              "symbol": {
-                "type": "esriSMS",
-                "color": [
-                  12,
-                  255,
-                  37,
-                  255
-                ],
-                "angle": 0,
-                "xoffset": 0,
-                "yoffset": 0,
-                "size": 26,
-                "style": "esriSMSPath",
-                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
-                "outline": {
-                  "type": "esriSLS",
-                  "color": [
-                    6,
-                    33,
-                    11,
-                    255
-                  ],
-                  "width": 1.5,
-                  "style": "esriSLSSolid"
-                }
-              }
-            }
-          },
-          {
-            "type": "Feature",
-            "geometry": {
-              "spatialReference": {
-                "wkid": 4326
-              },
-              "x": 4.1949309328184565,
-              "y": 26.481693986357058,
-              "type": "point"
-            },
-            "properties": {
-              "symbol": {
-                "type": "esriSMS",
-                "color": [
-                  12,
-                  255,
-                  37,
-                  255
-                ],
-                "angle": 0,
-                "xoffset": 0,
-                "yoffset": 0,
-                "size": 26,
-                "style": "esriSMSPath",
-                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
-                "outline": {
-                  "type": "esriSLS",
-                  "color": [
-                    6,
-                    33,
-                    11,
-                    255
-                  ],
-                  "width": 1.5,
-                  "style": "esriSLSSolid"
-                }
-              }
-            }
-          },
-          {
-            "type": "Feature",
-            "geometry": {
-              "spatialReference": {
-                "wkid": 4326
-              },
-              "x": 2.595844533274006,
-              "y": 32.68705083715875,
-              "type": "point"
-            },
-            "properties": {
-              "symbol": {
-                "type": "esriSMS",
-                "color": [
-                  12,
-                  255,
-                  37,
-                  255
-                ],
-                "angle": 0,
-                "xoffset": 0,
-                "yoffset": 0,
-                "size": 26,
-                "style": "esriSMSPath",
-                "path": "M16 3.5c-4.4 0-8 3.6-8 8 0 5.7 8 14.5 8 14.5s8-8.8 8-14.5c0-4.4-3.6-8-8-8zM16 14a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z",
-                "outline": {
-                  "type": "esriSLS",
-                  "color": [
-                    6,
-                    33,
-                    11,
-                    255
-                  ],
-                  "width": 1.5,
-                  "style": "esriSLSSolid"
-                }
-              }
+              "kind": "endpoint"
             }
           }
         ]
       },
-      "distanceKm": 543.68,
-      "published": false,
-      "createdAt": 1786758829218
+      "endPoint": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "spatialReference": {
+                "wkid": 4326
+              },
+              "x": 4.163176099297108,
+              "y": 32.72286463056455,
+              "type": "Point"
+            },
+            "properties": {
+              "kind": "endpoint"
+            }
+          }
+        ]
+      },
+      "published": true
     }
   ]
 }

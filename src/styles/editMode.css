@@ -1,0 +1,133 @@
+/* ── Edit mode toolbar ────────────────────────── */
+.em-toolbar {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--bg-panel);
+  padding: 8px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.em-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--btn-icon-border);
+  margin: 0 2px;
+}
+
+.em-tool-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid var(--btn-icon-border);
+  background: var(--btn-icon-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.em-tool-active {
+  border: 2px solid var(--green);
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.em-disabled {
+  background: var(--bg-elevated);
+  color: var(--text-dim);
+  cursor: not-allowed;
+}
+
+.em-undo {
+  background: var(--btn-icon-bg);
+  color: var(--text);
+}
+
+.em-delete {
+  background: var(--red-tint);
+  border-color: var(--btn-icon-border);
+  color: var(--red);
+}
+
+.em-text-btn {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--btn-icon-border);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.em-done {
+  border-color: var(--orange);
+  background: var(--orange-tint);
+  color: var(--orange);
+}
+
+.em-change-type {
+  border-color: var(--blue);
+  background: var(--blue-tint);
+  color: var(--blue);
+}
+
+.em-change-type:hover {
+  background: var(--blue);
+  color: var(--bg-panel);
+}
+
+.em-delete-text {
+  border-color: var(--red);
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.em-type-wrap {
+  position: relative;
+}
+
+.em-type-menu {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow);
+  min-width: 180px;
+  z-index: 20;
+}
+
+.em-type-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: var(--btn-icon-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.em-type-emoji {
+  font-size: 16px;
+  display: inline-block;
+}

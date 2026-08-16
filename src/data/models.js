@@ -14,6 +14,7 @@ export function createEmptyTour() {
     id: `tour_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     title: "",
     description: "",
+    companyId: null,
     price: 0,
     seats: 0,
     includedServices: [],
