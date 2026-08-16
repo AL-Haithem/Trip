@@ -7,7 +7,7 @@ export const brand = {
   name: "GEO",
   separator: "·",
   suffix: "Trips",
-  logo: "◈",
+  icon: "earth-americas",
 }
 
 export const navbar = {
@@ -32,22 +32,22 @@ export const landing = {
     title: "Travel planning is broken",
     items: [
       {
-        icon: "📡",
+        icon: "satellite-dish",
         title: "Scattered everywhere",
         text: "Trips are posted across TikTok, Facebook and Instagram — fragmented, hard to follow, and easy to miss.",
       },
       {
-        icon: "🧭",
+        icon: "compass",
         title: "Mystery routes",
         text: "Only pencil sketches and photos. No clear map, no idea which stop is a beach, camp, restaurant or rest.",
       },
       {
-        icon: "💸",
+        icon: "money-bill-wave",
         title: "Hidden costs",
         text: "You never know what the price covers — food, lodging, paid attractions — until you ask, then wait for a reply.",
       },
       {
-        icon: "⏳",
+        icon: "hourglass-half",
         title: "Slow booking",
         text: "DM the page, chase answers, hope for a spot. No fair, instant way to compare and reserve.",
       },
@@ -58,32 +58,32 @@ export const landing = {
     title: "One platform, full transparency",
     items: [
       {
-        icon: "🗺️",
+        icon: "map-location-dot",
         title: "Interactive trip map",
         text: "Every tour drawn on a live map — see the full path from start to finish before you decide.",
       },
       {
-        icon: "📍",
+        icon: "map-pin",
         title: "Know each stop",
-        text: "Each waypoint is typed and emoji-tagged: restaurant, camp, beach, rest, attraction, forest, stop.",
+        text: "Each waypoint is typed and icon-tagged: restaurant, camp, beach, rest, attraction, forest, stop.",
       },
       {
-        icon: "🧾",
+        icon: "receipt",
         title: "Clear coverage",
         text: "Exactly what the agency pays for — meals, lodging, pools, transport — vs. what you cover yourself.",
       },
       {
-        icon: "⚖️",
+        icon: "scale-balanced",
         title: "Compare & book",
         text: "Compare trips by distance, hours or services, then reserve your seat in a few clicks.",
       },
       {
-        icon: "⭐",
+        icon: "star",
         title: "Honest reviews",
         text: "Travelers who joined rate and comment freely after the trip — real proof, not promises.",
       },
       {
-        icon: "🛡️",
+        icon: "shield-halved",
         title: "Agency trust",
         text: "Verified agencies show total trips, travelers served and overall rating at a glance.",
       },
@@ -109,7 +109,7 @@ export const sidePanel = {
   sortLabel: "Sort",
   sortPrice: "Price",
   sortDistance: "Km",
-  verifiedChip: (count) => `✓ ${count} verified published trips`,
+  verifiedChip: (count) => `${count} verified published trips`,
   noResults: "No trips match your search.",
 }
 
@@ -126,10 +126,10 @@ export const tripsList = {
   empty: "No tours yet. Create your first one.",
   published: "Published",
   draft: "Draft",
-  price: (price) => `💰 ${price} $`,
+  price: (price) => `${price} $`,
   pricePerPerson: "per person",
-  distance: (km) => `📏 ${km} km`,
-  seats: (seats) => `💺 ${seats}`,
+  distance: (km) => `${km} km`,
+  seats: (seats) => `${seats}`,
   viewTrip: "View Trip",
   edit: "Edit",
   draw: "Draw On Map",
@@ -152,7 +152,7 @@ export const tripForm = {
   includedLabel: "Included Services",
   notIncludedLabel: "Not Included Services",
   save: "Save",
-  saved: "Saved ✓",
+  saved: "Saved",
   savedMessage: "Tour saved.",
   titleRequired: "Please provide a title before saving.",
 }
@@ -168,7 +168,7 @@ export const tripDraw = {
   endChange: "Change end point",
   endClick: "Click on the map...",
   save: "Save",
-  saved: "Saved ✓",
+  saved: "Saved",
   savedMessage: "Route saved.",
   back: "Back to Trips",
 }
@@ -186,8 +186,8 @@ export const auth = {
   resetPassword: "Reset Password",
   sendResetCode: "Send Reset Code",
   forgotPassword: "Forgot Password?",
-  backToLogin: "← Back to Login",
-  backToHome: "← Back to home",
+  backToLogin: "Back to Login",
+  backToHome: "Back to home",
   labels: {
     fullName: "Full name",
     fullNamePlaceholder: "Amina Benali",

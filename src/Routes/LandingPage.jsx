@@ -3,6 +3,7 @@ import Button from "../components/ui/Button.jsx"
 import Card from "../components/ui/Card.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Panel from "../components/ui/Panel.jsx"
+import Icon from "../components/ui/Icon.jsx"
 import {WAYPOINT_TYPES} from "../Editor/Tools/PointDrawer.jsx"
 import {brand, landing} from "../content/siteContent.js"
 import "../styles/landing.css"
@@ -18,7 +19,7 @@ function sectionEyebrow({eyebrow}) {
 function LandingPage() {
   const waypointChips = WAYPOINT_TYPES.map((t) => (
     <Chip key={t.id} title={t.label} className="lp-waypoint">
-      <span className="lp-waypoint-emoji">{t.emoji}</span>
+      <span className="lp-waypoint-emoji"><Icon name={t.icon} /></span>
       {t.label}
     </Chip>
   ))
@@ -55,7 +56,7 @@ function LandingPage() {
         <div className="lp-grid lp-grid-sm">
           {landing.problems.items.map((p) => (
             <Card key={p.title} className="lp-card">
-              <div className="lp-card-icon">{p.icon}</div>
+              <div className="lp-card-icon"><Icon name={p.icon} /></div>
               <h3 className="lp-card-title">{p.title}</h3>
               <p className="lp-card-text">{p.text}</p>
             </Card>
@@ -70,7 +71,7 @@ function LandingPage() {
         <div className="lp-grid lp-grid-md">
           {landing.solutions.items.map((s) => (
             <Card key={s.title} className="lp-card">
-              <div className="lp-card-icon">{s.icon}</div>
+              <div className="lp-card-icon"><Icon name={s.icon} /></div>
               <h3 className="lp-card-title">{s.title}</h3>
               <p className="lp-card-text">{s.text}</p>
             </Card>

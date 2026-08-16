@@ -2,6 +2,7 @@ import {useState, useRef, useCallback, useEffect} from "react"
 
 import TOOLS from "./registry.js"
 import {WAYPOINT_TYPES} from "./Tools/PointDrawer.jsx"
+import Icon from "../components/ui/Icon.jsx"
 import "../styles/editMode.css"
 
 function EditMode({view, onRegister, defaultTool = null, initialRoute = null}) {
@@ -164,7 +165,7 @@ function EditMode({view, onRegister, defaultTool = null, initialRoute = null}) {
                       onClick={() => handleChangeType(t.id)}
                       className="em-type-item"
                     >
-                      <span className="em-type-emoji">{t.emoji}</span>
+                      <span className="em-type-emoji"><Icon name={t.icon} /></span>
                       {t.label}
                     </button>
                   ))}

@@ -1,6 +1,7 @@
 import {useState} from "react"
 import TripCard from "./TripCard.jsx"
 import Chip from "./ui/Chip.jsx"
+import Icon from "./ui/Icon.jsx"
 import {brand, sidePanel as copy} from "../content/siteContent.js"
 import "../styles/sidePanel.css"
 
@@ -39,7 +40,7 @@ function SidePanel({tours, activeId, onSelect, onView}) {
         <p className="sp-subtitle">{copy.subtitle}</p>
 
         <div className="sp-search">
-          <span className="sp-search-icon">🔍</span>
+          <span className="sp-search-icon"><Icon name="magnifying-glass" /></span>
           <input
             className="sp-search-input"
             value={query}
@@ -66,7 +67,7 @@ function SidePanel({tours, activeId, onSelect, onView}) {
           </div>
         </div>
 
-        <Chip green className="sp-count">{copy.verifiedChip(tours.length)}</Chip>
+        <Chip green className="sp-count"><Icon name="circle-check" /> {copy.verifiedChip(tours.length)}</Chip>
       </div>
 
       <div className="sp-list">

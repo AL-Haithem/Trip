@@ -1,6 +1,7 @@
 import Card from "./ui/Card.jsx"
 import Chip from "./ui/Chip.jsx"
 import Button from "./ui/Button.jsx"
+import Icon from "./ui/Icon.jsx"
 import {WAYPOINT_TYPES} from "../Editor/Tools/PointDrawer.jsx"
 import {tripsList as copy} from "../content/siteContent.js"
 import "../styles/tripCard.css"
@@ -46,7 +47,7 @@ function TripCard({tour, active, onSelect, onView}) {
         {chips.length > 0 ? (
           chips.map((c) => (
             <span key={c.id} title={c.label} className="tc-waypoint">
-              {c.emoji}
+              <Icon name={c.icon} />
             </span>
           ))
         ) : (
@@ -55,10 +56,10 @@ function TripCard({tour, active, onSelect, onView}) {
       </div>
 
       <div className="tc-meta">
-        <span>{copy.distance(tour.distanceKm || 0)}</span>
-        <span>{copy.seats(tour.seats || 0)}</span>
+        <span><Icon name="ruler-horizontal" /> {copy.distance(tour.distanceKm || 0)}</span>
+        <span><Icon name="chair" /> {copy.seats(tour.seats || 0)}</span>
         {tour.includedServices && tour.includedServices.length > 0 && (
-          <span>✓ {tour.includedServices.length} services</span>
+          <span><Icon name="circle-check" /> {tour.includedServices.length} services</span>
         )}
       </div>
 

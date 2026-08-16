@@ -1,5 +1,4 @@
 import {useState, useEffect} from "react"
-import {useNavigate} from "react-router"
 
 import {getTours} from "../services/mockApi.js"
 import SidePanel from "../components/SidePanel.jsx"
@@ -12,7 +11,6 @@ function HomePage() {
   const [tours, setTours] = useState([])
   const [activeId, setActiveId] = useState(null)
   const [view, setView] = useState("map")
-  const navigate = useNavigate()
 
   useEffect(() => {
     let mounted = true
@@ -48,7 +46,7 @@ function HomePage() {
 
       {view === "preview" && (
         <div className="home-preview">
-          <span className="home-preview-dot">●</span>
+          <span className="home-preview-dot" aria-hidden="true" />
           <span className="home-preview-text">
             {copy.previewPrefix}{" "}
             <span className="home-preview-title">

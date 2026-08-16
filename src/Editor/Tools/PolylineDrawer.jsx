@@ -46,8 +46,6 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute, onState
 
   const distanceRef = useRef(null)
   const [distance, setDistance] = useState(null)
-  const [vertexCount, setVertexCount] = useState(0)
-  const [selectedIndex, setSelectedIndex] = useState(null)
 
   const onStateChangeRef = useRef(onStateChange)
   onStateChangeRef.current = onStateChange
@@ -75,8 +73,6 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute, onState
   }
 
   const syncUi = () => {
-    setVertexCount(verticesRef.current.length)
-    setSelectedIndex(selectedIndexRef.current)
     emitState()
   }
 
@@ -333,11 +329,11 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute, onState
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
-      try { pointerDownHandle.remove() } catch (err) {}
-      try { pointerMoveHandle.remove() } catch (err) {}
-      try { pointerUpHandle.remove() } catch (err) {}
-      try { clickHandle.remove() } catch (err) {}
-      try { view.map.remove(layer) } catch (err) {}
+      try { pointerDownHandle.remove() } catch {}
+      try { pointerMoveHandle.remove() } catch {}
+      try { pointerUpHandle.remove() } catch {}
+      try { clickHandle.remove() } catch {}
+      try { view.map.remove(layer) } catch {}
       layerRef.current = null
       polylineGraphicRef.current = null
       vertexGraphicsRef.current = []

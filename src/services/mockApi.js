@@ -141,10 +141,6 @@ export async function saveTour(tour) {
   return tour;
 }
 
-export async function createTour(tour) {
-  return saveTour(tour);
-}
-
 export async function deleteTour(id) {
   const tours = await getTours();
   const next = tours.filter((t) => t.id !== id);
@@ -157,11 +153,6 @@ export async function setPublished(id, published) {
   if (!tour) return null;
   tour.published = published;
   return saveTour(tour);
-}
-
-export async function getCompanies() {
-  const mock = await loadMockFile();
-  return mock.auth?.companies || [];
 }
 
 // Temporary in-memory OTP store for password reset (no real email service).

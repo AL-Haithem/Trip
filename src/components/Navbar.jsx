@@ -3,6 +3,7 @@ import {getSession, logout} from "../services/mockApi.js"
 import Button from "./ui/Button.jsx"
 import Chip from "./ui/Chip.jsx"
 import ThemeToggle from "./ui/ThemeToggle.jsx"
+import Icon from "./ui/Icon.jsx"
 import {brand, navbar as copy} from "../content/siteContent.js"
 import "../styles/navbar.css"
 
@@ -24,7 +25,7 @@ function Navbar() {
   return (
     <header className="navbar">
       <Link to="/" className="nav-brand">
-        <span className="nav-logo">{brand.logo}</span>
+        <span className="nav-logo"><Icon name={brand.icon} /></span>
         <span className="nav-brand-text">
           {brand.name}<span className="nav-brand-sep">{brand.separator}</span>
           <span className="nav-brand-suffix"> {brand.suffix}</span>

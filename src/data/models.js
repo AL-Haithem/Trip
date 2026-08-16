@@ -25,14 +25,3 @@ export function createEmptyTour() {
     createdAt: Date.now(),
   };
 }
-
-export function isValidTour(tour) {
-  return Boolean(
-    tour &&
-      tour.title &&
-      tour.title.trim().length > 0 &&
-      tour.route &&
-      tour.route.features &&
-      tour.route.features.length > 0
-  );
-}

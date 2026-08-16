@@ -1,4 +1,5 @@
 import {useTheme} from "../../theme/themeContext.jsx"
+import Icon from "./Icon.jsx"
 import "../../styles/themeToggle.css"
 
 export default function ThemeToggle() {
@@ -12,7 +13,7 @@ export default function ThemeToggle() {
       aria-label="Toggle color theme"
       className="theme-toggle"
     >
-      {isDark ? "☀️" : "🌙"}
+      <Icon name={isDark ? "sun" : "moon"} />
     </button>
   )
 }

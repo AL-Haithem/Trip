@@ -11,28 +11,18 @@ import WorldLayer from "./Layers/WorldLayer.jsx"
 import CountryLayer from "./Layers/CountryLayer.jsx"
 import {SUPPORTED_COUNTRIES} from "./countries.js"
 import {getMapColors} from "./mapTheme.js"
-import {WAYPOINT_TYPES} from "../Editor/Tools/PointDrawer.jsx"
+import {WAYPOINT_TYPES, waypointPinUrl} from "../Editor/Tools/PointDrawer.jsx"
+import {startEndPinUrl} from "../Editor/Tools/StartEndDrawer.jsx"
 
 const TYPE_MAP = WAYPOINT_TYPES.reduce((acc, t) => {
   acc[t.id] = t
   return acc
 }, {})
 
-function emojiToDataUrl(emoji, pinBg, pinInk) {
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">` +
-    `<circle cx="17" cy="17" r="16" fill="${pinBg}" stroke="${pinInk}" stroke-width="1.5"/>` +
-    `<text x="17" y="23" font-size="20" text-anchor="middle">${emoji}</text>` +
-    `</svg>`
-  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg)
-}
-
 function makePinSymbol(typeId, active, c) {
-  const t = TYPE_MAP[typeId]
-  const emoji = t ? t.emoji : "📍"
   return {
     type: "picture-marker",
-    url: emojiToDataUrl(emoji, c.pinBg, c.pinInk),
+    url: waypointPinUrl(typeId, c),
     width: active ? "40px" : "34px",
     height: active ? "40px" : "34px",
     outline: {color: c.pinInk, width: 1},
@@ -94,7 +84,7 @@ function HomeMap({tours, activeId, onSelectTrip}) {
     const clickHandle = view.on("click", handleClick)
 
     return () => {
-      try { clickHandle.remove() } catch (e) { /* noop */ }
+      try { clickHandle.remove() } catch {}
       try { view.destroy() } catch (e) { console.error("HomeMap: destroy failed", e) }
     }
   }, [])
@@ -105,7 +95,7 @@ function HomeMap({tours, activeId, onSelectTrip}) {
     if (!view) return
 
     Object.values(layersRef.current).forEach((l) => {
-      try { view.map.remove(l) } catch (e) { /* noop */ }
+      try { view.map.remove(l) } catch {}
     })
     layersRef.current = {}
 
@@ -138,26 +128,18 @@ function HomeMap({tours, activeId, onSelectTrip}) {
         }
       })
 
-      const endpointSymbol = (color, label) => ({
-        type: "picture-marker",
-        url:
-          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
-            `<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'>` +
-            `<circle cx='18' cy='18' r='16' fill='${color}' stroke='${c.pinInk}' stroke-width='2'/>` +
-            `<text x='18' y='24' font-size='20' text-anchor='middle' fill='${c.pinInk}' font-weight='bold' font-family='sans-serif'>${label}</text>` +
-            `</svg>`
-          ),
-        width: "36px",
-        height: "36px",
-      })
-
-      const drawEndpoint = (feature, color, label) => {
+      const drawEndpoint = (feature, kind) => {
         if (!feature || !feature.geometry) return
         const g = feature.geometry
         if (g.type === "point" || (g.x !== undefined && g.y !== undefined)) {
           layer.add(new Graphic({
             geometry: new Point(g),
-            symbol: endpointSymbol(color, label),
+            symbol: {
+              type: "picture-marker",
+              url: startEndPinUrl(kind, c),
+              width: "36px",
+              height: "36px",
+            },
             attributes: {tripId: tour.id},
           }))
         }
@@ -166,10 +148,10 @@ function HomeMap({tours, activeId, onSelectTrip}) {
       const startFc = tour.startPoint
       const endFc = tour.endPoint
       if (startFc && startFc.features && startFc.features.length) {
-        drawEndpoint(startFc.features[0], "#0cff25", "S")
+        drawEndpoint(startFc.features[0], "start")
       }
       if (endFc && endFc.features && endFc.features.length) {
-        drawEndpoint(endFc.features[0], "#ff4c4c", "E")
+        drawEndpoint(endFc.features[0], "end")
       }
     })
   }, [tours, activeId])

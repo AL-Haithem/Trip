@@ -224,6 +224,16 @@
 }
 .text-muted { color: var(--text-muted); }
 
+/* ── Route lazy-load fallback ─────────────────── */
+.route-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
 /* ── Landing hero (theme-aware gradient) ──────── */
 .hero {
   position: relative;

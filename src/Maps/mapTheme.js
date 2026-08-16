@@ -11,6 +11,7 @@ export function getMapColors(theme) {
       countryLabel: "rgba(58, 47, 37, 0.7)",
       pinBg: "#fffdf8",
       pinInk: "#06210b",
+      pinIcon: "#06210b",
       routeIdle: "#2f9d5a",
     }
   }
@@ -22,10 +23,9 @@ export function getMapColors(theme) {
     labelHalo: "#101114",
     countryOutline: "rgba(255, 255, 255, 0.3)",
     countryLabel: "rgba(255, 255, 255, 0.77)",
-    pinBg: "#0d1117",
-    pinInk: "#06210b",
+    pinBg: "#10241a",
+    pinInk: "#7CFFB2",
+    pinIcon: "#7CFFB2",
     routeIdle: "#2f7d4a",
   }
 }
-
-export default getMapColors

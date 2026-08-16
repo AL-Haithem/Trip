@@ -10,10 +10,6 @@ export function saveTour(tour) {
   return apiSaveTour(tour);
 }
 
-export function loadTours() {
-  return apiGetTours();
-}
-
 export function getTour(id) {
   return apiGetTour(id);
 }
@@ -24,9 +20,4 @@ export function deleteTour(id) {
 
 export function setPublished(id, published) {
   return apiSetPublished(id, published);
-}
-
-export function clearTours() {
-  console.warn("clearTours is no longer used; tours live in the mock file");
-  return true;
 }

@@ -6,6 +6,7 @@ import Button from "../components/ui/Button.jsx"
 import {Input} from "../components/ui/Input.jsx"
 import {login, register, requestPasswordReset, confirmPasswordReset} from "../services/mockApi.js"
 import {auth as authContent} from "../content/siteContent.js"
+import Icon from "../components/ui/Icon.jsx"
 
 function Auth() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -29,7 +30,6 @@ function Auth() {
 
   const [resetCode, setResetCode] = useState("")
   const [newPassword, setNewPassword] = useState("")
-  const [resetConfirm, setResetConfirm] = useState("")
   const [codeSent, setCodeSent] = useState(false)
 
   const showMsg = (text, isError = false) => setMessage({text, isError})
@@ -128,7 +128,7 @@ function Auth() {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-header">
-          <div className="auth-logo">◈</div>
+          <div className="auth-logo"><Icon name="earth-americas" /></div>
           <h2>{view === "forgot" ? "Reset Password" : "GEO · Trips"}</h2>
           <p>
             {view === "login" && "Welcome back, traveler!"}
@@ -171,7 +171,7 @@ function Auth() {
 
         {view === "forgot" && (
           <form onSubmit={handleReset}>
-            <button type="button" className="auth-back-btn" onClick={() => { setView("login"); showMsg("") }}>← Back to Login</button>
+            <button type="button" className="auth-back-btn" onClick={() => { setView("login"); showMsg("") }}><Icon name="arrow-left" /> {authContent.backToLogin}</button>
 
             <Input id="forgot-email" label="Email Address" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
 
