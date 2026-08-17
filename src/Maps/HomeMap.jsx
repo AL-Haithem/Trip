@@ -1,16 +1,15 @@
 import {useEffect, useState} from "react"
 
 import { Manager } from "./Generator"
-import { updateZoom } from "./MapController"
+import { useMapController } from "./MapController"
 
 const scale = 1
 
 function MainMap() {
 
-  const [data, setData] = useState(null)
+  const map = useMapController()
 
-  const [viewBox,setViewBox] = useState({ x:-180, y:-90, width:360, height:180})
-  const [zoom, setZoom] = useState(1)
+  const [data, setData] = useState(null)
 
   useEffect(() => {
     async function LoadMapData(){
@@ -22,32 +21,26 @@ function MainMap() {
 
   if (!data) return null
 
-  const zoomPosition = 100 - ((zoom - 1) / 9) * 100
-  function zoomIn() {
-    const value = Math.min(zoom + 1,10)
-    setZoom(value)
-    updateZoom(value,setViewBox)
-  }
-
-  function zoomOut() {
-    const value = Math.max(zoom - 1,1)
-    setZoom(value)
-    updateZoom( value, setViewBox)
-  }
+  const zoomPosition = 100 - ((map.zoom - 1) / 9) * 100
 
   return (
     <div className="map-shell">
 
       <div className="map-zoom glass">
-        <button type="button" className="map-zoom-btn" onClick={zoomIn}>+</button>
+        <button type="button" className="map-zoom-btn" onClick={map.zoomIn}>+</button>
         <div className="map-zoom-track"> <div className="map-zoom-thumb" style={{top: `${zoomPosition}%`}} /></div>
-        <button type="button" className="map-zoom-btn" onClick={zoomOut}>−</button>
+        <button type="button" className="map-zoom-btn" onClick={map.zoomOut}>−</button>
       </div>
 
       <svg 
-        className="map-canvas" preserveAspectRatio="xMidYMid slice" 
-        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
-        style={{border: "3px solid rgb(255, 255, 255)"}}
+        className="map-canvas" preserveAspectRatio="xMidYMid meet" 
+        viewBox={`${map.viewBox.x} ${map.viewBox.y} ${map.viewBox.width} ${map.viewBox.height}`}
+        style={{border: "3px solid rgb(255, 255, 255)",touchAction:"none"}}
+        onMouseDown={map.startPan}
+        onMouseMove={map.movePan}
+        onMouseUp={map.endPan}
+        onMouseLeave={map.endPan}
+        onWheel={map.zoomWheel}
       >
 
         <defs>

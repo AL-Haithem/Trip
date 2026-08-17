@@ -11,7 +11,10 @@
   width: 100%;
   height: 100%;
   border: none;
+  cursor: grab;
 }
+
+.map-canvas:active {cursor: grabbing;}
 
 /* MainMap is rendered inside a positioned/.td-map parent and should fill it */
 .map-shell-main {
