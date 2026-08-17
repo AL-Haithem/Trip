@@ -36,9 +36,9 @@
 }
 
 .em-tool-active {
-  border: 2px solid var(--green);
-  background: var(--green-tint);
-  color: var(--green);
+  border: 2px solid var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent);
 }
 
 .em-disabled {
@@ -103,7 +103,7 @@
   top: 50px;
   left: 0;
   background: var(--bg-elevated);
-  border: 1px solid var(--green);
+  border: 1px solid var(--accent);
   border-radius: 8px;
   padding: 8px;
   display: flex;

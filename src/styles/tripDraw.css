@@ -7,27 +7,34 @@
 }
 
 .td-wrap {
-  display: flex;
+  position: relative;
   width: 100%;
   height: 100vh;
+  overflow: hidden;
 }
 
 .td-sidebar {
-  width: 320px;
-  flex-shrink: 0;
-  height: 98%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 400px;
+  max-width: 100%;
   overflow-y: auto;
-  background: var(--bg-elevated);
+  border-left: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background: var(--bg-panel);
   color: var(--text);
   padding: 24px;
-  margin: 2px;
   box-sizing: border-box;
   font-family: system-ui, sans-serif;
+  z-index: 20;
 }
 
 .td-title {
   margin-top: 0;
-  color: var(--green);
+  color: var(--accent);
 }
 
 .td-subtitle {
@@ -51,8 +58,8 @@
 }
 
 .td-status-published {
-  background: var(--green-tint);
-  color: var(--green);
+  background: var(--accent-tint);
+  color: var(--accent);
 }
 
 .td-endpoints {
@@ -89,7 +96,7 @@
 }
 
 .td-dot-start {
-  background: var(--green);
+  background: var(--accent);
 }
 
 .td-dot-end {
@@ -109,9 +116,9 @@
 }
 
 .td-active-start {
-  border: 2px solid var(--green);
-  background: var(--green-tint);
-  color: var(--green);
+  border: 2px solid var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent);
 }
 
 .td-active-end {
@@ -126,8 +133,8 @@
   margin-top: 16px;
   border-radius: 8px;
   border: none;
-  background: var(--green);
-  color: var(--green-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
   font-size: 15px;
   font-weight: bold;
   cursor: pointer;
@@ -147,12 +154,12 @@
 }
 
 .td-saved {
-  color: var(--green);
+  color: var(--accent);
   font-size: 13px;
   margin-top: 10px;
 }
 
 .td-map {
-  flex: 1;
-  position: relative;
+  position: absolute;
+  inset: 0;
 }

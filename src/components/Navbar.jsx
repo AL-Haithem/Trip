@@ -2,7 +2,6 @@ import {Link, useNavigate} from "react-router-dom"
 import {getSession, logout} from "../services/mockApi.js"
 import Button from "./ui/Button.jsx"
 import Chip from "./ui/Chip.jsx"
-import ThemeToggle from "./ui/ThemeToggle.jsx"
 import Icon from "./ui/Icon.jsx"
 import {brand, navbar as copy} from "../content/siteContent.js"
 import "../styles/navbar.css"
@@ -34,7 +33,6 @@ function Navbar() {
 
       <nav className="nav-actions">
         <Button as="link" to="/map" variant="primary">{copy.bookTrip}</Button>
-        <ThemeToggle />
 
         {session ? (
           <>

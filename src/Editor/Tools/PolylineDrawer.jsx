@@ -1,11 +1,5 @@
 import {useEffect, useRef, useState} from "react"
 
-import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
-import Graphic from "@arcgis/core/Graphic"
-import Point from "@arcgis/core/geometry/Point"
-import Polyline from "@arcgis/core/geometry/Polyline"
-import {geodesicLength} from "@arcgis/core/geometry/geometryEngine"
-
 const LINE_SYMBOL = {
   type: "simple-line",
   color: "#0cff25",
@@ -359,7 +353,7 @@ function PolylineDrawer({view, active, onRegister, toolId, initialRoute, onState
         background: "var(--bg-panel-solid)",
         padding: "10px 18px",
         borderRadius: "8px",
-        color: "var(--green)",
+        color: "var(--accent)",
         fontSize: "14px",
         fontWeight: "bold",
         fontFamily: "monospace",

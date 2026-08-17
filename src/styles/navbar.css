@@ -30,8 +30,8 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: var(--green);
-  color: var(--green-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
   font-weight: bold;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .nav-brand-sep {
-  color: var(--green);
+  color: var(--accent);
 }
 
 .nav-brand-suffix {
@@ -61,6 +61,6 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--accent);
   display: inline-block;
 }

@@ -1,10 +1,5 @@
 import {useEffect, useRef, useState} from "react"
 
-import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
-import Graphic from "@arcgis/core/Graphic"
-import Point from "@arcgis/core/geometry/Point"
-
-import {useTheme} from "../../theme/themeContext.jsx"
 import {getMapColors} from "../../Maps/mapTheme.js"
 
 export const WAYPOINT_TYPES = [
@@ -62,9 +57,8 @@ function symbolFromFeature(feature, selected, c) {
 
 function PointDrawer({view, active, onRegister, toolId, initialRoute, onSelectChange, onStateChange}) {
 
-  const {theme} = useTheme()
-  const colorsRef = useRef(getMapColors(theme))
-  colorsRef.current = getMapColors(theme)
+  const colorsRef = useRef(getMapColors("dark"))
+  colorsRef.current = getMapColors("dark")
 
   const layerRef = useRef(null)
   const selectedGraphicRef = useRef(null)
@@ -79,29 +73,36 @@ function PointDrawer({view, active, onRegister, toolId, initialRoute, onSelectCh
 
   const stopPulse = () => {
     if (pulseRef.current) {
-      clearInterval(pulseRef.current)
+      cancelAnimationFrame(pulseRef.current)
       pulseRef.current = null
     }
   }
 
-  const startPulse = (graphic) => {
+  // One-shot: grow to selected size and fade in (opacity only, no oscillation).
+  const animateSelect = (graphic) => {
     stopPulse()
-    let frame = 0
-    pulseRef.current = setInterval(() => {
-      frame += 1
-      const t = (Math.sin(frame / 6) + 1) / 2
-      const opacity = 0.5 + t * 0.5
-      const size = 40 + Math.round(t * 8)
-      const typeId = graphic.attributes?.waypointType
+    const typeId = graphic.attributes?.waypointType
+    const baseSize = 40
+    const startOpacity = 0.2
+    const duration = 150
+    const start = performance.now()
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / duration)
       graphic.symbol = {
         type: "picture-marker",
         url: waypointPinUrl(typeId, colorsRef.current),
-        width: size + "px",
-        height: size + "px",
-        opacity,
+        width: baseSize + "px",
+        height: baseSize + "px",
+        opacity: startOpacity + (1 - startOpacity) * t,
         outline: {color: "#ff4c4c", width: 2},
       }
-    }, 60)
+      if (t < 1) {
+        pulseRef.current = requestAnimationFrame(step)
+      } else {
+        pulseRef.current = null
+      }
+    }
+    pulseRef.current = requestAnimationFrame(step)
   }
 
   const emitState = () => {
@@ -147,7 +148,7 @@ function PointDrawer({view, active, onRegister, toolId, initialRoute, onSelectCh
     selectedGraphicRef.current = graphic;
     setSelected(true);
     if (graphic) {
-      startPulse(graphic);
+      animateSelect(graphic);
     }
     if (onSelectChange) onSelectChange(graphic);
     emitState();
@@ -328,7 +329,7 @@ function PointDrawer({view, active, onRegister, toolId, initialRoute, onSelectCh
             background: "var(--bg-panel-solid)",
             padding: "10px 18px",
             borderRadius: "8px",
-            color: "var(--green)",
+            color: "var(--accent)",
             fontSize: "14px",
             fontWeight: "bold",
             fontFamily: "monospace",

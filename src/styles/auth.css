@@ -27,9 +27,6 @@
   -webkit-backdrop-filter: blur(4px);
   pointer-events: none;
 }
-[data-theme="light"] .auth-page::before {
-  background: rgba(255, 253, 248, 0.62);
-}
 
 .auth-container {
   background: var(--bg-elevated);
@@ -64,8 +61,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: var(--green);
-  color: var(--green-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
   font-size: 26px;
   font-weight: bold;
   filter: drop-shadow(0 0 16px rgba(12, 255, 37, 0.3));
@@ -110,8 +107,8 @@
 }
 
 .auth-tab.active {
-  background: var(--green);
-  color: var(--green-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .auth-field {
@@ -142,7 +139,7 @@
 
 .auth-field input:focus,
 .auth-field textarea:focus {
-  border-color: var(--green);
+  border-color: var(--accent);
 }
 
 .auth-field input::placeholder,
@@ -154,7 +151,7 @@
   display: inline-block;
   margin: 4px 0 18px;
   font-size: 0.85rem;
-  color: var(--green);
+  color: var(--accent);
   cursor: pointer;
   text-decoration: none;
 }
@@ -178,9 +175,9 @@
 }
 
 .auth-message.success {
-  background: var(--green-tint);
+  background: var(--accent-tint);
   border: 1px solid rgba(10, 143, 23, 0.35);
-  color: var(--green);
+  color: var(--accent);
 }
 
 .auth-submit-btn {
@@ -188,8 +185,8 @@
   padding: 13px;
   border-radius: 11px;
   border: none;
-  background: var(--green);
-  color: var(--green-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
   font-size: 1rem;
   font-weight: 700;
   font-family: inherit;
@@ -230,6 +227,6 @@
 }
 
 .auth-back-home-link {
-  color: var(--green);
+  color: var(--accent);
   text-decoration: none;
 }

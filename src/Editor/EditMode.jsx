@@ -37,6 +37,15 @@ function EditMode({view, onRegister, defaultTool = null, initialRoute = null}) {
   const activeApi = () => activeToolRef.current ? toolRef.current[activeToolRef.current] : null;
 
   const handleUndo = () => {
+    // Undo whichever tool actually has history (so deleting a point and
+    // hitting undo restores it even if the active tool isn't "point").
+    for (const id of ["point", "polyline"]) {
+      const api = toolRef.current[id];
+      if (api && api.canUndo && api.canUndo()) {
+        api.undo();
+        return;
+      }
+    }
     const api = activeApi();
     if (api && api.undo) api.undo();
   };

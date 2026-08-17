@@ -2,17 +2,17 @@
 export function getMapColors(theme) {
   if (theme === "light") {
     return {
-      bg: "#efe9df",
-      land: "#d8e4cf",
-      landOutline: "rgba(58, 47, 37, 0.45)",
-      label: "#3a2f25",
-      labelHalo: "rgba(255, 253, 248, 0.9)",
-      countryOutline: "rgba(58, 47, 37, 0.4)",
-      countryLabel: "rgba(58, 47, 37, 0.7)",
-      pinBg: "#fffdf8",
-      pinInk: "#06210b",
-      pinIcon: "#06210b",
-      routeIdle: "#2f9d5a",
+      bg: "#e6ccb2",
+      land: "#ddb892",
+      landOutline: "rgba(127, 85, 57, 0.45)",
+      label: "#7f5539",
+      labelHalo: "rgba(237, 224, 212, 0.9)",
+      countryOutline: "rgba(127, 85, 57, 0.4)",
+      countryLabel: "rgba(127, 85, 57, 0.7)",
+      pinBg: "#e6ccb2",
+      pinInk: "#7f5539",
+      pinIcon: "#ede0d4",
+      routeIdle: "#9c6644",
     }
   }
   return {

@@ -1,7 +1,5 @@
-import {useState, useRef, useEffect} from "react"
+import {useState, useRef, useEffect, useCallback} from "react"
 import {useParams, useNavigate} from "react-router"
-import {webMercatorToGeographic} from "@arcgis/core/geometry/support/webMercatorUtils"
-import Point from "@arcgis/core/geometry/Point"
 
 import MainMap from "../Maps/MainMap.jsx"
 import EditMode from "../Editor/EditMode.jsx"
@@ -9,6 +7,8 @@ import StartEndDrawer from "../Editor/Tools/StartEndDrawer.jsx"
 import {getTour, saveTour} from "../data/tourStore.js"
 import {tripDraw as copy} from "../content/siteContent.js"
 import "../styles/tripDraw.css"
+
+const DRAW_COUNTRIES = ["DZA"]
 
 function to4326(geometry) {
   if (!geometry) return null
@@ -109,10 +109,10 @@ function TripDraw() {
     setTimeout(() => setSaved(false), 1500);
   };
 
-  const handleEndpointChange = ({start, end}) => {
+  const handleEndpointChange = useCallback(({start, end}) => {
     setStartPoint(start || null);
     setEndPoint(end || null);
-  };
+  }, []);
 
   if (!tour) {
     return (
@@ -177,7 +177,7 @@ function TripDraw() {
       </div>
 
       <div className="td-map">
-        <MainMap onViewReady={setView} />
+        <MainMap onViewReady={setView} enabledCountries={DRAW_COUNTRIES} />
         <EditMode
           view={view}
           onRegister={registerTool}

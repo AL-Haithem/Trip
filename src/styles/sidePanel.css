@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--green);
+  color: var(--accent);
 }
 
 .sp-logo {
@@ -105,9 +105,9 @@
 }
 
 .sp-sort-btn-active {
-  border: 1px solid var(--green);
-  background: var(--green-tint);
-  color: var(--green);
+  border: 1px solid var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent);
 }
 
 .sp-count {

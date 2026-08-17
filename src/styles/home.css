@@ -14,7 +14,7 @@
 .home-preview {
   position: absolute;
   bottom: 20px;
-  left: 50%;
+  /* left: 50%; */
   transform: translateX(-50%);
   z-index: 30;
   display: flex;
@@ -30,7 +30,7 @@
 }
 
 .home-preview-dot {
-  color: var(--green);
+  color: var(--accent);
 }
 
 .home-preview-text {
