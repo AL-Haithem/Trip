@@ -190,11 +190,11 @@ export const auth = {
   backToHome: "Back to home",
   labels: {
     fullName: "Full name",
-    fullNamePlaceholder: "Amina Benali",
+    fullNamePlaceholder: "Your FullName",
     email: "Email Address",
     emailPlaceholder: "you@example.com",
     phone: "Phone",
-    phonePlaceholder: "+213 ...",
+    phonePlaceholder: "+123 ...",
     password: "Password",
     passwordPlaceholder: "At least 6 characters",
     confirmPassword: "Confirm Password",

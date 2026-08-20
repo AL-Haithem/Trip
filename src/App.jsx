@@ -26,6 +26,8 @@ function RouteFallback() {
   )
 }
 
+const DrawPage = lazy(() => import('./Routes/DrawPage.jsx'))
+
 function App() {
   return (
     <BrowserRouter>
@@ -34,10 +36,11 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/map" element={<HomePage />} />
-            {/* <Route path="/trips" element={<RequireCompany><TripsList /></RequireCompany>} />
+            <Route path="/draw" element={<DrawPage />} />
+            <Route path="/trips" element={<RequireCompany><TripsList /></RequireCompany>} />
             <Route path="/trips/create" element={<RequireCompany><TripForm /></RequireCompany>} />
             <Route path="/trips/edit/:id" element={<RequireCompany><TripForm /></RequireCompany>} />
-            <Route path="/trips/draw/:id" element={<RequireCompany><TripDraw /></RequireCompany>} /> */}
+            <Route path="/trips/draw/:id" element={<RequireCompany><TripDraw /></RequireCompany>} />
             <Route path="/login" element={<Auth />} />
             <Route path="/signup" element={<Auth />} />
             <Route path="*" element={<NotFound />} />

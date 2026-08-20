@@ -1,7 +1,7 @@
 import {useState, useRef, useEffect, useCallback} from "react"
 import {useParams, useNavigate} from "react-router"
 
-import MainMap from "../Maps/MainMap.jsx"
+import MainMap from "../Maps/HomeMap.jsx"
 import EditMode from "../Editor/EditMode.jsx"
 import StartEndDrawer from "../Editor/Tools/StartEndDrawer.jsx"
 import {getTour, saveTour} from "../data/tourStore.js"
@@ -33,8 +33,12 @@ function fcToGeom(fc) {
   const features = fc.features || (fc.type === "Feature" ? [fc] : [])
   const feature = features[0]
   const g = feature ? (feature.geometry || feature) : null
-  if (!g || (g.x === undefined && g.longitude === undefined)) return null
-  return new Point(g)
+  if (!g) return null
+  // Return a simple {lng, lat} object instead of ArcGIS Point
+  const lng = g.longitude ?? g.x ?? (g.coordinates && g.coordinates[0])
+  const lat = g.latitude ?? g.y ?? (g.coordinates && g.coordinates[1])
+  if (lng === undefined || lat === undefined) return null
+  return { lng, lat }
 }
 
 function TripDraw() {

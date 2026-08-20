@@ -1,6 +1,5 @@
 /* ════════════════════════════════════════════════════════════
    GEO · Trips — Theme tokens ONLY
-   Single dark theme (black / gunmetal) used site-wide.
    Shared component classes live in components.css.
    ════════════════════════════════════════════════════════════ */
 
@@ -36,7 +35,7 @@
   --btn-icon-border: #7a7a7a;
   --chip-bg: rgba(245, 245, 245, 0.05);
 
-  /* Map (dark) */
+  /* Map (dark) from mapTheme.js */
   --map-bg: #0d1117;
   --map-land: #3e4e35;
   --map-land-outline: rgba(0, 0, 0, 0.85);
@@ -44,8 +43,8 @@
   --map-label-halo: #101114;
   --map-country-outline: rgba(255, 255, 255, 0.3);
   --map-country-label: rgba(255, 255, 255, 0.77);
-  --map-pin-bg: #0d1117;
-  --map-pin-ink: #06210b;
+  --map-pin-bg: #10241a;
+  --map-pin-ink: #7CFFB2;
   --map-route-idle: #2f7d4a;
 
   /* Shape */
@@ -56,3 +55,4 @@
   --shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.8);
 }
+

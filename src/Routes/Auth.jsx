@@ -159,9 +159,9 @@ function Auth() {
 
         {view === "register" && (
           <form onSubmit={handleRegister}>
-            <Input id="reg-name" label="Full name" type="text" placeholder="Amina Benali" required value={name} onChange={(e) => setName(e.target.value)} />
+            <Input id="reg-name" label="Full name" type="text" placeholder="Your FullName" required value={name} onChange={(e) => setName(e.target.value)} />
             <Input id="reg-email" label="Email Address" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Input id="reg-phone" label="Phone" type="tel" placeholder="+213 ..." value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <Input id="reg-phone" label="Phone" type="tel" placeholder="+123 ..." value={phone} onChange={(e) => setPhone(e.target.value)} />
             <Input id="reg-password" label="Password" type={showPassword ? "text" : "password"} placeholder="At least 6 characters" required value={password} onChange={(e) => setPassword(e.target.value)} />
             <Input id="reg-confirm" label="Confirm Password" type={showPassword ? "text" : "password"} placeholder="••••••••" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             <span className="auth-forgot-link" onClick={() => setShowPassword((s) => !s)}>{showPassword ? "Hide password" : "Show password"}</span>

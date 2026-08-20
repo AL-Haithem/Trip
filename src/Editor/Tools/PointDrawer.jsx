@@ -57,8 +57,8 @@ function symbolFromFeature(feature, selected, c) {
 
 function PointDrawer({view, active, onRegister, toolId, initialRoute, onSelectChange, onStateChange}) {
 
-  const colorsRef = useRef(getMapColors("dark"))
-  colorsRef.current = getMapColors("dark")
+  const colorsRef = useRef(getMapColors())
+  colorsRef.current = getMapColors()
 
   const layerRef = useRef(null)
   const selectedGraphicRef = useRef(null)

@@ -64,5 +64,11 @@ function mockApiPlugin() {
 
 export default defineConfig({
   plugins: [react(), mockApiPlugin()],
-  base: "/"
+  base: "/",
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+  },
 })
