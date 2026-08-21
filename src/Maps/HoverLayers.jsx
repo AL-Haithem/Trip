@@ -199,6 +199,17 @@ export function WilayaHoverLayer() {
         }
 
         map.on("mousemove", "wilayas-fill", onMouseMove)
+map.on('click', (e) => {
+  const features = map.queryRenderedFeatures(e.point);
+
+  console.log(
+    features.map(f => ({
+      layer: f.layer.id,
+      sourceLayer: f.sourceLayer,
+      properties: f.properties
+    }))
+  );
+});
         map.on("mouseleave", "wilayas-fill", onMouseLeave)
 
         cleanup = () => {

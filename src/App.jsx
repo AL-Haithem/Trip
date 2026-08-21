@@ -27,6 +27,7 @@ function RouteFallback() {
 }
 
 const DrawPage = lazy(() => import('./Routes/DrawPage.jsx'))
+const TestPage  = lazy(() => import('./Routes/TestPage.jsx'))
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/map" element={<HomePage />} />
             <Route path="/draw" element={<DrawPage />} />
-            <Route path="/trips" element={<RequireCompany><TripsList /></RequireCompany>} />
+            <Route path="/test" element={<TestPage />} />
             <Route path="/trips/create" element={<RequireCompany><TripForm /></RequireCompany>} />
             <Route path="/trips/edit/:id" element={<RequireCompany><TripForm /></RequireCompany>} />
             <Route path="/trips/draw/:id" element={<RequireCompany><TripDraw /></RequireCompany>} />
