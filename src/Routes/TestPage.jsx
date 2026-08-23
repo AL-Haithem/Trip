@@ -8,8 +8,9 @@ import { useMapController } from '../Maps/useMapController2.js'
 export default function TestPage() {
 
   const { mapStyle } = useMapController()
-  const mapRef = useRef()
+  const mapRef = useRef(null)
   const hoveredId = useRef(null)
+  const mapInstance = useRef(null)
 
   return (
     <div style={{width: '100%', height: '100vh'}}>
@@ -21,12 +22,15 @@ export default function TestPage() {
           initialViewState={{longitude: 0,latitude: 28,zoom: 1.9}}
           style={{width: '100%',height: '100%'}}
           ref={mapRef}
-          onMouseMove={(event)=>{
+          onLoad={(event)=>{mapInstance.current = event.target}}
+          onMouseMove={(event)=>  {
 
-            const map = mapRef.current.getMap()
-            const features = mapRef.current.queryRenderedFeatures( event.point,{layers:["countries"]})
+            if (!mapInstance.current) return
 
-            if(features.length) {map.getCanvas().style.cursor="pointer"} else {map.getCanvas().style.cursor=""}
+            const map = mapInstance.current
+            const features = map.queryRenderedFeatures( event.point,{layers:["countries"]})
+
+            if (features.length) {map.getCanvas().style.cursor="pointer"} else {map.getCanvas().style.cursor=""}
 
             if (features.length === 0) {
               if (hoveredId.current !== null) {
@@ -44,9 +48,8 @@ export default function TestPage() {
 
             const feature = features[0]
 
-            if(hoveredId.current !== feature.id){
-
-              if(hoveredId.current !== null){
+            if (hoveredId.current !== feature.id) {
+              if (hoveredId.current != null) {
                 map.setFeatureState(
                   {
                     source:"world",
@@ -68,10 +71,11 @@ export default function TestPage() {
             }
           }
           onMouseLeave={()=>{
-  
-            const map = mapRef.current.getMap()
 
-            if(hoveredId.current !== null){
+            if(!mapInstance.current) return
+            const map = mapInstance.current
+
+            if (hoveredId.current !== null) {
 
               map.setFeatureState(
                 {
@@ -83,7 +87,7 @@ export default function TestPage() {
               )
               hoveredId.current=null
             }
-              map.getCanvas().style.cursor=""
+            map.getCanvas().style.cursor=""
           }}
         >
         </Map>
