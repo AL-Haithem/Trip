@@ -5,111 +5,71 @@ import maplibregl from 'maplibre-gl'
 let protocolRegistered = false
 
 function registerPMTilesProtocol() {
-
   if (protocolRegistered) return
-
   const protocol = new Protocol()
-
-  maplibregl.addProtocol(
-    'pmtiles',
-    protocol.tile.bind(protocol)
-  )
-
+  maplibregl.addProtocol( 'pmtiles', protocol.tile.bind(protocol) )
   protocolRegistered = true
 }
 
 function buildPMTilesStyle() {
-
   return {
 
     version: 8,
 
     sources: {
-
       world: {
         type: 'vector',
         url: 'pmtiles:///maps/world.pmtiles'
       },
-
       algeria: {
         type: 'vector',
         url: 'pmtiles:///maps/DZA.pmtiles'
       }
-
     },
 
     layers: [
-
- {
-  id: 'countries',
-
-  type: 'fill',
-
-  source: 'world',
-
-  'source-layer': 'world',
-
-  paint: {
-    'fill-color': '#00ff00',
-    'fill-opacity': 0.2
-  }
-},
-
-{
-  id: 'country-borders',
-
-  type: 'line',
-
-  source: 'world',
-
-  'source-layer': 'world',
-
-  maxzoom: 5,
-
-  paint: {
-    'line-color': '#0000ff',
-    'line-width': 5
-  }
-},
+      {
+        id: 'background',
+        type: 'background',
+        paint: {'background-color': 'rgb(38, 66, 109)'}
+      },
 
       {
-  id: 'wilayas',
+        id: 'countries',
+        type: 'fill',
+        source: 'world',
+        'source-layer': 'world',
+        paint: { "fill-color":["case",["boolean",["feature-state","hover"],false],"#ffe6007e","#252b34"]}
+      },
 
-  type: 'fill',
+      {
+        id: 'country-borders',
+        type: 'line',
+        source: 'world',
+        'source-layer': 'world',
+        maxzoom: 5,
+        paint: { 'line-color': '#000000', 'line-width': 2 }
+      },
 
-  source: 'algeria',
+      {
+        id: 'wilayas',
+        type: 'fill',
+        source: 'algeria',
+        'source-layer': 'DZA',
+        minzoom: 3,
+        paint: { "fill-color":["case",["boolean",["feature-state","hover"],false],"#ffe6007e  ","#2c3440"]}
+      },
 
-  'source-layer': 'DZA',
-
-  minzoom: 5,
-
-  paint: {
-    'fill-color': '#ff00ff',
-    'fill-opacity': 0.7
-  }
-},
-
-{
-  id: 'wilaya-borders',
-
-  type: 'line',
-
-  source: 'algeria',
-
-  'source-layer': 'DZA',
-
-  minzoom: 5,
-
-  paint: {
-    'line-color': '#ff0000',
-    'line-width': 5
-  }
-}
-
+      {
+        id: 'wilaya-borders',
+        type: 'line',
+        source: 'algeria',
+        'source-layer': 'DZA',
+        minzoom: 3,
+        paint: {'line-color': '#a8c23588','line-width': 1}
+      }
     ]
-
   }
-
 }
 
 export function useMapController() {
@@ -117,17 +77,9 @@ export function useMapController() {
   const [mapStyle, setMapStyle] = useState(null)
 
   useEffect(() => {
-
     registerPMTilesProtocol()
-
-    setMapStyle(
-      buildPMTilesStyle()
-    )
-
+    setMapStyle(buildPMTilesStyle())
   }, [])
 
-  return {
-    mapStyle
-  }
-
+  return {mapStyle}
 }
