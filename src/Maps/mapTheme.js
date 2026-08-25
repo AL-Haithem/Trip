@@ -13,7 +13,7 @@ export function getMapColors() {
 
     labelHalo: "#101114",
 
-    countryLabel: "rgba(255, 255, 255, 0.89)",
+    countryLabel: "rgb(255, 255, 255)",
 
     borders: {
       country: {

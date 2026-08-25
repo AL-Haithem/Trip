@@ -18,11 +18,13 @@ export default function TestPage() {
 
       {mapStyle && (
         <Map
-          renderWorldCopies={false}
-          mapLib={maplibregl}
+          //renderWorldCopies={false}
+          mapLib={maplibregl} 
           mapStyle={mapStyle}
-          initialViewState={{zoom: 1.9}}
-          style={{ width: '100%' , height: '100vh', position: "relative" }}
+          initialViewState={{longitude: 1 , latitude: 35 , zoom: 1.9}}
+          minZoom={1.9}
+          maxZoom={20}
+          style={{ width: '100%' , height: '100%', position: "relative" }}
 
           onLoad={(event)=>{mapInstance.current = event.target}}
           onMouseMove={(event)=>  {

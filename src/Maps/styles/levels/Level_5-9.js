@@ -1,4 +1,3 @@
-// WILAYAS | Zoom 5-9
 // wilayas, wilaya labels, wilaya hover, wilaya borders
 
 export function buildLevel_5_9(colors) {
@@ -8,7 +7,6 @@ export function buildLevel_5_9(colors) {
     {
       id: 'wilayas',
       type: 'fill',
-
       source: 'algeria',
       'source-layer': 'DZA',
 
@@ -16,19 +14,13 @@ export function buildLevel_5_9(colors) {
       maxzoom: 9,
 
       paint: {
-
-        'fill-color': [
-          'case',
-
+        'fill-color': ['case',
           [
             'boolean',
             ['feature-state', 'hover'],
             false
           ],
-
-          '#ffe6007e',
-
-          '#2c3440'
+          '#ffe6007e', '#2c3440'
         ]
       }
     },
@@ -37,7 +29,6 @@ export function buildLevel_5_9(colors) {
     {
       id: 'wilaya-borders',
       type: 'line',
-
       source: 'algeria',
       'source-layer': 'DZA',
 
@@ -45,20 +36,13 @@ export function buildLevel_5_9(colors) {
       maxzoom: 9,
 
       paint: {
-
-        'line-color':
-          colors.borders.state.color,
-
+        'line-color': colors.borders.state.color,
         'line-width': [
           'interpolate',
           ['linear'],
           ['zoom'],
-
-          3,
-          colors.borders.state.widthMin,
-
-          10,
-          colors.borders.state.widthMax
+          3,colors.borders.state.widthMin,
+          10,colors.borders.state.widthMax
         ]
       }
     },
@@ -68,7 +52,6 @@ export function buildLevel_5_9(colors) {
       id: "wilayas-hover",
       type: "fill",
       source: "algeria",
-
       "source-layer": "DZA",
 
       minzoom: 5,
@@ -82,8 +65,7 @@ export function buildLevel_5_9(colors) {
             ["feature-state", "hover"],
             false
           ],
-          0.5,
-          0
+          0.5, 0
         ]
       }
 
