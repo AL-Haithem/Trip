@@ -2,7 +2,8 @@ import { useRef,useState } from "react"
 
 export function useMapHover(){
 
-  const hoveredId = useRef(null)
+  const hoveredCountry = useRef(null)
+  const hoveredWilaya = useRef(null)
   const [tooltip, setTooltip] = useState(null)
 
   function handleZoom(map) {
@@ -15,11 +16,23 @@ export function useMapHover(){
 
   function handleMouseMove(event, map){
 
-    if (map.getZoom() >= 5) {
-    return
-  }
+    const zoom = map.getZoom()
+
+    let layer
+    let source
+    let sourceLayer
+
+    if(zoom < 5) {
+      layer="countries"
+      source="world"
+      sourceLayer="world" 
+    } else {
+      layer="wilayas"
+      source="algeria"
+      sourceLayer="DZA"
+    }
  
-    const features = map.queryRenderedFeatures( event.point,{layers:["countries"]})
+    const features = map.queryRenderedFeatures( event.point,{layers:[layer]})
 
     if (features.length) {map.getCanvas().style.cursor="pointer"} else {map.getCanvas().style.cursor=""}
 
@@ -31,50 +44,80 @@ export function useMapHover(){
 
     const feature = features[0]
 
-    const name = feature.properties?.ISO_3_coun === "XXX" ? "Not Available Yet": feature.properties?.English_Na
+    const id = feature.id
 
-    setTooltip({ x: event.point.x, y: event.point.y, name})
+    if (layer==="countries") {
+      if (hoveredCountry.current !== id) {
+        if (hoveredCountry.current != null) {
+          map.setFeatureState(
+            {
+              source :"world",
+              sourceLayer :"world",
+              id: hoveredCountry.current
+            },
+            {hover:false}
+          )
+        }
 
-    if (hoveredId.current !== feature.id) {
-      if (hoveredId.current != null) {
         map.setFeatureState(
           {
-            source:"world",
-            sourceLayer:"world",
-            id: hoveredId.current
+            source :"world",
+            sourceLayer :"world",
+            id
           },
-          {hover:false}
-        )
+          { hover:true } )
+        hoveredCountry.current = id
       }
 
-      map.setFeatureState(
-        {
-          source:"world",
-          sourceLayer:"world",
-          id:feature.id
-        },
-        { hover:true } )
-      hoveredId.current = feature.id
-    }   
+      const name = feature.properties?.ISO_3_coun === "XXX" ? "Not Available Yet": feature.properties?.English_Na
+      setTooltip({ x: event.point.x, y: event.point.y, name})
+    } else {  
+      if (hoveredWilaya.current !== id) {
 
+        if (hoveredWilaya.current != null) {
+          map.setFeatureState({
+              source:"algeria",
+              sourceLayer:"DZA",
+              id: hoveredWilaya.current
+          },{hover:false})
+        }
+
+        map.setFeatureState({
+            source:"algeria",
+            sourceLayer:"DZA",
+            id
+        },{ hover:true } )
+        hoveredWilaya.current = id
+      }
+      
+      setTooltip({
+        x:event.point.x,
+        y:event.point.y,
+        name:feature.properties.name
+      })
+    }
   }
 
   function clearHover(map){
 
-    if(hoveredId.current !== null){
-
-      map.setFeatureState(
-        {
+    if(hoveredCountry.current !== null){
+      map.setFeatureState( {
           source:"world",
           sourceLayer:"world",
-          id:hoveredId.current
-        },
-        {hover:false}
-      )
-
-      hoveredId.current=null
+          id:hoveredCountry.current
+        }, {hover:false})
+      hoveredCountry.current = null
     }
 
+    if(hoveredWilaya.current !== null){
+      map.setFeatureState({
+          source:"algeria",
+          sourceLayer:"DZA",
+          id:hoveredWilaya.current
+        },{hover:false})
+      hoveredWilaya.current = null
+    }
+    
   }
 
   function handleMouseLeave(map){

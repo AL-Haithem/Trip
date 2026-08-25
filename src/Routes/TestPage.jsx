@@ -21,8 +21,8 @@ export default function TestPage() {
           renderWorldCopies={false}
           mapLib={maplibregl}
           mapStyle={mapStyle}
-          initialViewState={{longitude: 0,latitude: 28,zoom: 1.9,}}
-          style={{ width: '100%' , height: '100%', position: "relative" }}
+          initialViewState={{zoom: 1.9}}
+          style={{ width: '100%' , height: '100vh', position: "relative" }}
 
           onLoad={(event)=>{mapInstance.current = event.target}}
           onMouseMove={(event)=>  {

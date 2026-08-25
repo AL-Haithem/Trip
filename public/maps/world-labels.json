@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "ISO_3_coun": "DZA",
+        "name": "Algeria"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.6596250000000623,
+          28.03312500000004
+        ]
+      }
+    }
+  ]
+}

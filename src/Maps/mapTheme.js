@@ -13,7 +13,7 @@ export function getMapColors() {
 
     labelHalo: "#101114",
 
-    countryLabel: "rgba(255, 255, 255, 0.77)",
+    countryLabel: "rgba(255, 255, 255, 0.89)",
 
     borders: {
       country: {
@@ -23,9 +23,9 @@ export function getMapColors() {
       },
 
       state: {
-        color: "#a8c23588",
-        widthMin: 0.9,
-        widthMax: 3.0
+        color: "#a8c235",
+        widthMin: 0.5,
+        widthMax: 0.9
       },
 
       district: {

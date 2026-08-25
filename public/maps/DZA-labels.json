@@ -1,0 +1,759 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Timimoun"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.5691898359969398,
+          30.026250549699036
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ain-Defla"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.0778464674047328,
+          36.16151620885603
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ain-Temouchent"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.0861195364849972,
+          35.41216841322047
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Alger"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.0940544597289135,
+          36.70201289979218
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Annaba"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.55891893950884,
+          36.84492392040198
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Batna"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.766141652830184,
+          35.33996957517141
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bechar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7077623164551183,
+          31.385974399575243
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bejaia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.917613267581887,
+          36.557963321891656
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Biskra"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.84686508904342,
+          34.78628355127789
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Blida"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.8943947550478395,
+          36.50434687750786
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bordj Bou Arrer"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.632523536942035,
+          36.09800145599027
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bouira"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.8451145884961013,
+          36.23386004376752
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Boumerdes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.633799195013709,
+          36.73693499851706
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Chlef"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.2052554190724862,
+          36.204758820498284
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Constantine"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.680324316151443,
+          36.36025622637416
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Djelfa"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.5419244764951046,
+          34.344596863488576
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "El-Tarf"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.174401373936295,
+          36.672392389101994
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "El Bayadh"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.9616328477070029,
+          32.57713119091029
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "El M'Ghair"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.662563358886464,
+          33.9660796907972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ghardaia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.625252842642862,
+          32.43528954470332
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Guelma"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.450700996214881,
+          36.35129164767427
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Illizi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.825380344817511,
+          27.84656384894785
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jijel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.969058752948274,
+          36.73113439140528
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Khenchela"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.021522521709166,
+          34.91572387676793
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Laghouat"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.9010990254319706,
+          33.75144585398931
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "M'Sila"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.352751732414866,
+          35.13178246774014
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mascara"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.1881434019767355,
+          35.40066335703519
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Medea"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.883150815815742,
+          35.97739794001837
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mila"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.142480134833624,
+          36.25211903130787
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mostaganem"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.31211820242191457,
+          36.00407027402979
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Naama"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.7866911496744214,
+          33.2381420816089
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Oran"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.587964882995308,
+          35.622962901219694
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Touggourt"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.457338236267443,
+          32.98328996877379
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Oum El Bouaghi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.010724068720558,
+          35.8123321566183
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Relizane"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.826390087501512,
+          35.838905324457365
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Saida"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.2885805219819577,
+          34.74651914060841
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Setif"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.378519057810595,
+          36.108394620215975
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sidi Bel Abbes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.5473585690505969,
+          34.68514630738689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Skikda"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.823677511415072,
+          36.75738793850229
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Souk-Ahras"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.84600081591179,
+          36.1396427106375
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "In Salah"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.3321454829693486,
+          27.21207977470034
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tebessa"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.850778215901684,
+          35.1248544803465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tiaret"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.5762280669826316,
+          34.894716332006354
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tindouf"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -5.834743746581788,
+          27.56767133933255
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tipaza"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.2393624780951082,
+          36.53060569073276
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tissemsilt"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.7847122550274621,
+          35.788356786238026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tizi Ouzou"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.185791372958033,
+          36.68285912758744
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tlemcen"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.491028111490743,
+          34.67149236832768
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Béni Abbès"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.5727513481148963,
+          29.085687368656302
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "El Menia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.148232491147448,
+          30.727222021328963
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bordj Baji Mokhtar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.1501331460844841,
+          22.658846270475294
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Adrar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.8490139176427878,
+          26.495947227514314
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ouargla"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.224625614607483,
+          31.000047726518133
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "El Oued"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.514347617724477,
+          33.216030072391845
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tamanrasset"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.810634673296369,
+          23.935066097788933
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Djanet"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.258682502161479,
+          24.05735943369063
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "In Guezzam"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.741436511844664,
+          20.423464406373
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ouled Djellal"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.748247147223566,
+          34.110586140660246
+        ]
+      }
+    }
+  ]
+}
