@@ -1,7 +1,7 @@
 // ROADS | طبقات الطرق من OpenFreeMap
-// تُستخدم داخل Level_9-20
+// تُستخدم داخل Level_3 | الألوان من mapTheme (colors.ofm)
 
-export function buildRoadsStyle() {
+export function buildRoadsStyle(colors) {
   return [
 
     // Roads: minor //
@@ -24,7 +24,7 @@ export function buildRoadsStyle() {
       },
 
       paint: {
-        'line-color': '#39424f',
+        'line-color': colors.ofm.roadMinor,
         'line-width': [
           'interpolate',
           ['linear'],
@@ -55,7 +55,7 @@ export function buildRoadsStyle() {
       },
 
       paint: {
-        'line-color': '#4a5666',
+        'line-color': colors.ofm.roadMajor,
         'line-width': [
           'interpolate',
           ['linear'],
@@ -84,7 +84,7 @@ export function buildRoadsStyle() {
       ],
 
       paint: {
-        'line-color': '#6f7989',
+        'line-color': colors.ofm.roadCasing,
         'line-width': [
           'interpolate',
           ['linear'],

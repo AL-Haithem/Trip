@@ -16,8 +16,8 @@ export function buildLevel_1(colors) {
       paint: {
         'fill-color': [
           'step',['zoom'],
-          ['case',['==', ['get', 'ISO_3_coun'], 'XXX'],'#1a1f27',colors.land],
-          5,'#1a1f27'
+          ['case',['==', ['get', 'ISO_3_coun'], 'XXX'],colors.landDeep,colors.land],
+          5,colors.landDeep
         ]
       }
     },

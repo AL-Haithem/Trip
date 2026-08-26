@@ -2,43 +2,30 @@
 // مستوى واحد من 9 الى 20 يعتمد على بيانات OpenFreeMap (OpenMapTiles schema)
 // المصدر: openfreemap (معرّف في MapStyle.js)
 // ستايل الطرق في ملف مستقل: ../roadsStyle.js
+// ستايل نقاط الاهتمام في ملف مستقل: ../poisStyle.js
 
 import { buildRoadsStyle } from '../roadsStyle'
+import { buildPoisStyle } from '../poisStyle'
 
 export function buildLevel_3(colors) {
   return [
-
-    // Landcover //
+    // Landuse //
     // {
-    //   id: 'ofm-landcover',
+    //   id: 'ofm-landuse',
     //   type: 'fill',
     //   source: 'openfreemap',
-    //   'source-layer': 'landcover',
+    //   'source-layer': 'landuse',
 
-    //   minzoom: 9,
+    //   minzoom: 13,
 
     //   paint: {
-    //     'fill-color': '#58565168',
+    //     'fill-color': colors.ofm.landuse,
     //     'fill-opacity': 1
     //   }
     // },
 
-    // Landuse //
-    {
-      id: 'ofm-landuse',
-      type: 'fill',
-      source: 'openfreemap',
-      'source-layer': 'landuse',
+    ...buildRoadsStyle(colors),
 
-      minzoom: 13,
-
-      paint: {
-        'fill-color': '#ced4dc53',
-        'fill-opacity': 1
-      }
-    },
-
-    ...buildRoadsStyle(),
 
     // Place Labels: city / town //
     {
@@ -47,7 +34,7 @@ export function buildLevel_3(colors) {
       source: 'openfreemap',
       'source-layer': 'place',
 
-      minzoom: 9,
+      minzoom: 9.3,
 
       filter: [
         'in',
@@ -89,27 +76,29 @@ export function buildLevel_3(colors) {
 
       paint: {
 
-        'fill-extrusion-color': '#e28306',
+        'fill-extrusion-color': colors.ofm.building3d,
         'fill-extrusion-height': [
           'coalesce',
           ['get', 'render_height'],
-          30
+          1
         ],
         'fill-extrusion-base': [
           'coalesce',
           ['get', 'render_min_height'],
           0
         ],
-        'fill-extrusion-opacity': 0.5
+        'fill-extrusion-opacity': 0.9
       }
     },
+
+    ...buildPoisStyle(colors),
 
     // Wilayas Labels //
     {
       id: "wilaya-labels",
       type: "symbol",
       source: "WilayasLabels",
-      minzoom: 4,
+      minzoom: 5,
       maxzoom: 9,
       layout: {
         "text-field": ["get", "name"],

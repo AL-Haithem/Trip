@@ -3,9 +3,9 @@ import Map, { useMap } from "react-map-gl/maplibre"
 import "maplibre-gl/dist/maplibre-gl.css"
 import "../styles/maps.css"
 import maplibregl from "maplibre-gl"
-import { useMapController } from "./useMapController.js"
+import { useMapController } from "./UseStates/useMapController.js"
+import { useMapHover } from "./UseStates/useMapHover.js"
 import { FpsMeter } from "../Components/ui/FpsMeter.jsx"
-import { CountryHoverLayer, WilayaHoverLayer } from "./HoverLayers.jsx"
 
 function MapControls({ minZoom, maxZoom }) {
   const { current: map } = useMap()
@@ -15,17 +15,16 @@ function MapControls({ minZoom, maxZoom }) {
 
   useEffect(() => {
     if (!map) return;
-    
-    // Set initial zoom
+
     setZoom(map.getZoom());
     setIs3D(map.getPitch() > 0)
 
     const handleZoom = () => setZoom(map.getZoom());
     const handlePitch = () => setIs3D(map.getPitch() > 0)
-    
+
     map.on('zoom', handleZoom);
     map.on('pitch', handlePitch);
-    
+
     return () => {
       map.off('zoom', handleZoom);
       map.off('pitch', handlePitch);
@@ -34,7 +33,7 @@ function MapControls({ minZoom, maxZoom }) {
 
   const zoomIn = () => map && map.zoomTo(Math.min(zoom + 1, maxZoom), { duration: 300 })
   const zoomOut = () => map && map.zoomTo(Math.max(zoom - 1, minZoom), { duration: 300 })
-  
+
   const toggle3D = () => {
     if (!map) return
     if (is3D) {
@@ -51,16 +50,16 @@ function MapControls({ minZoom, maxZoom }) {
     if (!track) return;
 
     const trackRect = track.getBoundingClientRect();
-    
+
     const onPointerMove = (moveEvent) => {
       let newY = moveEvent.clientY - trackRect.top;
       newY = Math.max(0, Math.min(trackRect.height, newY));
-      
+
       const pct = newY / trackRect.height;
       const newZoom = maxZoom - pct * (maxZoom - minZoom);
       map.jumpTo({ zoom: newZoom });
     };
-    
+
     const onPointerUp = () => {
       document.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('pointerup', onPointerUp);
@@ -70,7 +69,6 @@ function MapControls({ minZoom, maxZoom }) {
     document.addEventListener('pointerup', onPointerUp);
   };
 
-  // Calculate percentage (0% = maxZoom, 100% = minZoom)
   const pct = Math.max(0, Math.min(100, ((maxZoom - zoom) / (maxZoom - minZoom)) * 100));
 
   return (
@@ -113,7 +111,6 @@ function MapInfoPanel() {
       setInfo(prev => ({ ...prev, lat: e.lngLat.lat, lng: e.lngLat.lng }));
     };
 
-    // Initialize with center, then track mouse
     const center = map.getCenter();
     setInfo({
       zoom: map.getZoom(),
@@ -150,16 +147,18 @@ function MapInfoPanel() {
 }
 
 function HomeMap() {
-  const minZoom = 3;
+  const minZoom = 1.9;
   const maxZoom = 20;
 
-  const { mapStyle, showPOIs, togglePOIs } = useMapController();
+  const { mapStyle } = useMapController();
+  const mapInstance = useRef(null)
+  const { handleMouseMove, handleMouseLeave, tooltip, handleZoom } = useMapHover()
 
-  useEffect(() => {document.documentElement.setAttribute("data-theme", "dark")}, [])
+  useEffect(() => { document.documentElement.setAttribute("data-theme", "dark") }, [])
 
   const initialViewState = {
-    latitude: 0,
-    longitude: 0,
+    longitude: 1,
+    latitude: 35,
     zoom: minZoom,
     pitch: 0,
     minZoom,
@@ -173,45 +172,52 @@ function HomeMap() {
           initialViewState={initialViewState}
           mapStyle={mapStyle}
           mapLib={maplibregl}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '100%', position: "relative" }}
           doubleClickZoom={false}
           dragRotate={true}
           touchZoomRotate={true}
           attributionControl={false}
+
+          onLoad={(event) => { mapInstance.current = event.target }}
+          onMouseMove={(event) => {
+            if (!mapInstance.current) return
+            handleMouseMove(event, mapInstance.current)
+          }}
+          onMouseLeave={() => {
+            if (!mapInstance.current) return
+            handleMouseLeave(mapInstance.current)
+          }}
+          onZoom={(event) => {
+            if (!mapInstance.current) return
+            handleZoom(event.target)
+          }}
         >
           <MapControls minZoom={minZoom} maxZoom={maxZoom} />
           <MapInfoPanel />
-          <CountryHoverLayer />
-          <WilayaHoverLayer />
         </Map>
       )}
 
-      <div 
-        className="glass" 
-        style={{
-          position: 'absolute', top: 12, right: 12, zIndex: 100,
-          display: 'flex', flexDirection: 'column',
-          borderRadius: '8px', overflow: 'hidden',
-          border: '1px solid var(--line)'
-        }}
-      >
-        <button
-          className="map-toggle-btn"
-          data-tooltip={showPOIs ? "إخفاء الأماكن" : "إظهار الأماكن"}
-          onClick={togglePOIs}
+      {tooltip && (
+        <div
+          className="glass"
           style={{
-            background: showPOIs ? 'var(--accent)' : 'transparent',
-            color: showPOIs ? 'var(--accent-ink)' : 'var(--text-muted)',
-            opacity: showPOIs ? 1 : 0.6
+            position: "absolute",
+            left: tooltip.x + 14,
+            top: tooltip.y + 14,
+            color: "var(--text)",
+            padding: "6px 12px",
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: "bold",
+            pointerEvents: "none",
+            zIndex: 50,
+            border: "1px solid var(--line)",
+            whiteSpace: "nowrap"
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-            {!showPOIs && <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" strokeWidth="2" />}
-          </svg>
-        </button>
-      </div>
+          {tooltip.name}
+        </div>
+      )}
 
       <FpsMeter />
     </div>
