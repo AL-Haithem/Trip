@@ -28,6 +28,11 @@ export function buildPMTilesStyle() {
       WilayasLabels: {
         type: 'geojson',
         data: "/maps/DZA-labels.json"
+      },
+
+      openfreemap: {
+        type: 'vector',
+        url: 'https://tiles.openfreemap.org/planet'
       }
 
     },
@@ -38,6 +43,9 @@ export function buildPMTilesStyle() {
       {
         id: 'background',
         type: 'background',
+
+        minzoom:0,
+        maxzoom:20,
 
         paint: {
           'background-color': colors.water

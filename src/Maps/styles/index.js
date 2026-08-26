@@ -1,15 +1,13 @@
-import { buildLevel_0_5 } from './levels/Level_0-5'
-import { buildLevel_5_9 } from './levels/Level_5-9'
-import { buildLevel_9_13 } from './levels/Level_9-13'
-import { buildLevel_13_17 } from './levels/Level_13-17'
-import { buildLevel_17_20 } from './levels/Level_17-20'
+// سجل المستويات | الترتيب هنا = ترتيب رسم الطبقات على الخريطة
+
+import { buildLevel_1 } from './levels/Level_1'
+import { buildLevel_2 } from './levels/Level_2'
+import { buildLevel_3 } from './levels/Level_3'
 
 export function buildAllLayers(colors) {
   return [
-    ...buildLevel_0_5(colors),
-    ...buildLevel_5_9(colors),
-    ...buildLevel_9_13(colors),
-    ...buildLevel_13_17(colors),
-    ...buildLevel_17_20(colors),
+    ...buildLevel_1(colors),
+    ...buildLevel_2(colors),
+    ...buildLevel_3(colors),
   ]
 }

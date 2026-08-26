@@ -5,7 +5,7 @@ export function getMapColors() {
 
     water: "rgb(38, 66, 109)",
 
-    land: "#ffffff25",
+    land: "#2c3440",
 
     landOutline: "rgb(0, 0, 0)",
 
