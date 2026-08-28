@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import Icon from "../../../components/ui/Icon.jsx"
 
 const ToolbarButton = ({ title, onClick, active, disabled, children, className = "" }) => (
@@ -12,9 +12,31 @@ const ToolbarButton = ({ title, onClick, active, disabled, children, className =
   </button>
 )
 
-export const TripDrawToolbar = ({ activeTool, setActiveTool, clearSelection, handleUndo, handleDelete, canUndo, canDelete, selWaypoint, selVertex, setShowTypeMenu, handleChangeType, showTypeMenu, WAYPOINT_TYPES, Icon: IconComponent }) => {
+export const TripDrawToolbar = ({ activeTool, setActiveTool, pointMode, setPointMode, hasStart, clearSelection, handleUndo, handleDelete, canUndo, canDelete, selWaypoint, selVertex, setShowTypeMenu, handleChangeType, showTypeMenu, showLabelInput, setShowLabelInput, handleSetLabel, currentLabel, WAYPOINT_TYPES, Icon: IconComponent }) => {
+  const [draft, setDraft] = useState("")
+
+  useEffect(() => {
+    if (showLabelInput) setDraft(currentLabel)
+  }, [showLabelInput, currentLabel, selWaypoint, selVertex])
+
+  const handleStartTool = () => {
+    setActiveTool(null)
+    clearSelection()
+    if (setPointMode) setPointMode(p => p === "start" ? null : "start")
+  }
+
   return (
     <div className="tdm-toolbar">
+      <ToolbarButton
+        title={hasStart ? "Move start point" : "Set start point"}
+        onClick={handleStartTool}
+        active={pointMode === "start"}
+      >
+        <IconComponent name="location-dot" />
+      </ToolbarButton>
+
+      <div className="tdm-divider" />
+
       <ToolbarButton
         title="Draw route"
         onClick={() => {
@@ -22,6 +44,7 @@ export const TripDrawToolbar = ({ activeTool, setActiveTool, clearSelection, han
           clearSelection()
         }}
         active={activeTool === "polyline"}
+        disabled={!hasStart}
       >
         <IconComponent name="route" />
       </ToolbarButton>
@@ -49,25 +72,13 @@ export const TripDrawToolbar = ({ activeTool, setActiveTool, clearSelection, han
         </svg>
       </ToolbarButton>
 
-      {activeTool && (
-        <ToolbarButton
-          title="Done"
-          onClick={() => {setActiveTool(null); clearSelection()}}
-          active={true}
-          className="tdm-tool-active"
-          style={{width: "auto", padding: "0 14px", fontWeight: "bold", fontSize: 13}}
-        >
-          Done
-        </ToolbarButton>
-      )}
-
       {(selWaypoint !== null || selVertex !== null) && (
         <>
           <div className="tdm-divider" />
           <div className="tdm-type-wrap">
             <ToolbarButton
               title="Change point type"
-              onClick={() => setShowTypeMenu(p => !p)}
+              onClick={() => { setShowTypeMenu(p => !p); setShowLabelInput(false) }}
               style={{color: "var(--accent)"}}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -86,7 +97,45 @@ export const TripDrawToolbar = ({ activeTool, setActiveTool, clearSelection, han
               </div>
             )}
           </div>
+
+          <div className="tdm-type-wrap">
+            <ToolbarButton
+              title="Add text label"
+              onClick={() => { setShowLabelInput(p => !p); setShowTypeMenu(false) }}
+              style={{color: "var(--accent)"}}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 7 V5 h16 v2 M12 5 v14 M9 19 h6" />
+              </svg>
+            </ToolbarButton>
+            {showLabelInput && (
+              <div className="tdm-type-menu">
+                <input
+                  autoFocus
+                  className="tdm-label-input"
+                  value={draft}
+                  placeholder="Label above the point..."
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSetLabel(draft) }}
+                />
+                <div className="tdm-label-actions">
+                  <button className="tdm-type-item" onClick={() => handleSetLabel(draft)}>Apply</button>
+                  <button className="tdm-type-item" onClick={() => handleSetLabel("")}>Clear</button>
+                </div>
+              </div>
+            )}
+          </div>
         </>
+      )}
+
+      {(activeTool || pointMode) && (
+        <button
+          className="tdm-done-btn"
+          title="Done"
+          onClick={() => {setActiveTool(null); if (setPointMode) setPointMode(null); clearSelection()}}
+        >
+          Done
+        </button>
       )}
     </div>
   )

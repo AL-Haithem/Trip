@@ -1,18 +1,18 @@
-// ثيم الخريطة | محوّل من Google Styling "Retro" (خريطة ورقية سيبيا)
+// Map theme | converted from Google Styling "Retro" (sepia paper map)
 // landscape #f9ddc5 -7 | road #813033 +43 | water #1994bf -69sat +43 | local #f19f53
 
 export function getMapColors() {
 
   return {
 
-    // الأساس | landscape = #f9ddc5 + lightness -7 //
+    // Base | landscape = #f9ddc5 + lightness -7 //
     bg: "#e8ceb7",
     water: "#a0b5bd",
     land: "#e8ceb7",
     landDeep: "#d9c1a8",
     landOutline: "rgb(0, 0, 0)",
 
-    // النصوص | حبر بني داكن على الورق //
+    // Labels | dark brown ink on paper //
     label: "#3a2b1f",
     labelHalo: "#f9ddc5",
     countryLabel: "#5f4632",
@@ -37,7 +37,7 @@ export function getMapColors() {
       }
     },
 
-    // طبقات OpenFreeMap التفصيلية (zoom 9-20) //
+    // Detailed OpenFreeMap layers (zoom 9-20) //
     ofm: {
       // park #645c20 +39 //
       landuse: "#a09c77",
@@ -51,7 +51,7 @@ export function getMapColors() {
       roadOutline: "#813033"
     },
 
-    // نقاط الاهتمام POI //
+    // Points of interest POI //
     poi: {
       food: "#f19f53",
       stay: "#9f9a75",

@@ -1,4 +1,4 @@
-// سجل المستويات | الترتيب هنا = ترتيب رسم الطبقات على الخريطة
+// Level registry | order here = layer draw order on the map
 
 import { buildLevel_1 } from './levels/Level_1'
 import { buildLevel_2 } from './levels/Level_2'

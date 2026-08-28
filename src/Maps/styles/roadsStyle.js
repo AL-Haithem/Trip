@@ -1,5 +1,5 @@
-// ROADS | طبقات الطرق من OpenFreeMap
-// تُستخدم داخل Level_3 | الألوان من mapTheme (colors.ofm)
+// ROADS | road layers from OpenFreeMap
+// Used inside Level_3 | colors from mapTheme (colors.ofm)
 
 export function buildRoadsStyle(colors) {
   return [

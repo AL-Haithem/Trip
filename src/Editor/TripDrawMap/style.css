@@ -13,12 +13,38 @@
   align-items: center;
   gap: 8px;
   padding: 6px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bg-panel);
   backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
   z-index: 10;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--line);
+}
+
+.tdm-done-btn {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.tdm-done-btn:hover {
+  filter: brightness(1.05);
 }
 
 .tdm-tool-btn {
@@ -29,20 +55,20 @@
   justify-content: center;
   border: none;
   background: transparent;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   cursor: pointer;
-  color: #444;
+  color: var(--text-muted);
   transition: all 0.2s ease;
 }
 
 .tdm-tool-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: #000;
+  background: var(--chip-bg);
+  color: var(--text);
 }
 
 .tdm-tool-active {
-  background: var(--accent, #0cff25) !important;
-  color: #000 !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
 }
 
 .tdm-tool-disabled {
@@ -51,17 +77,17 @@
 }
 
 .tdm-tool-delete {
-  color: #ff4c4c;
+  color: var(--red);
 }
 
 .tdm-tool-delete:hover {
-  background: rgba(255, 76, 76, 0.1);
+  background: var(--red-tint);
 }
 
 .tdm-divider {
   width: 1px;
   height: 24px;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--line);
   margin: 0 4px;
 }
 
@@ -75,14 +101,15 @@
   position: absolute;
   top: 45px;
   right: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow);
   padding: 6px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 140px;
+  min-width: 150px;
   z-index: 100;
 }
 
@@ -93,15 +120,16 @@
   padding: 8px 12px;
   border: none;
   background: transparent;
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   cursor: pointer;
   text-align: left;
   font-size: 13px;
+  color: var(--text);
   transition: background 0.2s;
 }
 
 .tdm-type-item:hover {
-  background: #f5f5f5;
+  background: var(--chip-bg);
 }
 
 .tdm-type-emoji {
@@ -112,7 +140,57 @@
   justify-content: center;
 }
 
-/* Markers styles - منع transition على transform لكي لا يتعارض مع تحريك الخريطة */
+.tdm-label-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  outline: none;
+  background: var(--bg-input);
+  color: var(--text);
+}
+
+.tdm-label-input:focus {
+  border-color: var(--accent);
+}
+
+.tdm-label-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.tdm-label-actions .tdm-type-item {
+  justify-content: center;
+  background: var(--bg-elevated);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tdm-label-actions .tdm-type-item:hover {
+  background: var(--line);
+}
+
+/* Marker label above the pin - no transition on transform to avoid conflict with map panning */
+.td-marker-label {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+/* Markers styles - disable transition on transform so it doesn't conflict with map movement */
 .td-pin {
   width: 36px;
   height: 36px;
@@ -178,7 +256,7 @@
 
 .td-endpoint-unlocked {
   transform: scale(1.1);
-  box-shadow: 0 0 0 4px rgba(12, 255, 37, 0.4);
+  box-shadow: 0 0 0 4px var(--accent-tint);
 }
 
 @keyframes pulse {

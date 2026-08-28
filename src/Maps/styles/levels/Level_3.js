@@ -1,8 +1,8 @@
 // OPENFREEMAP | Zoom 9-20
-// مستوى واحد من 9 الى 20 يعتمد على بيانات OpenFreeMap (OpenMapTiles schema)
-// المصدر: openfreemap (معرّف في MapStyle.js)
-// ستايل الطرق في ملف مستقل: ../roadsStyle.js
-// ستايل نقاط الاهتمام في ملف مستقل: ../poisStyle.js
+// Single level from 9 to 20 based on OpenFreeMap data (OpenMapTiles schema)
+// Source: openfreemap (defined in MapStyle.js)
+// Road style in separate file: ../roadsStyle.js
+// POI style in separate file: ../poisStyle.js
 
 import { buildRoadsStyle } from '../roadsStyle'
 import { buildPoisStyle } from '../poisStyle'

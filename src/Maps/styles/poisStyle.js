@@ -1,6 +1,6 @@
-// POIs | نقاط الاهتمام من OpenFreeMap (source-layer: poi)
-// تُستخدم داخل Level_3 | الألوان من mapTheme (colors.poi)
-// الفئات مصممة حسب فكرة المشروع: طعام | مبيت | ترفيه/شاطئ | معالم | خدمات
+// POIs | points of interest from OpenFreeMap (source-layer: poi)
+// Used inside Level_3 | colors from mapTheme (colors.poi)
+// Categories per project concept: food | lodging | entertainment/beach | landmarks | services
 
 export function buildPoisStyle(colors) {
 
@@ -66,7 +66,7 @@ export function buildPoisStyle(colors) {
       }
     },
 
-    // POI labels (تظهر عند الاقتراب) //
+    // POI labels (appear when zoomed in) //
     {
       id: 'ofm-poi-labels',
       type: 'symbol',

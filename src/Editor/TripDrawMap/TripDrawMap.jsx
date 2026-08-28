@@ -84,19 +84,22 @@ function parseInitial(routeFc, startFc, endFc) {
     if (g.type === "LineString") {
       const coords = g.coordinates
       let types = f.properties?.vertTypes
-      // حماية بيانات قديمة: إذا كان vertTypes بنفس طول الإحداثيات (يشمل البداية) نزيل الأول
+      let labels = f.properties?.vertLabels
+      // Legacy safety: if vertTypes length matches coordinates (includes start), drop the first
       if (types && types.length === coords.length) types = types.slice(1)
-      // coords[0] هي نقطة البداية (نستبعدها من verts)، و vertTypes[idx] يقابل coords[idx+1]
+      // coords[0] is the start (excluded from verts); vertTypes[idx] maps to coords[idx+1]
       verts = coords.slice(1).map(([lng, lat], idx) => ({
-        lng, lat, type: (types && types[idx]) || f.properties?.waypointType || null
+        lng, lat,
+        type: (types && types[idx]) || null,
+        label: (labels && labels[idx]) || null,
       }))
       pendingVertTypes = types
     } else if (g.type === "Point") {
-      // تجاهل النقاط التي هي verts/نقاط نهاية محفوظة كـ Point لتجنب التكرار
+      // Ignore verts/endpoints saved as Point to avoid duplicates
       if (f.properties?.isRouteVertex || f.properties?.kind === "endpoint") return
       const lng = g.coordinates[0]
       const lat = g.coordinates[1]
-      // تجاهل أي Point يطابق إحداثيات البداية أو أحد verts (بيانات قديمة مكررة)
+      // Ignore any Point matching start or a vert coordinate (duplicate legacy data)
       const dupOfVert = verts.some(v => v.lng === lng && v.lat === lat)
       if (dupOfVert) return
       if (start && start.lng === lng && start.lat === lat) return
@@ -104,6 +107,7 @@ function parseInitial(routeFc, startFc, endFc) {
         id: "w" + i,
         lng, lat,
         type: f.properties?.waypointType || "rest",
+        label: f.properties?.waypointLabel || null,
       })
     }
   })
@@ -111,8 +115,8 @@ function parseInitial(routeFc, startFc, endFc) {
   if (verts.length === 0 && waypoints.length > 0) {
     // no LineString found, keep waypoints as is
   }
-  // تنظيف بيانات قديمة: إذا كان الطرفان (أول وآخر vert) يطابقان البداية بسبب تكرار من السابق،
-  // نزيل الـ vert الأول الزائد (كان يظهر كدائرة مكررة عند البداية)
+  // Legacy cleanup: if both ends (first & last vert) match the start due to prior duplication,
+  // remove the extra first vert (it showed as a duplicate circle at the start)
   if (verts.length > 1 && start &&
       verts[0].lng === start.lng && verts[0].lat === start.lat &&
       verts[verts.length - 1].lng === start.lng && verts[verts.length - 1].lat === start.lat) {
@@ -132,7 +136,7 @@ function composeRoute(s) {
 }
 
 const TripDrawMap = forwardRef(function TripDrawMap(
-  {initialRoute, initialStart, initialEnd, pointMode, onPointsChange, onPlace},
+  {initialRoute, initialStart, initialEnd, pointMode, setPointMode, onPointsChange, onPlace},
   ref
 ) {
   const {mapStyle} = useMapController()
@@ -151,6 +155,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
   const [selWaypoint, setSelWaypoint] = useState(null)
   const [selVertex, setSelVertex] = useState(null)
   const [showTypeMenu, setShowTypeMenu] = useState(false)
+  const [showLabelInput, setShowLabelInput] = useState(false)
   const [history, setHistory] = useState([])
 
 
@@ -180,6 +185,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
     setSelWaypoint(null)
     setSelVertex(null)
     setShowTypeMenu(false)
+    setShowLabelInput(false)
   }, [])
 
   useImperativeHandle(ref, () => ({
@@ -191,7 +197,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
         features.push({
           type: "Feature",
           geometry: {type: "LineString", coordinates: routeCoords.map(v => [v.lng, v.lat])},
-          properties: {routePath: true, vertTypes: s.verts.map(v => v.type || null)},
+          properties: {routePath: true, vertTypes: s.verts.map(v => v.type || null), vertLabels: s.verts.map(v => v.label || null)},
         })
       }
       s.waypoints.forEach(w => {
@@ -200,7 +206,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
           geometry: {type: "Point", coordinates: [w.lng, w.lat]},
           properties: {
             waypointType: w.type,
-            waypointLabel: (WAYPOINT_TYPES.find(t => t.id === w.type) || {}).label || "",
+            waypointLabel: w.label || "",
           },
         })
       })
@@ -248,11 +254,12 @@ const TripDrawMap = forwardRef(function TripDrawMap(
   }, [verts, startPoint, endPoint, setDataLive])
 
   const markerSignature =
-    waypoints.map(w => `${w.id}:${w.type}:${selWaypoint === w.id ? 1 : 0}`).join("|") +
+    waypoints.map(w => `${w.id}:${w.lng.toFixed(5)}:${w.lat.toFixed(5)}:${w.type}:${w.label || ""}:${selWaypoint === w.id ? 1 : 0}`).join("|") +
     "@" +
-    verts.map((v, i) => `${v.type || ""}:${selVertex === i ? 1 : 0}`).join(",") +
+    verts.map((v, i) => `${v.lng.toFixed(5)}:${v.lat.toFixed(5)}:${v.type || ""}:${v.label || ""}:${selVertex === i ? 1 : 0}`).join(",") +
     "@" +
-    (startPoint ? "s" : "") + (endPoint ? "e" : "") +
+    (startPoint ? `${startPoint.lng.toFixed(5)}:${startPoint.lat.toFixed(5)}` : "") +
+    (endPoint ? `e:${endPoint.lng.toFixed(5)}:${endPoint.lat.toFixed(5)}` : "") +
     "@" + (pointMode || "")
 
   useEffect(() => {
@@ -263,11 +270,27 @@ const TripDrawMap = forwardRef(function TripDrawMap(
     markersRef.current = []
     const created = []
 
+    const appendLabel = (el, text) => {
+      if (text) {
+        const lab = document.createElement("div")
+        lab.className = "td-marker-label"
+        lab.textContent = text
+        el.appendChild(lab)
+      }
+    }
+
     waypoints.forEach((w) => {
       const el = document.createElement("div")
-      el.className = "td-endpoint-marker" + (selWaypoint === w.id ? " td-pin-selected" : "")
-      el.style.backgroundImage = `url("${svgToUrl(pinSvg(w.type, selWaypoint === w.id))}")`
-      el.title = (WAYPOINT_TYPES.find(t => t.id === w.type) || {}).label || ""
+      const isDefault = !w.type || w.type === "normal"
+      if (isDefault) {
+        el.className = "td-vtx" + (selWaypoint === w.id ? " td-vtx-selected" : "")
+        el.style.borderColor = ROUTE_PIN_COLOR
+      } else {
+        el.className = "td-endpoint-marker" + (selWaypoint === w.id ? " td-pin-selected" : "")
+        el.style.backgroundImage = `url("${svgToUrl(pinSvg(w.type, selWaypoint === w.id))}")`
+      }
+      el.title = isDefault ? "" : ((WAYPOINT_TYPES.find(t => t.id === w.type) || {}).label || "")
+      appendLabel(el, w.label)
       el.addEventListener("click", (e) => {
         e.stopPropagation()
         setSelVertex(null)
@@ -294,15 +317,16 @@ const TripDrawMap = forwardRef(function TripDrawMap(
         el.className = "td-endpoint-marker td-endpoint-end" + (selVertex === i ? " td-vtx-selected" : "")
         el.style.backgroundImage = `url("${svgToUrl(flagSvg('end'))}")`
       } else {
-        const hasType = v.type && v.type !== "rest" && v.type !== null
-        if (hasType) {
-          el.className = "td-endpoint-marker" + (selVertex === i ? " td-pin-selected" : "")
-          el.style.backgroundImage = `url("${svgToUrl(pinSvg(v.type, selVertex === i))}")`
-        } else {
+        const isDefault = !v.type || v.type === "normal"
+        if (isDefault) {
           el.className = "td-vtx" + (selVertex === i ? " td-vtx-selected" : "")
           el.style.borderColor = ROUTE_PIN_COLOR
+        } else {
+          el.className = "td-endpoint-marker" + (selVertex === i ? " td-pin-selected" : "")
+          el.style.backgroundImage = `url("${svgToUrl(pinSvg(v.type, selVertex === i))}")`
         }
       }
+      appendLabel(el, v.label)
 
       el.addEventListener("click", (e) => {
         e.stopPropagation()
@@ -318,14 +342,14 @@ const TripDrawMap = forwardRef(function TripDrawMap(
       m.on("drag", () => {
         const ll = m.getLngLat()
         const next = [...stateRef.current.verts]
-        next[i] = {lng: ll.lng, lat: ll.lat, type: next[i].type}
+        next[i] = {lng: ll.lng, lat: ll.lat, type: next[i].type, label: next[i].label}
         stateRef.current.verts = next
         setDataLive()
       })
       m.on("dragend", () => {
         const ll = m.getLngLat()
         setVerts(prev => prev.map((x, j) =>
-          j === i ? {lng: ll.lng, lat: ll.lat, type: x.type} : x
+          j === i ? {lng: ll.lng, lat: ll.lat, type: x.type, label: x.label} : x
         ))
       })
       created.push(m)
@@ -389,14 +413,14 @@ const TripDrawMap = forwardRef(function TripDrawMap(
     }
     if (s.activeTool === "polyline") {
       pushHistory()
-      const newVertex = {lng: e.lngLat.lng, lat: e.lngLat.lat, type: null}
+      const newVertex = {lng: e.lngLat.lng, lat: e.lngLat.lat, type: null, label: null}
       const curLen = s.verts.length
       setVerts(prev => {
         if (prev.length === 0) return [newVertex]
-        // إدراج قبل نقطة النهاية الثابتة: [ ...prev.slice(0,-1), newVertex, last ]
+        // Insert before the fixed end point: [ ...prev.slice(0,-1), newVertex, last ]
         return [...prev.slice(0, -1), newVertex, prev[prev.length - 1]]
       })
-      // حدد النقطة الجديدة مباشرة لتسهيل تغيير نوعها (قبل الأخيرة)
+      // Select the new point immediately to ease changing its type (the one before last)
       setSelVertex(curLen === 0 ? 0 : curLen - 1)
       setSelWaypoint(null)
       setShowTypeMenu(false)
@@ -443,7 +467,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
     }
     if (s.selVertex !== null) {
       const idx = s.selVertex
-      // لا نغير نوع نقطة النهاية الأخيرة - تبقى flag
+      // Don't change the type of the last endpoint vert - it stays a flag
       if (idx === s.verts.length - 1) return
       setVerts(prev => prev.map((v, i) => i === idx ? {...v, type: typeId} : v))
       setShowTypeMenu(false)
@@ -451,8 +475,23 @@ const TripDrawMap = forwardRef(function TripDrawMap(
     }
   }, [])
 
+  const handleSetLabel = useCallback((text) => {
+    const s = stateRef.current
+    const val = (text || "").trim() || null
+    if (s.selWaypoint) {
+      const id = s.selWaypoint
+      setWaypoints(prev => prev.map(w => w.id === id ? {...w, label: val} : w))
+    } else if (s.selVertex !== null) {
+      const idx = s.selVertex
+      setVerts(prev => prev.map((v, i) => i === idx ? {...v, label: val} : v))
+    }
+    setShowLabelInput(false)
+  }, [])
+
   useEffect(() => {
     const onKey = (e) => {
+      const t = e.target
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return
       if (e.key === "Delete" || e.key === "Backspace") handleDelete()
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
         e.preventDefault()
@@ -473,7 +512,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
     setMapReady(true)
     const s = stateRef.current
     const coords = composeRoute(s)
-    if (coords.length >= 2) {
+    if (s.startPoint && coords.length >= 2) {
       const bounds = new maplibregl.LngLatBounds()
       coords.forEach(c => bounds.extend([c.lng, c.lat]))
       if (!bounds.isEmpty()) {
@@ -501,11 +540,17 @@ const TripDrawMap = forwardRef(function TripDrawMap(
   const canUndo = history.length > 0
   const canDelete = selWaypoint !== null || selVertex !== null
 
+  const currentLabel = selWaypoint
+    ? ((waypoints.find(w => w.id === selWaypoint) || {}).label || "")
+    : selVertex !== null
+      ? ((verts[selVertex] || {}).label || "")
+      : ""
+
   return (
     <div className="tdm-shell">
       {mapStyle && (
         <Map
-          initialViewState={{longitude: 1, latitude: 35, zoom: 5.2, minZoom: 1.9, maxZoom: 20}}
+          initialViewState={{longitude: 1, latitude: 35, zoom: 1.9, minZoom: 1.9, maxZoom: 20}}
           mapStyle={mapStyle}
           mapLib={maplibregl}
           style={{width: "100%", height: "100%"}}
@@ -529,6 +574,9 @@ const TripDrawMap = forwardRef(function TripDrawMap(
       <TripDrawToolbar 
         activeTool={activeTool}
         setActiveTool={setActiveTool}
+        pointMode={pointMode}
+        setPointMode={setPointMode}
+        hasStart={!!startPoint}
         clearSelection={clearSelection}
         handleUndo={handleUndo}
         handleDelete={handleDelete}
@@ -539,6 +587,10 @@ const TripDrawMap = forwardRef(function TripDrawMap(
         setShowTypeMenu={setShowTypeMenu}
         handleChangeType={handleChangeType}
         showTypeMenu={showTypeMenu}
+        showLabelInput={showLabelInput}
+        setShowLabelInput={setShowLabelInput}
+        handleSetLabel={handleSetLabel}
+        currentLabel={currentLabel}
         WAYPOINT_TYPES={WAYPOINT_TYPES}
         Icon={Icon}
       />

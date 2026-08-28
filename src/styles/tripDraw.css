@@ -7,6 +7,7 @@
 }
 
 .td-wrap {
+  position: relative;
   display: flex;
   flex-direction: row;
   width: 100vw;
@@ -15,146 +16,100 @@
   background: var(--bg);
 }
 
-.td-sidebar {
-  position: relative;
-  width: 380px;
-  min-width: 380px;
-  height: 100%;
-  overflow-y: auto;
-  border-left: 1px solid var(--line);
-  background: var(--bg-panel);
-  color: var(--text);
-  padding: 24px;
-  box-sizing: border-box;
-  font-family: system-ui, sans-serif;
-  z-index: 20;
+/* Page title — floating, no background, contrasting color */
+.td-wm-title {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
 }
 
-.td-title {
-  margin-top: 0;
-  color: var(--accent);
-}
-
-.td-subtitle {
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
-.td-status {
+/* Floating cluster — top-left: Back + page title */
+.td-float-left {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 15;
   display: flex;
   align-items: center;
-  margin-bottom: 0;
-}
-
-.td-status-chip {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: bold;
-  background: var(--chip-bg);
-  color: var(--text-muted);
-}
-
-.td-status-published {
-  background: var(--accent-tint);
-  color: var(--accent);
-}
-
-.td-endpoints {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
   gap: 10px;
 }
 
-.td-endpoint {
+/* Floating cluster — top-right: Save + tour name */
+.td-float-right {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.td-float-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.td-float-name {
+  max-width: 220px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--bg-panel);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 12px;
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-float-save {
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--map-route-idle, #2f7d4a);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.td-float-save:hover {
+  filter: brightness(1.08);
+}
+
+.td-float-back {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--btn-icon-border);
+  background: var(--bg-panel);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.td-float-back:hover {
   background: var(--chip-bg);
 }
 
-.td-endpoint-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.td-endpoint-label {
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.td-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.td-dot-start {
-  background: var(--accent);
-}
-
-.td-dot-end {
-  background: var(--red);
-}
-
-.td-endpoint-btn {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--btn-icon-border);
-  background: transparent;
-  color: var(--text);
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.td-active-start {
-  border: 2px solid var(--accent);
-  background: var(--accent-tint);
-  color: var(--accent);
-}
-
-.td-active-end {
-  border: 2px solid var(--red);
-  background: var(--red-tint);
-  color: var(--red);
-}
-
-.td-save {
-  width: 100%;
-  padding: 12px;
-  margin-top: 16px;
-  border-radius: 8px;
-  border: none;
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.td-back {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--btn-icon-border);
-  background: transparent;
-  color: var(--text);
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.td-saved {
-  color: var(--accent);
-  font-size: 13px;
-  margin-top: 10px;
+.td-float-saved {
+  color: #ffffff;
+  font-size: 12px;
+  margin: 0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
 }
 
 .td-map {
@@ -163,7 +118,7 @@
   height: 100%;
 }
 
-/* ── TripDrawMap | محرر MapLibre ──────────────── */
+/* ── TripDrawMap | MapLibre editor ──────────────── */
 .tdm-shell {
   position: relative;
   width: 100%;
@@ -171,7 +126,7 @@
   overflow: hidden;
 }
 
-/* دبوس المحطة */
+/* Station pin */
 .td-pin {
   width: 34px;
   height: 34px;
@@ -189,7 +144,7 @@
   z-index: 5;
 }
 
-/* رأس المسار */
+/* Route vertex */
 .td-vtx {
   width: 15px;
   height: 15px;
@@ -211,7 +166,7 @@
   z-index: 5;
 }
 
-/* بداية / نهاية */
+/* Start / End */
 .td-endpoint-marker {
   width: 36px;
   height: 36px;
@@ -220,7 +175,7 @@
   pointer-events: auto;
 }
 
-/* شريط المسافة / رسائل الوضع */
+/* Distance bar / status messages */
 .td-dist {
   position: absolute;
   bottom: 20px;
@@ -235,7 +190,7 @@
   z-index: 10;
 }
 
-/* البداية/النهاية: قفل افتراضياً، تفتح فقط في وضع التغيير */
+/* Start/End: locked by default, unlocked only in change mode */
 .td-endpoint-locked {
   filter: saturate(0.75);
   cursor: default;
@@ -246,7 +201,7 @@
   cursor: move;
 }
 
-/* ── شريط الأدوات العائم (أعلى منتصف الخريطة) ── */
+/* ── Floating toolbar (top center of map) ── */
 .tdm-toolbar {
   position: absolute;
   top: 16px;
@@ -303,7 +258,7 @@
   margin: 0 2px;
 }
 
-/* قائمة تغيير نوع المحطة */
+/* Station type change menu */
 .tdm-type-wrap {
   position: relative;
 }

@@ -26,28 +26,27 @@ export function buildLevel_2(colors) {
       }
     },
 
-    // Wilayas Hover //
-    {
-      id: "wilayas-hover",
-      type: "fill",
-      source: "algeria",
-      "source-layer": "DZA",
+    // // Wilayas Hover //
+    // {
+    //   id: "wilayas-hover",
+    //   type: "fill",
+    //   source: "algeria",
+    //   "source-layer": "DZA",
 
-      minzoom: 5,
-      maxzoom: 9,
+    //   minzoom: 5,
+    //   maxzoom: 9,
 
-      paint: {
-        "fill-color": "#00000053",
-        "fill-opacity": [ "case",
-          [
-            "boolean",
-            ["feature-state", "hover"],
-            false
-          ],
-          0.5, 0
-        ]
-      }
-
-    },
+    //   paint: {
+    //     "fill-color": "#00000053",
+    //     "fill-opacity": [ "case",
+    //       [
+    //         "boolean",
+    //         ["feature-state", "hover"],
+    //         false
+    //       ],
+    //       0.5, 0
+    //     ]
+    //   }
+    // },
   ]
 }

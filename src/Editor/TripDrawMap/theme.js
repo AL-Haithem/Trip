@@ -8,6 +8,7 @@ export const WAYPOINT_COLORS = {
   attraction: "#f56d6d",
   forest: "#63c76a",
   reststop: "#b48cf2",
+  normal: "#0cff25",
 }
 
 export const ROUTE_LINE_PAINT = {

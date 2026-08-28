@@ -4,6 +4,7 @@ import {useParams, useNavigate} from "react-router"
 import TripDrawMap from "../Editor/TripDrawMap/TripDrawMap.jsx"
 import {getTour, saveTour} from "../data/tourStore.js"
 import {tripDraw as copy} from "../content/siteContent.js"
+import Icon from "../components/ui/Icon.jsx"
 import "../styles/tripDraw.css"
 
 function TripDraw() {
@@ -17,7 +18,7 @@ function TripDraw() {
   const [hasStart, setHasStart] = useState(false)
 
 
-  // بيانات التحميل الأولية للمحرر (تُقرأ مرة واحدة) //
+  // Initial editor load data (read once) //
   const [initialData, setInitialData] = useState(null)
 
   const editorRef = useRef(null)
@@ -36,6 +37,13 @@ function TripDraw() {
     })
     return () => { mounted = false }
   }, [id])
+
+  // عند فتح الصفحة بلا نقطة بداية، ادخل تلقائياً وضع رسم البداية
+  useEffect(() => {
+    if (initialData && !(initialData.start && initialData.start.features && initialData.start.features.length)) {
+      setPointMode("start")
+    }
+  }, [initialData])
 
   const handleSaveRoute = async () => {
     if (!tour) return
@@ -61,53 +69,37 @@ function TripDraw() {
   return (
     <div className="td-wrap">
 
-      <div className="td-sidebar">
-        <h2 className="td-title">{copy.editorTitle}</h2>
-        <p className="td-subtitle">{tour.title}</p>
-
-        <div className="td-status">
-          <span className={tour.published ? "td-status-chip td-status-published" : "td-status-chip"}>
-            {tour.published ? copy.published ?? "Published" : copy.draft ?? "Draft"}
-          </span>
-        </div>
-
-        <div className="td-endpoints">
-          <div className="td-endpoint">
-            <div className="td-endpoint-head">
-              <span className="td-dot td-dot-start" />
-              <span className="td-endpoint-label">{copy.startLabel}</span>
-            </div>
-            <button
-              onClick={() => setPointMode(pointMode === "start" ? null : "start")}
-              className={pointMode === "start" ? "td-endpoint-btn td-active-start" : "td-endpoint-btn"}
-            >
-              {pointMode === "start" ? copy.startClick : hasStart ? copy.startChange : copy.startAdd}
-            </button>
-          </div>
-        </div>
-
-        <button onClick={handleSaveRoute} className="td-save">
-          {saved ? copy.saved : copy.save}
-        </button>
-
-        <button onClick={() => navigate("/trips")} className="td-back">
-          {copy.back}
-        </button>
-
-        {saved && (
-          <p className="td-saved">{copy.savedMessage}</p>
-        )}
-      </div>
-
       <div className="td-map">
         <TripDrawMap
           ref={editorRef}
           initialRoute={initialData.route}
           initialStart={initialData.start}
           pointMode={pointMode}
+          setPointMode={setPointMode}
           onPlace={() => setPointMode(null)}
           onPointsChange={(s) => {setHasStart(s)}}
         />
+      </div>
+
+      <div className="td-float-left">
+        <div className="td-float-row">
+          <button onClick={() => navigate("/trips")} className="td-float-back" title={copy.back}>
+            <Icon name="arrow-left" />
+          </button>
+          <div className="td-wm-title">{copy.editorTitle}</div>
+        </div>
+      </div>
+
+      <div className="td-float-right">
+        <div className="td-float-row">
+          <button onClick={handleSaveRoute} className="td-float-save">
+            {saved ? copy.saved : copy.save}
+          </button>
+          <div className="td-float-name" title={tour.title}>{tour.title}</div>
+        </div>
+        {saved && (
+          <p className="td-float-saved">{copy.savedMessage}</p>
+        )}
       </div>
 
     </div>
