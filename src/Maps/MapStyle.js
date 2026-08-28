@@ -33,27 +33,29 @@ export function buildPMTilesStyle() {
       openfreemap: {
         type: 'vector',
         url: 'https://tiles.openfreemap.org/planet'
-      }
+      },
 
+      hillshadeDEM:{
+        type:"raster-dem",
+        tiles:[
+          "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
+        ],
+        tileSize:256,
+        encoding:"terrarium",
+        maxzoom:14
+      }
     },
 
     layers: [
 
-      // Background | Water //
       {
-        id: 'background',
-        type: 'background',
-
-        minzoom:0,
-        maxzoom:20,
-
-        paint: {
-          'background-color': colors.water
-        }
+        id:"background",
+        type:"background",
+        paint:{ "background-color":colors.water  }
       },
 
-      ...buildAllLayers(colors)
+      ...buildAllLayers(colors),
+    ],
 
-    ]
   }
 }

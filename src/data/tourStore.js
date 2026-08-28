@@ -1,5 +1,4 @@
 import {
-  getTours as apiGetTours,
   getTour as apiGetTour,
   saveTour as apiSaveTour,
   deleteTour as apiDeleteTour,

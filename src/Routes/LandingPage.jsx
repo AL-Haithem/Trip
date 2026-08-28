@@ -4,7 +4,7 @@ import Card from "../components/ui/Card.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Panel from "../components/ui/Panel.jsx"
 import Icon from "../components/ui/Icon.jsx"
-import {WAYPOINT_TYPES} from "../Editor/Tools/PointDrawer.jsx"
+import {WAYPOINT_TYPES} from "../content/waypointTypes.js"
 import {brand, landing} from "../content/siteContent.js"
 import "../styles/landing.css"
 

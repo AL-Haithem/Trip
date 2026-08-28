@@ -9,9 +9,7 @@ export function getMapColors() {
     bg: "#e8ceb7",
     water: "#a0b5bd",
     land: "#e8ceb7",
-
     landDeep: "#d9c1a8",
-
     landOutline: "rgb(0, 0, 0)",
 
     // النصوص | حبر بني داكن على الورق //

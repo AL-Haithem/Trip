@@ -22,6 +22,33 @@ export function buildLevel_1(colors) {
       }
     },
 
+      // Wilayas //
+    {
+      id: 'wilayas',
+      type: 'fill',
+      source: 'algeria',
+      'source-layer': 'DZA',
+      minzoom: 5,
+      maxzoom: 20,
+      paint: {'fill-color': colors.land}
+    },
+
+
+    {
+      id:"terrain-hillshade",
+      type:"hillshade",
+      source:"hillshadeDEM",
+      minzoom: 1.9,
+      maxzoom: 20,
+
+      paint:{
+        "hillshade-exaggeration":.25,
+        "hillshade-shadow-color":"#000000",
+        "hillshade-highlight-color":"#141413",
+        "hillshade-accent-color":"#0c0c0c"
+      }
+    },  
+
     // Country Labels //
     {
       id: 'country-labels',

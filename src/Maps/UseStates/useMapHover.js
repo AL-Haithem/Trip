@@ -19,17 +19,11 @@ export function useMapHover(){
     const zoom = map.getZoom()
 
     let layer
-    let source
-    let sourceLayer
 
     if(zoom < 5) {
       layer="countries"
-      source="world"
-      sourceLayer="world" 
     } else {
       layer="wilayas"
-      source="algeria"
-      sourceLayer="DZA"
     }
  
     const features = map.queryRenderedFeatures( event.point,{layers:[layer]})

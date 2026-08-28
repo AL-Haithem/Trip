@@ -3,17 +3,7 @@
 export function buildLevel_2(colors) {
   return [
 
-    // Wilayas //
-    {
-      id: 'wilayas',
-      type: 'fill',
-      source: 'algeria',
-      'source-layer': 'DZA',
-      minzoom: 5,
-      maxzoom: 20,
-      paint: {'fill-color': colors.land}
-    },
-
+  
     // Wilaya Borders //
     {
       id: 'wilaya-borders',

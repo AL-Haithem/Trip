@@ -160,9 +160,10 @@ function HomeMap() {
     longitude: 1,
     latitude: 35,
     zoom: minZoom,
-    pitch: 0,
     minZoom,
     maxZoom,
+    // pitch: 0,
+    // bearing: 0,
   }
 
   return (

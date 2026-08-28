@@ -16,7 +16,7 @@ export function buildLevel_3(colors) {
     //   source: 'openfreemap',
     //   'source-layer': 'landuse',
 
-    //   minzoom: 13,
+    //   minzoom: 14,
 
     //   paint: {
     //     'fill-color': colors.ofm.landuse,
@@ -34,7 +34,7 @@ export function buildLevel_3(colors) {
       source: 'openfreemap',
       'source-layer': 'place',
 
-      minzoom: 9.3,
+      minzoom: 9,
 
       filter: [
         'in',
@@ -48,9 +48,9 @@ export function buildLevel_3(colors) {
           'interpolate',
           ['linear'],
           ['zoom'],
-          9, 11,
-          14, 14,
-          18, 18
+          9, 15,
+          14, 19,
+          18, 22
         ],
         'text-anchor': 'center',
         'text-variable-anchor': ['center', 'left', 'right'],
@@ -60,7 +60,7 @@ export function buildLevel_3(colors) {
       paint: {
         'text-color': colors.label,
         'text-halo-color': colors.labelHalo,
-        'text-halo-width': 1.5
+        'text-halo-width': .2
       }
     },
     
@@ -72,7 +72,7 @@ export function buildLevel_3(colors) {
       source: 'openfreemap',
       'source-layer': 'building',
 
-      minzoom: 13,
+      minzoom: 15,
 
       paint: {
 
@@ -117,7 +117,9 @@ export function buildLevel_3(colors) {
         "text-halo-color": colors.labelHalo,
         "text-halo-width": 1.5
       }
-    }
+    },
+
+    
 
 
   ]

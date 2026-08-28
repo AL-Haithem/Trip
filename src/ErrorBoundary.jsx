@@ -29,6 +29,9 @@ class ErrorBoundary extends Component {
           <p className="eb-message">
             {String(this.state.error && this.state.error.message || this.state.error)}
           </p>
+          <pre style={{whiteSpace: "pre-wrap", fontSize: 11, color: "#999", maxWidth: 700}}>
+            {String(this.state.error && this.state.error.stack || "")}
+          </pre>
           <button onClick={this.handleReload} className="eb-reload">
             {copy.reload}
           </button>
