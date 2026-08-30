@@ -22,6 +22,7 @@ function TripPreview() {
   const [playing, setPlaying] = useState(true)
   const [busSpeed, setBusSpeed] = useState(1)
   const initialCameraRef = useRef(false)
+  const activeStepRef = useRef(null)
 
   useEffect(() => {
     let mounted = true
@@ -45,21 +46,47 @@ function TripPreview() {
     const vertTypes = routeFeature?.properties?.vertTypes || []
     const vertLabels = routeFeature?.properties?.vertLabels || []
 
+    let runningDistanceKm = 0
+
     const stops = coords.map((coord, index) => {
       const isStart = index === 0
       const isEnd = index === coords.length - 1
+      const previousCoord = index > 0 ? coords[index - 1] : null
+
+      if (previousCoord) {
+        const toRad = (value) => (value * Math.PI) / 180
+        const earthRadiusKm = 6371
+        const lat1 = toRad(previousCoord[1])
+        const lat2 = toRad(coord[1])
+        const deltaLat = toRad(coord[1] - previousCoord[1])
+        const deltaLng = toRad(coord[0] - previousCoord[0])
+
+        const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+          Math.cos(lat1) * Math.cos(lat2) *
+          Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2)
+
+        const distanceKm = 2 * earthRadiusKm * Math.asin(Math.sqrt(a))
+        runningDistanceKm += distanceKm
+      }
+
+      const rawType = isStart ? "start" : isEnd ? "end" : (vertTypes[index] || "normal")
+      const rawLabel = isStart
+        ? "Start Point"
+        : isEnd
+          ? "Final Destination"
+          : (vertLabels[index] || "")
+      const label = rawType === "normal" && !rawLabel ? null : (rawLabel || (rawType !== "normal" ? `${rawType} stop` : null))
+
       return {
         id: index,
         coords: coord,
-        label: isStart
-          ? "Start Point"
-          : isEnd
-            ? "Final Destination"
-            : (vertLabels[index] || (vertTypes[index] ? `${vertTypes[index]} stop` : `Stop ${index + 1}`)),
-        type: isStart ? "start" : isEnd ? "end" : (vertTypes[index] || "waypoint"),
+        label,
+        type: rawType,
         order: index + 1,
+        distanceKm: Number(runningDistanceKm.toFixed(1)),
         isDestination: isEnd,
         isStart,
+        hasLabel: Boolean(label && label.trim()),
       }
     })
 
@@ -99,18 +126,6 @@ function TripPreview() {
   }
   const interpolateAngle = (from, to, ratio) => normalizeAngle(from + shortestAngleDelta(from, to) * ratio)
 
-  const getPointBehind = (point, bearing, distanceMeters = 42) => {
-    const lat = point[1]
-    const metersPerLat = 111_320
-    const metersPerLng = 111_320 * Math.cos((lat * Math.PI) / 180)
-    const direction = (bearing + 180) * (Math.PI / 180)
-
-    const lngOffset = (Math.sin(direction) * distanceMeters) / metersPerLng
-    const latOffset = (Math.cos(direction) * distanceMeters) / metersPerLat
-
-    return [point[0] + lngOffset, point[1] + latOffset]
-  }
-
   const currentTravelPoint = routeData.coords.length > 1
     ? interpolatePoint(routeData.coords[segmentIndex], routeData.coords[segmentIndex + 1], segmentProgress)
     : routeData.coords[0]
@@ -137,11 +152,16 @@ function TripPreview() {
   const cameraBearing = routeData.coords.length > 2
     ? interpolateAngle(previousHeading, currentHeading, turnBlend)
     : currentHeading
+
   const cameraCenter = currentTravelPoint || startPoint || [0, 0]
 
   const speedOptions = [0.5, 1, 1.25, 1.5, 1.75, 2]
   const currentSpeedIndex = speedOptions.indexOf(busSpeed)
   const nextSpeed = speedOptions[(currentSpeedIndex + 1) % speedOptions.length]
+
+  const traveledDistanceKm = tour?.distanceKm
+    ? Number((tour.distanceKm * progress).toFixed(1))
+    : 0
 
   const handlePlayToggle = () => {
     setPlaying((value) => !value)
@@ -150,25 +170,12 @@ function TripPreview() {
   useEffect(() => {
     if (!routeData.coords.length || !mapRef.current || !currentTravelPoint) return
 
-    if (!initialCameraRef.current) {
-      mapRef.current.jumpTo({
-        center: cameraCenter,
-        zoom: 16,
-        pitch: 62,
-        bearing: cameraBearing,
-        animate: false,
-        essential: true,
-      })
-      initialCameraRef.current = true
-      return
-    }
-
-    mapRef.current.easeTo({
+    mapRef.current.jumpTo({
       center: cameraCenter,
       zoom: 16,
       pitch: 62,
       bearing: cameraBearing,
-      duration: 160,
+      animate: false,
       essential: true,
     })
   }, [cameraBearing, cameraCenter, currentTravelPoint, routeData.coords.length])
@@ -205,6 +212,15 @@ function TripPreview() {
       if (frameId) cancelAnimationFrame(frameId)
     }
   }, [busSpeed, playing, routeData.coords.length])
+
+  useEffect(() => {
+    if (!activeStepRef.current) return
+
+    activeStepRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    })
+  }, [currentIndex])
 
   if (!tour || !routeData.coords.length) {
     return <div className="rp-loading">Loading preview…</div>
@@ -276,14 +292,22 @@ function TripPreview() {
           <div className="rp-steps">
             {routeData.stops.map((stop, index) => {
               const isActive = index <= currentIndex
+              const shouldShowOnMobile = window.innerWidth <= 760
+                ? index >= Math.max(0, currentIndex - 1) && index <= Math.min(routeData.stops.length - 1, currentIndex + 1)
+                : true
               const typeMeta = WAYPOINT_TYPES.find((item) => item.id === stop.type) || WAYPOINT_TYPES[0]
               const isStart = index === 0
               const isEnd = index === routeData.stops.length - 1
               const labelIcon = isStart ? START_ICON : isEnd ? END_ICON : typeMeta?.icon || "location-dot"
               const labelClass = isStart ? "start" : isEnd ? "end" : ""
+              const stepCopy = stop.isStart ? "Start Point" : stop.isDestination ? "Final Destination" : (stop.label || "")
+
+              if (!shouldShowOnMobile) return null
+
               return (
                 <button
                   key={stop.id}
+                  ref={isActive && index === currentIndex ? activeStepRef : null}
                   className={`rp-step ${isActive ? "active" : ""}`}
                   type="button"
                   onClick={() => {
@@ -296,7 +320,10 @@ function TripPreview() {
                   <span className={`rp-step-icon ${labelClass}`} title={typeMeta?.label || "Stop"}>
                     <Icon name={labelIcon} />
                   </span>
-                  <span className="rp-step-copy">{stop.isStart ? "Start Point" : stop.isDestination ? "Final Destination" : stop.label}</span>
+                  <div className="rp-step-text">
+                    {stepCopy ? <span className="rp-step-copy">{stepCopy}</span> : null}
+                    <span className="rp-step-distance">{stop.distanceKm.toFixed(1)} km</span>
+                  </div>
                 </button>
               )
             })}
@@ -371,23 +398,30 @@ function TripPreview() {
               )
             })}
 
-            {currentTravelPoint && (
-              <Marker longitude={currentTravelPoint[0]} latitude={currentTravelPoint[1]} anchor="center">
-                <div className="rp-vehicle">🚌</div>
-              </Marker>
-            )}
           </Map>
 
-          {currentStop && currentStop.label && currentIndex > 0 && currentIndex < routeData.stops.length - 1 && (
+          {currentTravelPoint && (
+            <div className="rp-vehicle-overlay" aria-label="Bus position">
+              <div className="rp-vehicle">🚌</div>
+            </div>
+          )}
+
+          {currentStop && currentStop.hasLabel && currentIndex > 0 && currentIndex < routeData.stops.length - 1 && (
             <div className="rp-stop-label">
-              <span className="rp-stop-label-badge">Stop</span>
+              <div className="rp-stop-label-head">
+                <span className="rp-stop-label-badge">Stop {currentStop.order}</span>
+                <span className={`rp-stop-label-icon ${currentStop.isStart ? "start" : currentStop.isDestination ? "end" : ""}`}>
+                  <Icon name={currentStop.isStart ? START_ICON : currentStop.isDestination ? END_ICON : (WAYPOINT_TYPES.find((item) => item.id === currentStop.type)?.icon || "location-dot")} />
+                </span>
+              </div>
               <strong>{currentStop.label}</strong>
+              <small>{currentStop.isDestination ? "Final destination" : currentStop.isStart ? "Starting point" : (WAYPOINT_TYPES.find((item) => item.id === currentStop.type)?.label || "Route stop")}</small>
             </div>
           )}
 
           <div className="rp-map-badge">
             <span>{tour.title}</span>
-            <strong>{tour.distanceKm || 0} km</strong>
+            <strong>{traveledDistanceKm} km</strong>
           </div>
         </div>
       </div>

@@ -1,14 +1,55 @@
 const MOCK_API_URL = "/api/mock";
 const SESSION_KEY = "geo_session";
+const FALLBACK_KEY = "geo_mock_backup";
+
+async function readLocalMockFallback() {
+  try {
+    const raw = localStorage.getItem(FALLBACK_KEY);
+    if (raw) {
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.error("mockApi: failed to read local fallback", e);
+  }
+
+  try {
+    const res = await fetch("/TempFiles/mock-data.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("Fallback fetch failed");
+    const json = await res.json();
+    localStorage.setItem(FALLBACK_KEY, JSON.stringify(json));
+    return json;
+  } catch (e) {
+    console.error("mockApi: failed to fetch file fallback", e);
+    return { auth: { credentials: [], companies: [] }, tours: [] };
+  }
+}
+
+function writeLocalMockFallback(mock) {
+  try {
+    localStorage.setItem(FALLBACK_KEY, JSON.stringify(mock));
+    return true;
+  } catch (e) {
+    console.error("mockApi: failed to write local fallback", e);
+    return false;
+  }
+}
 
 async function loadMockFile() {
   try {
     const res = await fetch(MOCK_API_URL, {cache: "no-store"});
-    if (!res.ok) throw new Error("Failed to load mock data");
-    return await res.json();
+    const contentType = res.headers.get("content-type") || "";
+
+    if (!res.ok || !contentType.includes("application/json")) {
+      throw new Error("Mock API not returning JSON");
+    }
+
+    const json = await res.json();
+    writeLocalMockFallback(json);
+    return json;
   } catch (e) {
     console.error("mockApi: could not load", MOCK_API_URL, e);
-    return {auth: {credentials: [], companies: []}, tours: []};
+    const fallback = await readLocalMockFallback();
+    return fallback || {auth: {credentials: [], companies: []}, tours: []};
   }
 }
 
@@ -19,11 +60,16 @@ async function writeMockFile(mock) {
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(mock),
     });
-    if (!res.ok) throw new Error("Failed to write mock data");
+
+    if (!res.ok) {
+      throw new Error("Failed to write mock data");
+    }
+
+    writeLocalMockFallback(mock);
     return true;
   } catch (e) {
     console.error("mockApi: could not write mock file", e);
-    return false;
+    return writeLocalMockFallback(mock);
   }
 }
 
