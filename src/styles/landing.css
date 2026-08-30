@@ -1,39 +1,65 @@
-/* ── Landing page ─────────────────────────────── */
 .lp-page {
-  min-height: 100vh;
-  background: var(--bg);
+  background: var(--bg-panel-solid);
   color: var(--text);
-  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  font-family: inherit;
+  overflow-x: hidden;
 }
 
-/* HERO */
-.lp-hero-inner {
-  max-width: 920px;
-  margin: 0 auto;
+/* --- HERO SECTION --- */
+.hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  background: url("/TempFiles/hero_bg.jpg") center/cover no-repeat;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(20,20,20,0.9));
+  z-index: 1;
+}
+
+.lp-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  padding: 0 20px;
+  animation: lpHeroFadeIn 1.2s ease-out forwards;
 }
 
 .lp-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(12, 255, 37, 0.4);
-  background: rgba(12, 255, 37, 0.08);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--accent);
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 24px;
 }
 
 .lp-hero-title {
-  margin: 22px 0 0;
-  font-size: clamp(34px, 6vw, 58px);
-  line-height: 1.05;
-  font-weight: bold;
-  color: var(--text);
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 0 0 20px 0;
+  color: #fff;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
 .lp-hero-highlight {
@@ -41,134 +67,231 @@
 }
 
 .lp-hero-subtitle {
-  margin: 18px auto 0;
-  max-width: 620px;
-  font-size: 17px;
+  font-size: clamp(18px, 3vw, 22px);
+  color: rgba(255,255,255,0.8);
+  margin: 0 auto 40px;
+  max-width: 650px;
   line-height: 1.6;
-  color: var(--text-muted);
 }
 
 .lp-hero-actions {
-  margin-top: 34px;
   display: flex;
-  gap: 14px;
+  gap: 16px;
   justify-content: center;
-  flex-wrap: wrap;
 }
 
-/* SECTIONS */
+@keyframes lpHeroFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- GENERAL SECTIONS --- */
 .lp-section {
-  max-width: 1100px;
+  padding: 100px 20px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 80px 24px;
-}
-
-.lp-section-alt {
-  background: var(--bg-panel-solid);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
 
 .lp-eyebrow {
   text-align: center;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
 }
 
 .lp-section-title {
-  margin: 10px 0 0;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
   text-align: center;
-  font-size: 34px;
-  font-weight: bold;
+  margin: 0 0 60px 0;
   color: var(--text);
 }
 
 .lp-grid {
   display: grid;
-  gap: 18px;
-  margin-top: 40px;
+  gap: 30px;
 }
 
-.lp-grid-sm {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+.lp-grid-sm { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.lp-grid-md { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+
+/* --- SHOWCASE GALLERY (each tour image shown once) --- */
+.lp-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.lp-grid-md {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+.lp-showcase-card {
+  position: relative;
+  height: 320px;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: lpCardIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.lp-showcase-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+}
+
+.lp-showcase-img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s ease;
+}
+
+.lp-showcase-card:hover .lp-showcase-img {
+  transform: scale(1.06);
+}
+
+.lp-showcase-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
 }
 
 .lp-card {
-  padding: 22px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: lpCardIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.lp-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--accent);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+@keyframes lpCardIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .lp-card-icon {
-  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  background: rgba(237, 210, 191, 0.1);
+  color: var(--accent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 
 .lp-card-title {
-  margin: 12px 0 6px;
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
   color: var(--text);
 }
 
 .lp-card-text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 15px;
   color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
 }
 
-/* WAYPOINT LEGEND */
+/* --- WAYPOINT LEGEND --- */
 .lp-waypoint-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
   justify-content: center;
+  gap: 16px;
   margin-top: 40px;
 }
 
+.lp-waypoint {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  padding: 10px 20px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.lp-waypoint:hover {
+  border-color: var(--accent);
+  background: rgba(237, 210, 191, 0.1);
+  transform: scale(1.05);
+}
+
 .lp-waypoint-emoji {
-  font-size: 18px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
 }
 
-/* CTA */
+/* --- FINAL CTA --- */
 .lp-cta-section {
-  padding: 0 24px 100px;
-}
-
-.lp-cta {
-  max-width: 920px;
-  margin: 0 auto;
-  border-radius: 20px;
-  border: 1px solid rgba(12, 255, 37, 0.35);
-  background: linear-gradient(135deg, rgba(12, 255, 37, 0.10), rgba(12, 255, 37, 0.02));
-  padding: 48px 32px;
+  padding: 120px 20px;
   text-align: center;
 }
 
+.lp-cta {
+  max-width: 800px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, var(--bg-panel), rgba(0,0,0,0.6));
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 60px 40px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+}
+
 .lp-cta-title {
-  margin: 0;
-  font-size: 30px;
-  font-weight: bold;
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
   color: var(--text);
 }
 
 .lp-cta-text {
-  margin: 12px auto 28px;
-  max-width: 540px;
-  font-size: 15px;
+  font-size: 18px;
   color: var(--text-muted);
+  margin-bottom: 32px;
+  line-height: 1.6;
 }
 
-/* FOOTER */
+/* --- FOOTER --- */
 .lp-footer {
-  border-top: 1px solid var(--line);
-  padding: 28px 24px;
+  padding: 40px 20px;
   text-align: center;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
   color: var(--text-muted);
-  font-size: 13px;
+  background: rgba(0,0,0,0.2);
 }

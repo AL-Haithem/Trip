@@ -7,7 +7,7 @@ export function useMapHover(){
   const [tooltip, setTooltip] = useState(null)
 
   function handleZoom(map) {
-    if (map.getZoom() >= 5) {
+    if (map.getZoom() >= 9) {
       clearHover(map)
       setTooltip(null)
       map.getCanvas().style.cursor = ""
@@ -64,7 +64,7 @@ export function useMapHover(){
       }
 
       const name = feature.properties?.ISO_3_coun === "XXX" ? "Not Available Yet": feature.properties?.English_Na
-      setTooltip({ x: event.point.x, y: event.point.y, name})
+      if (zoom < 9) setTooltip({ x: event.point.x, y: event.point.y, name})
     } else {  
       if (hoveredWilaya.current !== id) {
 
@@ -84,7 +84,7 @@ export function useMapHover(){
         hoveredWilaya.current = id
       }
       
-      setTooltip({
+      if (zoom < 9) setTooltip({
         x:event.point.x,
         y:event.point.y,
         name:feature.properties.name

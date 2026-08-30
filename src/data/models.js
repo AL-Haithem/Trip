@@ -20,6 +20,7 @@ export function createEmptyTour() {
     includedServices: [],
     notIncludedServices: [],
     route: null,
+    image: null,
     distanceKm: 0,
     published: false,
     createdAt: Date.now(),

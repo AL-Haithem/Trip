@@ -54,8 +54,8 @@ function LandingPage() {
         {sectionEyebrow(landing.problems)}
         <h2 className="lp-section-title">{landing.problems.title}</h2>
         <div className="lp-grid lp-grid-sm">
-          {landing.problems.items.map((p) => (
-            <Card key={p.title} className="lp-card">
+          {landing.problems.items.map((p, idx) => (
+            <Card key={p.title} className="lp-card" style={{animationDelay: `${idx * 0.1}s`}}>
               <div className="lp-card-icon"><Icon name={p.icon} /></div>
               <h3 className="lp-card-title">{p.title}</h3>
               <p className="lp-card-text">{p.text}</p>
@@ -65,17 +65,33 @@ function LandingPage() {
       </section>
 
       {/* SOLUTION */}
-      <section className="lp-section lp-section-alt">
+      <section className="lp-section">
         {sectionEyebrow(landing.solutions)}
         <h2 className="lp-section-title">{landing.solutions.title}</h2>
         <div className="lp-grid lp-grid-md">
-          {landing.solutions.items.map((s) => (
-            <Card key={s.title} className="lp-card">
+          {landing.solutions.items.map((s, idx) => (
+            <Card key={s.title} className="lp-card" style={{animationDelay: `${idx * 0.1}s`}}>
               <div className="lp-card-icon"><Icon name={s.icon} /></div>
               <h3 className="lp-card-title">{s.title}</h3>
               <p className="lp-card-text">{s.text}</p>
             </Card>
           ))}
+        </div>
+      </section>
+
+      {/* SHOWCASE — each tour image shown exactly once, no repeats */}
+      <section className="lp-section">
+        <div className="lp-eyebrow">Inspiration</div>
+        <h2 className="lp-section-title">Where your trips can take you</h2>
+        <div className="lp-showcase">
+          <div className="lp-showcase-card">
+            <div className="lp-showcase-img" style={{backgroundImage: `url("/TempFiles/tour_1.jpg")`}} />
+            <div className="lp-showcase-caption">Forest mountain trail</div>
+          </div>
+          <div className="lp-showcase-card">
+            <div className="lp-showcase-img" style={{backgroundImage: `url("/TempFiles/tour_2.jpg")`}} />
+            <div className="lp-showcase-caption">Crystal coast resort</div>
+          </div>
         </div>
       </section>
 

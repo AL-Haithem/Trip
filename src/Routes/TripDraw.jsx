@@ -38,7 +38,7 @@ function TripDraw() {
     return () => { mounted = false }
   }, [id])
 
-  // عند فتح الصفحة بلا نقطة بداية، ادخل تلقائياً وضع رسم البداية
+  // When opening the page with no starting point, automatically enter start-drawing mode
   useEffect(() => {
     if (initialData && !(initialData.start && initialData.start.features && initialData.start.features.length)) {
       setPointMode("start")

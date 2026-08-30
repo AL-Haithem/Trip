@@ -73,7 +73,7 @@ function TripForm() {
               key={service}
               green={tour.includedServices.includes(service)}
               onClick={() => toggleService(service, "includedServices")}
-              className="tf-chip"
+              className={`tf-chip ${tour.includedServices.includes(service) ? "tf-chip-active" : ""}`}
             >
               {service}
             </Chip>
@@ -88,7 +88,7 @@ function TripForm() {
               <Chip
                 key={service}
                 onClick={() => toggleService(service, "notIncludedServices")}
-                className={active ? "tf-chip tf-chip-excluded" : "tf-chip"}
+                className={`tf-chip ${active ? "tf-chip-excluded" : ""}`}
               >
                 {service}
               </Chip>

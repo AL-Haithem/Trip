@@ -27,15 +27,17 @@
     {
       "id": "tour_1786900512351_wyrfb1",
       "title": "Demo Tour",
-      "description": "dasdasdas",
+      "description": "Demoaskd owda ;dpasp samsl owoeosa, ;asodsoa asdjasdi spaldijglfs ",
       "companyId": "company_demo",
-      "price": 3434,
-      "seats": 3434,
+      "price": 2000,
+      "seats": 24,
       "includedServices": [
-        "Transport"
+        "Transport",
+        "Lodging",
+        "Playground"
       ],
       "notIncludedServices": [
-        "Transport"
+        "Playground"
       ],
       "route": {
         "type": "FeatureCollection",
@@ -46,48 +48,44 @@
               "type": "LineString",
               "coordinates": [
                 [
-                  -1.1309168118583273,
-                  34.53256114643898
+                  -0.649699595144483,
+                  35.70232733593876
                 ],
                 [
-                  0.054554698319662975,
-                  34.70375853500475
+                  -0.5768148699228561,
+                  35.715213348853766
                 ],
                 [
-                  0.05604761438431183,
-                  33.76774980444728
+                  -0.5293130606096952,
+                  35.765703299783226
                 ],
                 [
-                  0.6055024174459049,
-                  33.23771646066413
+                  -0.47270929136072937,
+                  35.80894498696169
                 ],
                 [
-                  1.8168995660719247,
-                  33.698138155010795
+                  -0.3769763943280111,
+                  35.844533269893546
                 ],
                 [
-                  1.028416214894463,
-                  34.3575398297923
+                  -0.2612435275342193,
+                  35.797780081097414
                 ],
                 [
-                  1.6448668349052298,
-                  35.08221407783759
+                  -0.09261874410054816,
+                  35.77712727248428
                 ],
                 [
-                  1.9220266808684414,
-                  35.88419656353521
+                  0.07844404862126453,
+                  35.89523223555186
                 ],
                 [
-                  2.0108985756120035,
-                  36.53637847203912
+                  0.15218144960533664,
+                  36.04643214176423
                 ],
                 [
-                  1.019998567213321,
-                  35.93420592867025
-                ],
-                [
-                  0.229228685739173,
-                  36.06571308016939
+                  0.368877423878331,
+                  36.18676887941014
                 ]
               ]
             },
@@ -102,16 +100,14 @@
                 "forest",
                 "camp",
                 "beach",
-                null,
                 null
               ],
               "vertLabels": [
-                null,
+                "Breakfast",
                 "View",
                 null,
                 "Stoping for eat",
                 "Camping 2 hours",
-                null,
                 null,
                 null,
                 null,
@@ -121,7 +117,7 @@
           }
         ]
       },
-      "distanceKm": 966.6,
+      "distanceKm": 120.6,
       "startPoint": {
         "type": "FeatureCollection",
         "features": [
@@ -130,8 +126,107 @@
             "geometry": {
               "type": "Point",
               "coordinates": [
-                -1.1309168118583273,
-                34.53256114643898
+                -0.649699595144483,
+                35.70232733593876
+              ]
+            },
+            "properties": {
+              "kind": "endpoint"
+            }
+          }
+        ]
+      },
+      "published": true
+    },
+    {
+      "id": "tour_1787966270485_ynxlpz",
+      "title": "dasd",
+      "description": "asdasd",
+      "companyId": "company_demo",
+      "price": 44,
+      "seats": 24242,
+      "includedServices": [],
+      "notIncludedServices": [],
+      "route": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [
+                  3.7538394979896452,
+                  26.27761058894083
+                ],
+                [
+                  5.714657046254388,
+                  24.410820870512993
+                ],
+                [
+                  1.6253957997912494,
+                  23.588498922521936
+                ],
+                [
+                  -0.5349686323015419,
+                  25.378953340783085
+                ],
+                [
+                  -0.44495344763140565,
+                  26.85681274415471
+                ],
+                [
+                  1.976584790150099,
+                  27.130975790361234
+                ],
+                [
+                  5.470330116433445,
+                  28.417456385017545
+                ],
+                [
+                  2.1048048148390137,
+                  25.74021619586628
+                ]
+              ]
+            },
+            "properties": {
+              "routePath": true,
+              "vertTypes": [
+                null,
+                null,
+                null,
+                null,
+                "beach",
+                null,
+                null
+              ],
+              "vertLabels": [
+                null,
+                null,
+                null,
+                null,
+                "dasdas",
+                null,
+                null
+              ]
+            }
+          }
+        ]
+      },
+      "image": null,
+      "distanceKm": 2232.7,
+      "published": false,
+      "createdAt": 1787966270485,
+      "startPoint": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                3.7538394979896452,
+                26.27761058894083
               ]
             },
             "properties": {
