@@ -10,6 +10,7 @@ const HomePage = lazy(() => import('./Routes/HomePage.jsx'))
 const TripsList = lazy(() => import('./Routes/TripsList.jsx'))
 const TripForm = lazy(() => import('./Routes/TripForm.jsx'))
 const TripDraw = lazy(() => import('./Routes/TripDraw.jsx'))
+const BookingPage = lazy(() => import('./Routes/BookingPage.jsx'))
 const TripPreview = lazy(() => import('./Routes/TripPreview.jsx'))
 const Auth = lazy(() => import('./Routes/Auth.jsx'))
 
@@ -41,6 +42,7 @@ function App() {
             <Route path="/trips/draw/:id" element={<RequireCompany><TripDraw /></RequireCompany>} />
             <Route path="/Preview/:id" element={<TripPreview />} />
             <Route path="/Preview:id" element={<TripPreview />} />
+            <Route path="/booking/:id" element={<BookingPage />} />
             <Route path="/login" element={<Auth />} />
             <Route path="/signup" element={<Auth />} />
             <Route path="*" element={<NotFound />} />

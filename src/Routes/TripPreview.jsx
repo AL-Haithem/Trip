@@ -98,6 +98,7 @@ function TripPreview() {
   const currentIndex = Math.min(routeData.stops.length - 1, Math.max(0, Math.floor(progress * routeLength)))
   const segmentIndex = Math.min(routeData.coords.length - 2, Math.max(0, Math.floor(progress * routeLength)))
   const segmentProgress = routeData.coords.length > 1 ? (progress * routeLength) - segmentIndex : 0
+  const departureSchedule = (tour.departureSchedule || []).filter((day) => day && day.date)
 
   const interpolatePoint = (from, to, ratio) => [
     from[0] + (to[0] - from[0]) * ratio,
@@ -254,12 +255,42 @@ function TripPreview() {
 
         <div className="rp-header-right">
           <span className="rp-trip-name">{tour.title}</span>
-          <button className="rp-save-btn" type="button">Reservation</button>
+          <button
+            className="rp-save-btn rp-booking-btn"
+            type="button"
+            onClick={() => navigate(`/booking/${tour.id}`)}
+          >
+            Book Now
+          </button>
         </div>
       </header>
 
       <div className="rp-main-layout">
         <aside className="rp-timeline">
+          <div className="rp-schedule-panel">
+            <div className="rp-schedule-header">
+              <span className="rp-kicker">Departure schedule</span>
+              <h2>Available launch times</h2>
+            </div>
+
+            {departureSchedule.length ? (
+              departureSchedule.map((day) => (
+                <div key={day.id || day.date} className="rp-schedule-day">
+                  <strong>{new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</strong>
+                  <div className="rp-schedule-times">
+                    {(day.times || []).filter((slot) => slot && slot.time).map((slot) => (
+                      <span key={slot.id || `${day.date}-${slot.time}`} className="rp-schedule-chip">
+                        {slot.time} · {Number(slot.seatsAvailable || 0)} seats
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="rp-schedule-empty">No departure schedule has been added for this trip yet.</p>
+            )}
+          </div>
+
           <div className="rp-timeline-header">
             <div>
               <span className="rp-kicker">Route Order</span>

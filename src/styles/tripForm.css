@@ -120,6 +120,72 @@
   border-color: rgba(255, 76, 76, 0.3) !important;
 }
 
+.tf-schedule-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 10px 0 28px;
+}
+
+.tf-schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.tf-schedule-day {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tf-schedule-row,
+.tf-time-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.tf-time-row {
+  grid-template-columns: 1fr 120px 120px auto;
+}
+
+.tf-add-btn,
+.tf-remove-btn {
+  border: 1px solid var(--line);
+  background: rgba(237, 210, 191, 0.08);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tf-add-btn {
+  color: var(--accent);
+}
+
+.tf-add-btn-inline {
+  width: fit-content;
+}
+
+.tf-remove-btn {
+  color: #ffb4b4;
+}
+
+.tf-add-btn:hover,
+.tf-remove-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
 /* Submit Action */
 .tf-submit {
   margin-top: 20px;

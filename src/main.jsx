@@ -3,6 +3,7 @@ import "./styles/index.css"
 import "./styles/theme.css"
 import "./styles/components.css"
 import "./styles/maps.css"
+import "./styles/booking.css"
 import App from "./App.jsx"
 
 const redirect = sessionStorage.getItem("redirect")

@@ -22,6 +22,7 @@ export function createEmptyTour() {
     route: null,
     image: null,
     distanceKm: 0,
+    departureSchedule: [],
     published: false,
     createdAt: Date.now(),
   };
