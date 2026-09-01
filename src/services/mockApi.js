@@ -197,6 +197,19 @@ export async function deleteTour(id) {
 export async function setPublished(id, published) {
   const tour = await getTour(id);
   if (!tour) return null;
+  if (published) {
+    const hasStart = Boolean(tour.startPoint && tour.startPoint.features && tour.startPoint.features.length);
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const hasFutureSchedule = (tour.departureSchedule || []).some(
+      (day) => day && day.date && day.date >= todayStr && (day.times || []).length
+    );
+    if (!hasStart || !hasFutureSchedule) {
+      const err = new Error("Trip must have a starting point and a valid future departure date before publishing");
+      err.code = "PUBLISH_INVALID";
+      throw err;
+    }
+  }
   tour.published = published;
   return saveTour(tour);
 }

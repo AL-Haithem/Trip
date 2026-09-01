@@ -40,6 +40,28 @@
   text-align: center;
 }
 
+.tf-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tf-back-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(237, 210, 191, 0.08);
+}
+
 /* Field Styling (from Input.jsx) */
 .tf-inner .field {
   display: flex;
@@ -156,6 +178,19 @@
   grid-template-columns: 1fr 120px 120px auto;
 }
 
+.tf-time-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tf-time-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .tf-add-btn,
 .tf-remove-btn {
   border: 1px solid var(--line);
@@ -201,6 +236,31 @@
   font-size: 14px;
   margin-top: 15px;
   animation: tfSavedFade 0.5s ease;
+}
+
+@media (max-width: 600px) {
+  .tf-page {
+    padding: 20px 10px;
+    align-items: flex-start;
+  }
+
+  .tf-inner {
+    padding: 24px 16px;
+  }
+
+  .tf-time-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tf-time-row .input {
+    min-width: 0;
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  .tf-time-actions {
+    flex-wrap: nowrap;
+  }
 }
 
 @keyframes tfSavedFade {

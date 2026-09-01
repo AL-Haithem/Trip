@@ -2,6 +2,7 @@ import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 
 import {getTours, getSession} from "../services/mockApi.js"
+import {hasStartPoint, findPastSlot} from "../data/models.js"
 import {deleteTour, setPublished} from "../data/tourStore.js"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
@@ -37,6 +38,22 @@ function TripsList() {
 
   const handleTogglePublish = async (tour) => {
     const next = !tour.published;
+    if (next) {
+      if (!hasStartPoint(tour)) {
+        alert("You must draw a starting point for this trip before publishing. Use the Draw button to set it.");
+        return;
+      }
+      const pastDay = findPastSlot(tour.departureSchedule);
+      if (pastDay) {
+        alert(`Cannot publish: the departure on ${pastDay.date} has already passed. Edit the trip and choose a future date.`);
+        return;
+      }
+      const schedule = (tour.departureSchedule || []).filter((day) => day && day.date);
+      if (!schedule.length) {
+        alert("Cannot publish: add at least one valid departure date and time.");
+        return;
+      }
+    }
     await setPublished(tour.id, next);
     setTours(prev => prev.map(t => t.id === tour.id ? {...t, published: next} : t));
   };
@@ -50,14 +67,16 @@ function TripsList() {
     <div className="tl-page">
       <div className="tl-head">
         <div style={{display: "flex", flexDirection: "column"}}>
-          <h1 className="tl-title">{copy.title}</h1>
+          <h1 className="tl-title"><Icon name="route" /> {copy.title}</h1>
           {sessionCompany && (
             <div className="tl-managed">
-              {copy.managedBy(sessionCompany.name)}
+              <Icon name="building" /> {copy.managedBy(sessionCompany.name)}
             </div>
           )}
         </div>
-        <Button variant="primary" onClick={() => navigate("/trips/create")}>{copy.createButton}</Button>
+        <Button variant="primary" onClick={() => navigate("/trips/create")}>
+          <Icon name="plus" /> {copy.createButton}
+        </Button>
       </div>
 
       {loading ? (
@@ -81,7 +100,7 @@ function TripsList() {
                       <rect width="400" height="200" fill="url(#g)"/>
                       <circle cx="70" cy="68" r="18" fill="rgba(255,255,255,0.18)"/>
                       <path d="M42 146 C 120 80, 160 64, 214 96 S 318 120, 360 66" stroke="rgba(255,255,255,0.72)" stroke-width="6" fill="none" stroke-linecap="round"/>
-                      <text x="200" y="166" text-anchor="middle" fill="white" font-size="16" font-family="Arial, sans-serif">${(tour.title || "No image").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</text>
+                      <text x="200" y="166" text-anchor="middle" fill="white" font-size="16" font-family="Quicksand, sans-serif">${(tour.title || "No image").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</text>
                     </svg>
                   `)}`}
                   className="tl-card-img" 
@@ -117,16 +136,22 @@ function TripsList() {
                 </div>
 
                 <div className="tl-card-actions">
-                  <Button variant="info" size="sm" onClick={() => navigate(`/trips/edit/${tour.id}`)}>{copy.edit}</Button>
-                  <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour.id}`)}>{copy.draw}</Button>
+                  <Button variant="info" size="sm" onClick={() => navigate(`/trips/edit/${tour.id}`)}>
+                    <Icon name="pencil" /> {copy.edit}
+                  </Button>
+                  <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour.id}`)}>
+                    <Icon name="map-location-dot" /> {copy.draw}
+                  </Button>
                   <Button
                     variant={tour.published ? "warning" : "primary"}
                     size="sm"
                     onClick={() => handleTogglePublish(tour)}
                   >
-                    {tour.published ? copy.unpublish : copy.publish}
+                    <Icon name={tour.published ? "eye-slash" : "eye"} /> {tour.published ? copy.unpublish : copy.publish}
                   </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(tour.id)}>{copy.delete}</Button>
+                  <Button variant="danger" size="sm" onClick={() => handleDelete(tour.id)}>
+                    <Icon name="trash" /> {copy.delete}
+                  </Button>
                 </div>
               </div>
             </div>

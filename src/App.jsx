@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router";
 import { Suspense, lazy } from "react";
 
 import NotFound from './NotFound.jsx'
@@ -20,6 +20,17 @@ function RequireCompany({children}) {
   return children
 }
 
+function LegacyUrlGuard({children}) {
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+
+  if (params.has("view") || params.has("font")) {
+    return <NotFound />
+  }
+
+  return children
+}
+
 function RouteFallback() {
   return (
     <div className="route-loading">
@@ -33,20 +44,27 @@ function App() {
     <BrowserRouter>
       <ErrorBoundary>
         <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/map" element={<HomePage />} />
-            <Route path="/trips" element={<TripsList />} />
-            <Route path="/trips/create" element={<RequireCompany><TripForm /></RequireCompany>} />
-            <Route path="/trips/edit/:id" element={<RequireCompany><TripForm /></RequireCompany>} />
-            <Route path="/trips/draw/:id" element={<RequireCompany><TripDraw /></RequireCompany>} />
-            <Route path="/Preview/:id" element={<TripPreview />} />
-            <Route path="/Preview:id" element={<TripPreview />} />
-            <Route path="/booking/:id" element={<BookingPage />} />
-            <Route path="/login" element={<Auth />} />
-            <Route path="/signup" element={<Auth />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <LegacyUrlGuard>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/map" element={<HomePage />} />
+              <Route path="/trips" element={<TripsList />} />
+              <Route path="/trips/create" element={<RequireCompany><TripForm /></RequireCompany>} />
+              <Route path="/create" element={<RequireCompany><TripForm /></RequireCompany>} />
+              <Route path="/trips/edit/:id" element={<RequireCompany><TripForm /></RequireCompany>} />
+              <Route path="/trips/edit:id" element={<RequireCompany><TripForm /></RequireCompany>} />
+              <Route path="/edit/:id" element={<RequireCompany><TripForm /></RequireCompany>} />
+              <Route path="/edit:id" element={<RequireCompany><TripForm /></RequireCompany>} />
+              <Route path="/trips/draw/:id" element={<RequireCompany><TripDraw /></RequireCompany>} />
+              <Route path="/Preview/:id" element={<TripPreview />} />
+              <Route path="/Preview:id" element={<TripPreview />} />
+              <Route path="/booking/:id" element={<BookingPage />} />
+              <Route path="/login" element={<Auth />} />
+              <Route path="/register" element={<Auth />} />
+              <Route path="/signup" element={<Auth />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </LegacyUrlGuard>
         </Suspense>
       </ErrorBoundary>
     </BrowserRouter>

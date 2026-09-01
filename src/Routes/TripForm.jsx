@@ -1,12 +1,13 @@
 import {useState, useEffect} from "react"
 import {useParams, useNavigate} from "react-router"
 
-import {createEmptyTour, DEFAULT_SERVICES} from "../data/models.js"
+import {createEmptyTour, DEFAULT_SERVICES, findPastSlot, todayStr} from "../data/models.js"
 import {saveTour, getTour} from "../data/tourStore.js"
 import {getSession} from "../services/mockApi.js"
 import {Input, TextArea} from "../components/ui/Input.jsx"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
+import Icon from "../components/ui/Icon.jsx"
 import {tripForm as copy} from "../content/siteContent.js"
 import "../styles/tripForm.css"
 
@@ -141,6 +142,12 @@ function TripForm() {
       return
     }
 
+    const pastDay = findPastSlot(schedule)
+    if (pastDay) {
+      alert(`Departure on ${pastDay.date} has already passed. Please choose a future date and time.`)
+      return
+    }
+
     const allSlots = schedule.flatMap((day) => day.times || [])
     const maxSeats = allSlots.reduce((max, slot) => Math.max(max, Number(slot.seatsAvailable || 0)), 0)
     const maxPrice = allSlots.reduce((max, slot) => Math.max(max, Number(slot.price || 0)), 0)
@@ -160,15 +167,18 @@ function TripForm() {
   return (
     <div className="tf-page">
       <div className="tf-inner">
-        <h1 className="tf-title">{isEdit ? copy.editTitle : copy.createTitle}</h1>
+        <button type="button" className="tf-back-btn" onClick={() => navigate("/trips")}>
+          <Icon name="arrow-left" /> Back to trips
+        </button>
+        <h1 className="tf-title"><Icon name={isEdit ? "pen-to-square" : "plus-circle"} /> {isEdit ? copy.editTitle : copy.createTitle}</h1>
 
         <Input label={copy.titleLabel} value={tour.title} onChange={(e) => updateField("title", e.target.value)} placeholder={copy.titlePlaceholder} />
         <TextArea label={copy.descriptionLabel} value={tour.description} onChange={(e) => updateField("description", e.target.value)} placeholder={copy.descriptionPlaceholder} />
 
         <div className="tf-schedule-block">
           <div className="tf-schedule-header">
-            <label className="tf-label">Departure dates & times</label>
-            <button type="button" className="tf-add-btn" onClick={addDepartureDay}>+ Add day</button>
+            <label className="tf-label"><Icon name="calendar-days" /> Departure dates & times</label>
+            <button type="button" className="tf-add-btn" onClick={addDepartureDay}><Icon name="plus" /> Add day</button>
           </div>
 
           {(tour.departureSchedule || []).map((day, dayIndex) => (
@@ -176,42 +186,52 @@ function TripForm() {
               <div className="tf-schedule-row">
                 <input
                   type="date"
+                  min={todayStr()}
                   className="input"
                   value={day.date || ""}
                   onChange={(e) => updateDepartureDay(dayIndex, "date", e.target.value)}
                 />
-                <button type="button" className="tf-remove-btn" onClick={() => removeDepartureDay(dayIndex)}>Remove</button>
+                <button type="button" className="tf-remove-btn" onClick={() => removeDepartureDay(dayIndex)}><Icon name="trash" /> Remove</button>
               </div>
 
               {(day.times || []).map((slot, timeIndex) => (
-                <div key={slot.id || `slot_${dayIndex}_${timeIndex}`} className="tf-time-row">
-                  <input
-                    type="time"
-                    className="input"
-                    value={slot.time || "09:00"}
-                    onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "time", e.target.value)}
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    className="input"
-                    value={slot.seatsAvailable ?? 0}
-                    placeholder="Seats"
-                    onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "seatsAvailable", e.target.value)}
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    className="input"
-                    value={slot.price ?? 0}
-                    placeholder="Price"
-                    onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "price", e.target.value)}
-                  />
-                  <button type="button" className="tf-remove-btn" onClick={() => removeDepartureTime(dayIndex, timeIndex)}>Delete</button>
+                <div key={slot.id || `slot_${dayIndex}_${timeIndex}`} className="tf-time-entry">
+                  <div className="tf-time-row">
+                    <input
+                      type="time"
+                      className="input"
+                      value={slot.time || "09:00"}
+                      onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "time", e.target.value)}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      className="input"
+                      value={slot.seatsAvailable ?? 0}
+                      placeholder="Seats"
+                      onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "seatsAvailable", e.target.value)}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      className="input"
+                      value={slot.price ?? 0}
+                      placeholder="Price"
+                      onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "price", e.target.value)}
+                    />
+                  </div>
+                  <div className="tf-time-actions">
+                    <button type="button" className="tf-remove-btn" onClick={() => removeDepartureTime(dayIndex, timeIndex)}><Icon name="xmark" /> Delete</button>
+                    {timeIndex === (day.times || []).length - 1 && (
+                      <button type="button" className="tf-add-btn tf-add-btn-inline" onClick={() => addDepartureTime(dayIndex)}><Icon name="clock" /> Add time</button>
+                    )}
+                  </div>
                 </div>
               ))}
 
-              <button type="button" className="tf-add-btn tf-add-btn-inline" onClick={() => addDepartureTime(dayIndex)}>+ Add time</button>
+              {!(day.times || []).length && (
+                <button type="button" className="tf-add-btn tf-add-btn-inline" onClick={() => addDepartureTime(dayIndex)}><Icon name="clock" /> Add time</button>
+              )}
             </div>
           ))}
         </div>
@@ -247,7 +267,7 @@ function TripForm() {
         </div>
 
         <Button variant="primary" block onClick={handleSave} className="tf-submit">
-          {saved ? copy.saved : copy.save}
+          <Icon name={saved ? "check" : "floppy-disk"} /> {saved ? copy.saved : copy.save}
         </Button>
 
         {saved && (

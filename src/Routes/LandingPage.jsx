@@ -32,7 +32,7 @@ function LandingPage() {
       <section className="hero">
         <div className="lp-hero-inner">
           <div className="lp-badge">
-            {brand.logo} {brand.name} {brand.separator} {brand.suffix}
+            <Icon name="globe" /> {brand.logo} {brand.name} {brand.separator} {brand.suffix}
           </div>
 
           <h1 className="lp-hero-title">
@@ -43,8 +43,12 @@ function LandingPage() {
           <p className="lp-hero-subtitle">{landing.hero.subtitle}</p>
 
           <div className="lp-hero-actions">
-            <Button as="link" to="/map" variant="primary" size="lg">{landing.hero.primaryCta}</Button>
-            <Button as="link" to="/map" variant="ghost" size="lg">{landing.hero.secondaryCta}</Button>
+            <Button as="link" to="/map" variant="primary" size="lg">
+              <Icon name="compass" /> {landing.hero.primaryCta}
+            </Button>
+            <Button as="link" to="/map" variant="ghost" size="lg">
+              <Icon name="map" /> {landing.hero.secondaryCta}
+            </Button>
           </div>
         </div>
       </section>

@@ -172,6 +172,21 @@
   background: var(--line);
 }
 
+@media (max-width: 1180px) {
+  .tdm-toolbar {
+    top: auto;
+    bottom: 20px;
+    max-width: calc(100% - 24px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tdm-type-menu {
+    top: auto;
+    bottom: 45px;
+  }
+}
+
 /* Marker label above the pin - no transition on transform to avoid conflict with map panning */
 .td-marker-label {
   position: absolute;

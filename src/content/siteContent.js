@@ -121,7 +121,7 @@ export const home = {
 export const tripsList = {
   title: "Trips",
   managedBy: (name) => `Managed by ${name}`,
-  createButton: "+ Create New Tour",
+  createButton: "Create New Tour",
   loading: "Loading tours...",
   empty: "No tours yet. Create your first one.",
   published: "Published",

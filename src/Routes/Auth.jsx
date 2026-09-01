@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react"
-import {useNavigate, useSearchParams, Link} from "react-router"
+import {useNavigate, useSearchParams, Link, useLocation} from "react-router"
 
 import "../styles/auth.css"
 import Button from "../components/ui/Button.jsx"
@@ -10,7 +10,8 @@ import Icon from "../components/ui/Icon.jsx"
 
 function Auth() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const initialView = searchParams.get("view") || "login"
+  const location = useLocation()
+  const initialView = searchParams.get("view") || (location.pathname === "/register" ? "register" : "login")
   const [view, setView] = useState(initialView === "register" ? "register" : "login")
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({text: "", isError: false})
@@ -19,8 +20,18 @@ function Auth() {
 
   useEffect(() => {
     const v = searchParams.get("view")
-    if (v === "register" || v === "login") setView(v)
-  }, [searchParams])
+    if (v === "register" || v === "login") {
+      setView(v)
+      return
+    }
+
+    if (location.pathname === "/register") {
+      setView("register")
+      return
+    }
+
+    setView("login")
+  }, [searchParams, location.pathname])
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -35,9 +46,13 @@ function Auth() {
   const showMsg = (text, isError = false) => setMessage({text, isError})
 
   const switchView = (next) => {
-    setView(next)
+    const normalized = next === "register" ? "register" : "login"
+    const target = normalized === "register" ? "/register" : "/login"
+
+    setView(normalized)
     showMsg("")
-    setSearchParams({view: next === "register" ? "register" : "login"})
+    setSearchParams({view: normalized}, {replace: true})
+    navigate(target, {replace: true})
   }
 
   const handleLogin = async (e) => {
@@ -129,7 +144,7 @@ function Auth() {
       <div className="auth-container">
         <div className="auth-header">
           <div className="auth-logo"><Icon name="earth-americas" /></div>
-          <h2>{view === "forgot" ? "Reset Password" : "GEO · Trips"}</h2>
+          <h2>{view === "forgot" ? <><Icon name="key" /> Reset Password</> : <><Icon name="map" /> GEO · Trips</>}</h2>
           <p>
             {view === "login" && "Welcome back, traveler!"}
             {view === "register" && "Join as an agency or a traveler."}
@@ -139,8 +154,12 @@ function Auth() {
 
         {view !== "forgot" && (
           <div className="auth-tabs">
-            <button className={`auth-tab ${view === "login" ? "active" : ""}`} onClick={() => switchView("login")}>Sign In</button>
-            <button className={`auth-tab ${view === "register" ? "active" : ""}`} onClick={() => switchView("register")}>Create Account</button>
+            <button className={`auth-tab ${view === "login" ? "active" : ""}`} onClick={() => switchView("login")}>
+              <Icon name="right-to-bracket" /> Sign In
+            </button>
+            <button className={`auth-tab ${view === "register" ? "active" : ""}`} onClick={() => switchView("register")}>
+              <Icon name="user-plus" /> Create Account
+            </button>
           </div>
         )}
 
@@ -153,7 +172,7 @@ function Auth() {
             <Input id="login-email" label="Email Address" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             <Input id="login-password" label="Password" type={showPassword ? "text" : "password"} placeholder="••••••••" required value={password} onChange={(e) => setPassword(e.target.value)} />
             <span className="auth-forgot-link" onClick={() => { setView("forgot"); showMsg("") }}>Forgot Password?</span>
-            <Button type="submit" variant="primary" block loading={loading}>Login Now</Button>
+            <Button type="submit" variant="primary" block loading={loading}><Icon name="arrow-right-to-bracket" /> Login Now</Button>
           </form>
         )}
 
@@ -165,7 +184,7 @@ function Auth() {
             <Input id="reg-password" label="Password" type={showPassword ? "text" : "password"} placeholder="At least 6 characters" required value={password} onChange={(e) => setPassword(e.target.value)} />
             <Input id="reg-confirm" label="Confirm Password" type={showPassword ? "text" : "password"} placeholder="••••••••" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             <span className="auth-forgot-link" onClick={() => setShowPassword((s) => !s)}>{showPassword ? "Hide password" : "Show password"}</span>
-            <Button type="submit" variant="primary" block loading={loading}>Create Account</Button>
+            <Button type="submit" variant="primary" block loading={loading}><Icon name="user-plus" /> Create Account</Button>
           </form>
         )}
 
@@ -176,14 +195,14 @@ function Auth() {
             <Input id="forgot-email" label="Email Address" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
 
             {!codeSent ? (
-              <Button type="button" variant="info" block loading={loading} onClick={handleSendCode}>Send Reset Code</Button>
+              <Button type="button" variant="info" block loading={loading} onClick={handleSendCode}><Icon name="paper-plane" /> Send Reset Code</Button>
             ) : (
               <>
                 <Input id="forgot-code" label="Reset Code" type="text" placeholder="6-digit code" required value={resetCode} onChange={(e) => setResetCode(e.target.value)} />
                 <Input id="forgot-new" label="New Password" type={showPassword ? "text" : "password"} placeholder="••••••••" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                 <Input id="forgot-confirm" label="Confirm Password" type={showPassword ? "text" : "password"} placeholder="••••••••" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                 <span className="auth-forgot-link" onClick={() => setShowPassword((s) => !s)}>{showPassword ? "Hide password" : "Show password"}</span>
-                <Button type="submit" variant="primary" block loading={loading}>Reset Password</Button>
+                <Button type="submit" variant="primary" block loading={loading}><Icon name="key" /> Reset Password</Button>
               </>
             )}
           </form>

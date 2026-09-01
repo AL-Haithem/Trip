@@ -13,7 +13,7 @@
   background-position: center;
   background-attachment: fixed;
   padding: 2rem;
-  font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
+  font-family: inherit;
   position: relative;
   box-sizing: border-box;
 }
@@ -69,7 +69,7 @@
 }
 
 .auth-header h2 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: inherit;
   font-size: 1.7rem;
   font-weight: 800;
   margin: 0 0 6px;

@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   background: var(--bg);
-  font-family: system-ui, sans-serif;
+  font-family: inherit;
   padding: 24px;
 }
 

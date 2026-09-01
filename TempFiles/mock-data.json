@@ -29,8 +29,8 @@
       "title": "Demo Tour",
       "description": "Demoaskd owda ;dpasp samsl owoeosa, ;asodsoa asdjasdi spaldijglfs ",
       "companyId": "company_demo",
-      "price": 2000,
-      "seats": 24,
+      "price": 2300,
+      "seats": 28,
       "includedServices": [
         "Transport",
         "Lodging",
@@ -64,8 +64,8 @@
                   35.80894498696169
                 ],
                 [
-                  -0.3769763943280111,
-                  35.844533269893546
+                  -0.3921350694222099,
+                  35.85347781053328
                 ],
                 [
                   -0.2612435275342193,
@@ -117,7 +117,42 @@
           }
         ]
       },
-      "distanceKm": 81.7,
+      "image": null,
+      "distanceKm": 82.6,
+      "departureSchedule": [
+        {
+          "id": "day_1788214215986_135fry",
+          "date": "2026-09-06",
+          "times": [
+            {
+              "id": "time_1788214215986_5i0e25",
+              "time": "09:00",
+              "seatsAvailable": 24,
+              "price": "1500"
+            },
+            {
+              "id": "time_1788214239946_64f4qi",
+              "time": "10:00",
+              "seatsAvailable": 28,
+              "price": "1400"
+            }
+          ]
+        },
+        {
+          "id": "day_1788214236706_7nrl09",
+          "date": "2026-09-03",
+          "times": [
+            {
+              "id": "time_1788214236706_pdw9z8",
+              "time": "19:00",
+              "seatsAvailable": 12,
+              "price": "2300"
+            }
+          ]
+        }
+      ],
+      "published": true,
+      "createdAt": 1788214211511,
       "startPoint": {
         "type": "FeatureCollection",
         "features": [
@@ -135,8 +170,7 @@
             }
           }
         ]
-      },
-      "published": true
+      }
     }
   ]
 }

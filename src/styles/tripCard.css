@@ -24,7 +24,7 @@
 
 .tc-title {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: inherit;
   font-size: 17px;
   font-weight: bold;
   color: var(--text);
@@ -82,7 +82,7 @@
 }
 
 .tc-price {
-  font-family: system-ui, sans-serif;
+  font-family: inherit;
   font-size: 20px;
   font-weight: bold;
   color: var(--text);

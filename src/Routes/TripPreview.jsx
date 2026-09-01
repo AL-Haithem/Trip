@@ -21,6 +21,7 @@ function TripPreview() {
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [busSpeed, setBusSpeed] = useState(1)
+  const [scheduleOpen, setScheduleOpen] = useState(false)
   const initialCameraRef = useRef(false)
   const activeStepRef = useRef(null)
 
@@ -98,7 +99,7 @@ function TripPreview() {
   const currentIndex = Math.min(routeData.stops.length - 1, Math.max(0, Math.floor(progress * routeLength)))
   const segmentIndex = Math.min(routeData.coords.length - 2, Math.max(0, Math.floor(progress * routeLength)))
   const segmentProgress = routeData.coords.length > 1 ? (progress * routeLength) - segmentIndex : 0
-  const departureSchedule = (tour.departureSchedule || []).filter((day) => day && day.date)
+  const departureSchedule = (tour?.departureSchedule || []).filter((day) => day && day.date)
 
   const interpolatePoint = (from, to, ratio) => [
     from[0] + (to[0] - from[0]) * ratio,
@@ -232,15 +233,15 @@ function TripPreview() {
       <header className="rp-editor-header">
         <div className="rp-header-left">
           <button className="rp-nav-btn rp-back" onClick={() => navigate(-1)} type="button" aria-label="Back">
-            ←
+            <Icon name="arrow-left" />
           </button>
 
-          <h1 className="rp-page-title">Trip Preview</h1>
+          <h1 className="rp-page-title"><Icon name="map-location-dot" /> Preview</h1>
         </div>
 
         <div className="rp-controls-stack" aria-label="Route controls">
           <button className="rp-control-btn rp-control-btn-icon" onClick={handlePlayToggle} type="button" title={playing ? "Pause" : "Play route"}>
-            {playing ? "⏸" : "▶"}
+            <Icon name={playing ? "pause" : "play"} />
           </button>
 
           <button
@@ -249,7 +250,7 @@ function TripPreview() {
             type="button"
             title="Change bus playback speed"
           >
-            {busSpeed}x
+            <Icon name="gauge" /> {busSpeed}x
           </button>
         </div>
 
@@ -260,7 +261,7 @@ function TripPreview() {
             type="button"
             onClick={() => navigate(`/booking/${tour.id}`)}
           >
-            Book Now
+            <Icon name="calendar-check" /> Book Now
           </button>
         </div>
       </header>
@@ -268,40 +269,52 @@ function TripPreview() {
       <div className="rp-main-layout">
         <aside className="rp-timeline">
           <div className="rp-schedule-panel">
-            <div className="rp-schedule-header">
-              <span className="rp-kicker">Departure schedule</span>
-              <h2>Available launch times</h2>
-            </div>
-
-            {departureSchedule.length ? (
-              departureSchedule.map((day) => (
-                <div key={day.id || day.date} className="rp-schedule-day">
-                  <strong>{new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</strong>
-                  <div className="rp-schedule-times">
-                    {(day.times || []).filter((slot) => slot && slot.time).map((slot) => (
-                      <span key={slot.id || `${day.date}-${slot.time}`} className="rp-schedule-chip">
-                        {slot.time} · {Number(slot.seatsAvailable || 0)} seats
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="rp-schedule-empty">No departure schedule has been added for this trip yet.</p>
-            )}
+            <button
+              type="button"
+              className="rp-schedule-trigger"
+              onClick={() => setScheduleOpen((value) => !value)}
+              aria-expanded={scheduleOpen}
+            >
+              <span className="rp-kicker"><Icon name="clock" /> Departure schedule</span>
+              <span className="rp-schedule-trigger-text">Available launch times</span>
+            </button>
           </div>
+
+          {scheduleOpen && (
+            <div className="rp-schedule-popup-backdrop" onClick={() => setScheduleOpen(false)}>
+              <div className="rp-schedule-popup" onClick={(event) => event.stopPropagation()}>
+                <div className="rp-schedule-popup-header">
+                  <span className="rp-kicker">Departure schedule</span>
+                  <button type="button" className="rp-schedule-close" onClick={() => setScheduleOpen(false)}>
+                    Close
+                  </button>
+                </div>
+                <div className="rp-schedule-popup-list">
+                  {departureSchedule.length ? (
+                    departureSchedule.map((day) => (
+                      <div key={day.id || day.date} className="rp-schedule-day rp-schedule-day-popup">
+                        <strong>{new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</strong>
+                        <div className="rp-schedule-times">
+                          {(day.times || []).filter((slot) => slot && slot.time).map((slot) => (
+                            <span key={slot.id || `${day.date}-${slot.time}`} className="rp-schedule-chip">
+                              {slot.time} · {Number(slot.seatsAvailable || 0)} seats
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="rp-schedule-empty">No departure schedule has been added for this trip yet.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="rp-timeline-header">
             <div>
               <span className="rp-kicker">Route Order</span>
               <h2>Station Sequence</h2>
-            </div>
-            <div className="rp-summary">
-              {startPoint && endPoint && (
-                <span>
-                  Start → Finish: {routeData.stops.length} stops
-                </span>
-              )}
             </div>
           </div>
 
@@ -323,17 +336,12 @@ function TripPreview() {
           <div className="rp-steps">
             {routeData.stops.map((stop, index) => {
               const isActive = index <= currentIndex
-              const shouldShowOnMobile = window.innerWidth <= 760
-                ? index >= Math.max(0, currentIndex - 1) && index <= Math.min(routeData.stops.length - 1, currentIndex + 1)
-                : true
               const typeMeta = WAYPOINT_TYPES.find((item) => item.id === stop.type) || WAYPOINT_TYPES[0]
               const isStart = index === 0
               const isEnd = index === routeData.stops.length - 1
               const labelIcon = isStart ? START_ICON : isEnd ? END_ICON : typeMeta?.icon || "location-dot"
               const labelClass = isStart ? "start" : isEnd ? "end" : ""
               const stepCopy = stop.isStart ? "Start Point" : stop.isDestination ? "Final Destination" : (stop.label || "")
-
-              if (!shouldShowOnMobile) return null
 
               return (
                 <button

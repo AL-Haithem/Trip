@@ -1,10 +1,24 @@
-import { useEffect, useMemo, useState } from "react"
-import { useNavigate, useParams } from "react-router"
-import { getTour } from "../data/tourStore.js"
+import {useEffect, useMemo, useState} from "react"
+import {useNavigate, useParams} from "react-router"
+
+import {getTour} from "../data/tourStore.js"
+import {Input, TextArea} from "../components/ui/Input.jsx"
+import Button from "../components/ui/Button.jsx"
+import Chip from "../components/ui/Chip.jsx"
+import Icon from "../components/ui/Icon.jsx"
+import "../styles/booking.css"
+
+const formatDate = (dateStr) =>
+  new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  })
 
 function BookingPage() {
-  const { id } = useParams()
+  const {id} = useParams()
   const navigate = useNavigate()
+
   const [tour, setTour] = useState(null)
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -14,11 +28,7 @@ function BookingPage() {
   const [selectedDate, setSelectedDate] = useState("")
   const [selectedTime, setSelectedTime] = useState("")
   const [notes, setNotes] = useState("")
-  const [paymentMethod, setPaymentMethod] = useState("card")
-  const [cardName, setCardName] = useState("")
-  const [cardNumber, setCardNumber] = useState("")
-  const [cardExpiry, setCardExpiry] = useState("")
-  const [cardCvc, setCardCvc] = useState("")
+  const [paymentMethod, setPaymentMethod] = useState("edahabia")
   const [submitMessage, setSubmitMessage] = useState("")
 
   useEffect(() => {
@@ -37,13 +47,13 @@ function BookingPage() {
       }
     })
 
-    return () => {
-      mounted = false
-    }
+    return () => { mounted = false }
   }, [id])
 
   const schedule = useMemo(() => {
-    return (tour?.departureSchedule || []).filter((day) => day && day.date).sort((a, b) => new Date(a.date) - new Date(b.date))
+    return (tour?.departureSchedule || [])
+      .filter((day) => day && day.date)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
   }, [tour])
 
   const availableTimesForSelectedDate = useMemo(() => {
@@ -64,7 +74,8 @@ function BookingPage() {
   }, [availableTimesForSelectedDate, selectedTime])
 
   const selectedSlot = useMemo(() => {
-    return availableTimesForSelectedDate.find((slot) => slot.time === selectedTime) || availableTimesForSelectedDate[0] || null
+    return availableTimesForSelectedDate.find((slot) => slot.time === selectedTime) ||
+      availableTimesForSelectedDate[0] || null
   }, [availableTimesForSelectedDate, selectedTime])
 
   const remainingSeats = Number(selectedSlot?.seatsAvailable || 0)
@@ -82,12 +93,7 @@ function BookingPage() {
     return Number(selectedSlot.price || 0) * guests
   }, [tour, selectedSlot, guests])
 
-  // تفاصيل الدفع | رسوم الخدمة 5% + ضريبة 19% //
-  const SERVICE_FEE_RATE = 0.05
-  const VAT_RATE = 0.19
-  const serviceFee = Math.round(totalPrice * SERVICE_FEE_RATE * 100) / 100
-  const vat = Math.round((totalPrice + serviceFee) * VAT_RATE * 100) / 100
-  const grandTotal = totalPrice + serviceFee + vat
+  const grandTotal = totalPrice
 
   const handleSubmit = () => {
     if (!firstName.trim() || !lastName.trim() || !phone.trim() || !email.trim()) {
@@ -105,244 +111,178 @@ function BookingPage() {
       return
     }
 
-    if (paymentMethod === "card" && (!cardName.trim() || cardNumber.replace(/\D/g, "").length < 12 || !cardExpiry.trim() || cardCvc.length < 3)) {
-      setSubmitMessage("Please complete the card details to proceed with the payment.")
-      return
-    }
-
-    const payLabel = paymentMethod === "card" ? "paid by card" : paymentMethod === "cash" ? "cash on departure" : "bank transfer"
-    setSubmitMessage(`Booking request sent for ${firstName} ${lastName} — ${guests} seat(s) on ${selectedDate} at ${selectedTime}, ${payLabel}, total ${grandTotal.toLocaleString()} $.`)
+    setSubmitMessage(`Booking request sent for ${firstName} ${lastName} — ${guests} seat(s) on ${selectedDate} at ${selectedTime}. Redirecting to the ${paymentMethod === "edahabia" ? "Edahabia" : paymentMethod === "visa" ? "Visa" : "Mastercard"} payment page, total ${grandTotal.toLocaleString()} $.`)
   }
 
   if (!tour) {
-    return <div className="booking-loading">Loading booking details...</div>
+    return <div className="bk-loading"><span className="spinner" /> Loading booking details…</div>
   }
 
   return (
-    <div className="booking-page">
-      <div className="booking-shell">
-        <button className="booking-back" type="button" onClick={() => navigate(-1)}>
-          ← Back
-        </button>
+    <div className="bk-page">
+      <div className="bk-inner">
+        <section className="bk-panel">
+          {/* ═══ Head ═══ */}
+          <div className="bk-form-head">
+            <div className="bk-head-main">
+              <button className="bk-back" type="button" onClick={() => navigate(-1)}>
+                <Icon name="arrow-left" /> Back
+              </button>
 
-        <div className="booking-grid">
-          <section className="booking-hero">
-            <div className="booking-badge">Luxury travel</div>
-            <h1>{tour.title}</h1>
-            <p>{tour.description || "A handcrafted journey designed for travelers who want comfort, beauty, and unforgettable moments."}</p>
-
-            <div className="booking-meta">
-              <div>
-                <span>Price</span>
-                <strong>{Number(selectedSlot?.price || 0).toLocaleString()} $</strong>
-              </div>
-              <div>
-                <span>Seats left</span>
-                <strong>{remainingSeats || 0}</strong>
-              </div>
-              <div>
-                <span>Distance</span>
-                <strong>{tour.distanceKm || 0} km</strong>
+              <div className="bk-title-stack">
+                <h2><Icon name="calendar-check" /> Book now</h2>
               </div>
             </div>
 
-            <div className="booking-card">
-              <h3>Included in your trip</h3>
-              <ul>
-                {(tour.includedServices && tour.includedServices.length > 0 ? tour.includedServices : ["Food", "Transport", "City guide"]).map((service) => (
-                  <li key={service}>{service}</li>
-                ))}
-              </ul>
-            </div>
+            <div className="bk-price-tag"><Icon name="tag" /> {totalPrice.toLocaleString()} $</div>
+          </div>
 
-            <div className="booking-card booking-card-alt">
-              <h3>Departure options</h3>
-              {schedule.length ? (
-                <div className="booking-days-list">
-                  {schedule.map((day) => (
-                    <div key={day.id || day.date} className="booking-day-box">
-                      <strong>{new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</strong>
-                      <div className="booking-times-list">
-                        {(day.times || []).map((slot) => (
-                          <span key={slot.id || `${day.date}-${slot.time}`} className={selectedDate === day.date && selectedTime === slot.time ? "active" : ""}>
-                            {slot.time} · {Number(slot.seatsAvailable || 0)} seats
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+          <div className="bk-hero">
+            <h1 className="bk-title">{tour.title}</h1>
+            <p className="bk-desc">
+              {tour.description || "A handcrafted journey designed for travelers who want comfort, beauty, and unforgettable moments."}
+            </p>
+          </div>
+
+          <div className="bk-meta">
+            <div className="bk-meta-item">
+              <Icon name="dollar-sign" />
+              <span>Price</span>
+              <strong>{Number(selectedSlot?.price || 0).toLocaleString()} $</strong>
+            </div>
+            <div className="bk-meta-item">
+              <Icon name="users" />
+              <span>Seats left</span>
+              <strong>{remainingSeats || 0}</strong>
+            </div>
+            <div className="bk-meta-item">
+              <Icon name="route" />
+              <span>Distance</span>
+              <strong>{tour.distanceKm || 0} km</strong>
+            </div>
+          </div>
+
+          {/* ═══ Two columns: form | summary ═══ */}
+          <div className="bk-columns">
+            <div className="bk-col">
+              <div className="bk-form-grid">
+                <Input label="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                <Input label="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+              </div>
+
+              <div className="bk-form-grid">
+                <Input label="Phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+213 …" />
+                <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              </div>
+
+              <div className="bk-form-grid">
+                <div className="field">
+                  <label>Seats</label>
+                  <div className="bk-stepper">
+                    <button type="button" onClick={() => setGuests((v) => Math.max(1, v - 1))}><Icon name="minus" /></button>
+                    <span>{guests}</span>
+                    <button type="button" onClick={() => setGuests((v) => Math.min(remainingSeats || 1, v + 1))}><Icon name="plus" /></button>
+                  </div>
                 </div>
-              ) : (
-                <p className="booking-empty">No departure schedule available yet.</p>
-              )}
-            </div>
-          </section>
 
-          <section className="booking-form-panel">
-            <div className="booking-form-head">
-              <div>
-                <span className="booking-kicker">Secure booking</span>
-                <h2>Book now</h2>
-              </div>
-              <div className="booking-price-tag">{totalPrice.toLocaleString()} $</div>
-            </div>
-
-            <div className="booking-form-grid">
-              <div className="booking-field-group">
-                <label htmlFor="booking-first-name">First name</label>
-                <input id="booking-first-name" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="" />
+                <div className="field">
+                  <label>Departure</label>
+                  <div className="bk-selected-departure">
+                    <Icon name="calendar-days" />
+                    <span>{selectedDate ? formatDate(selectedDate) : "No date"}</span>
+                    <strong>{selectedTime || "No time"}</strong>
+                  </div>
+                </div>
               </div>
 
-              <div className="booking-field-group">
-                <label htmlFor="booking-last-name">Last name</label>
-                <input id="booking-last-name" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="" />
+              <div className="bk-block">
+                <h3 className="bk-block-title"><Icon name="calendar-days" /> Departure options</h3>
+                {schedule.length ? (
+                  <div className="bk-days">
+                    {schedule.map((day) => (
+                      <div key={day.id || day.date} className="bk-day">
+                        <strong className="bk-day-date">{formatDate(day.date)}</strong>
+                        <div className="bk-day-times">
+                          {(day.times || []).map((slot) => {
+                            const active = selectedDate === day.date && selectedTime === slot.time
+                            return (
+                              <button
+                                key={slot.id || `${day.date}-${slot.time}`}
+                                type="button"
+                                className={active ? "bk-time active" : "bk-time"}
+                                onClick={() => {
+                                  setSelectedDate(day.date)
+                                  setSelectedTime(slot.time)
+                                }}
+                              >
+                                {slot.time} · {Number(slot.seatsAvailable || 0)} seats
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="bk-empty">No departure schedule available yet.</p>
+                )}
               </div>
-            </div>
 
-            <div className="booking-form-grid">
-              <div className="booking-field-group">
-                <label htmlFor="booking-phone">Phone</label>
-                <input id="booking-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+213 ..." />
-              </div>
-
-              <div className="booking-field-group">
-                <label htmlFor="booking-email">Email</label>
-                <input id="booking-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-              </div>
-            </div>
-
-            <div className="booking-field-group">
-              <label>Seats</label>
-              <div className="booking-stepper">
-                <button type="button" onClick={() => setGuests((v) => Math.max(1, v - 1))}>−</button>
-                <span>{guests}</span>
-                <button type="button" onClick={() => setGuests((v) => Math.min(remainingSeats || 1, v + 1))}>+</button>
-              </div>
-            </div>
-
-            <div className="booking-field-group">
-              <label htmlFor="booking-date">Departure date</label>
-              <select id="booking-date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)}>
-                {schedule.length ? schedule.map((day) => (
-                  <option key={day.id || day.date} value={day.date}>{new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}</option>
-                )) : <option value="">No dates</option>}
-              </select>
-            </div>
-
-            <div className="booking-field-group">
-              <label htmlFor="booking-time">Departure time</label>
-              <select id="booking-time" value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)}>
-                {availableTimesForSelectedDate.length ? availableTimesForSelectedDate.map((slot) => (
-                  <option key={slot.id || `${selectedDate}-${slot.time}`} value={slot.time}>{slot.time}</option>
-                )) : <option value="">No time</option>}
-              </select>
-            </div>
-
-            <div className="booking-field-group">
-              <label htmlFor="booking-notes">Notes</label>
-              <textarea
-                id="booking-notes"
-                rows={4}
-                placeholder="Any preferences, travel requests, or accommodation notes?"
+              <TextArea
+                label="Notes"
+                rows={2}
+                placeholder="Any preferences or special requests?"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
             </div>
 
-            <div className="booking-final-summary">
-              <div className="booking-summary-header">
-                <span>Final booking details</span>
+            <div className="bk-col">
+              <div className="bk-total">
+                <span><Icon name="receipt" /> Total price</span>
                 <strong>{grandTotal.toLocaleString()} $</strong>
               </div>
 
-              <div className="booking-summary">
-                <div><span>Trip</span><strong>{tour.title}</strong></div>
-                <div><span>Seats</span><strong>{guests}</strong></div>
-                <div><span>Date</span><strong>{selectedDate}</strong></div>
-                <div><span>Time</span><strong>{selectedTime}</strong></div>
-                <div><span>Unit Price</span><strong>{Number(selectedSlot?.price || 0).toLocaleString()} $</strong></div>
-                <div><span>Subtotal</span><strong>{totalPrice.toLocaleString()} $</strong></div>
-                <div><span>Service fee (5%)</span><strong>{serviceFee.toLocaleString()} $</strong></div>
-                <div><span>VAT (19%)</span><strong>{vat.toLocaleString()} $</strong></div>
-                <div><span>Available</span><strong>{remainingSeats} seats</strong></div>
-              </div>
-            </div>
-
-            <div className="booking-payment-card">
-              <h3>Payment details</h3>
-
-              <div className="booking-payment-methods">
-                {[
-                  {id: "card", label: "Card", icon: "credit-card"},
-                  {id: "cash", label: "Cash on departure", icon: "money-bill-wave"},
-                  {id: "transfer", label: "Bank transfer", icon: "building-columns"},
-                ].map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    className={paymentMethod === m.id ? "booking-pay-method active" : "booking-pay-method"}
-                    onClick={() => setPaymentMethod(m.id)}
-                  >
-                    <i className={`fa-solid fa-${m.icon}`} aria-hidden="true" />
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-
-              {paymentMethod === "card" && (
-                <div className="booking-card-fields">
-                  <div className="booking-field-group">
-                    <label htmlFor="pay-card-name">Cardholder name</label>
-                    <input id="pay-card-name" type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="Name as printed on card" />
-                  </div>
-                  <div className="booking-field-group">
-                    <label htmlFor="pay-card-number">Card number</label>
-                    <input id="pay-card-number" type="text" inputMode="numeric" value={cardNumber} onChange={(e) => setCardNumber(e.target.value.replace(/[^\d ]/g, "").slice(0, 19))} placeholder="0000 0000 0000 0000" />
-                  </div>
-                  <div className="booking-form-grid">
-                    <div className="booking-field-group">
-                      <label htmlFor="pay-card-expiry">Expiry</label>
-                      <input id="pay-card-expiry" type="text" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value.slice(0, 5))} placeholder="MM/YY" />
-                    </div>
-                    <div className="booking-field-group">
-                      <label htmlFor="pay-card-cvc">CVC</label>
-                      <input id="pay-card-cvc" type="text" inputMode="numeric" value={cardCvc} onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="123" />
-                    </div>
-                  </div>
+              <div className="bk-payment">
+                <h3 className="bk-block-title"><Icon name="wallet" /> Payment</h3>
+                <div className="bk-pay-methods">
+                  {[
+                    {id: "edahabia", label: "الذهبية - Edahabia", icon: "wallet"},
+                    {id: "visa", label: "Visa", icon: "credit-card"},
+                    {id: "mastercard", label: "Mastercard", icon: "money-check"},
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      className={paymentMethod === m.id ? "bk-pay-method active" : "bk-pay-method"}
+                      onClick={() => setPaymentMethod(m.id)}
+                    >
+                      <Icon name={m.icon} />
+                      {m.label}
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
 
-              {paymentMethod === "cash" && (
-                <p className="booking-pay-note">
-                  Pay in cash to the trip organizer at the departure meeting point. Your seats are held for 24 hours.
-                </p>
-              )}
+              <div className="bk-block">
+                <h3 className="bk-block-title"><Icon name="circle-check" /> Included</h3>
+                <div className="bk-chips">
+                  {(tour.includedServices && tour.includedServices.length > 0 ? tour.includedServices : ["Food", "Transport", "City guide"]).map((service) => (
+                    <Chip key={service} green>{service}</Chip>
+                  ))}
+                </div>
+              </div>
 
-              {paymentMethod === "transfer" && (
-                <p className="booking-pay-note">
-                  Bank transfer details will be sent to your email after confirming the booking. Seats are held for 48 hours.
-                </p>
-              )}
+              {submitMessage && <div className="bk-message">{submitMessage}</div>}
 
-              <div className="booking-pay-total">
-                <span>Total to pay</span>
-                <strong>{grandTotal.toLocaleString()} $</strong>
+              <div className="bk-cta">
+                <Button variant="primary" size="lg" block onClick={handleSubmit}>
+                  <Icon name="sparkles" /> Book Now <Icon name="arrow-right" />
+                </Button>
               </div>
             </div>
-
-            {submitMessage && <div className="booking-message">{submitMessage}</div>}
-
-            <div className="booking-cta-bar">
-              <div>
-                <span className="booking-cta-label">Ready to reserve</span>
-                <strong>{grandTotal.toLocaleString()} $</strong>
-              </div>
-              <button className="booking-submit" type="button" onClick={handleSubmit}>
-                Confirm booking
-              </button>
-            </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
     </div>
   )

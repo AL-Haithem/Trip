@@ -92,13 +92,15 @@
 }
 
 .rp-control-btn {
-  width: 42px;
+  min-width: 42px;
+  width: auto;
   height: 42px;
   border-radius: 14px;
-  padding: 0;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   font-size: 18px;
   font-weight: 700;
   border: 1px solid rgba(255,255,255,0.12);
@@ -382,6 +384,39 @@
   box-shadow: 0 24px 60px rgba(2, 6, 12, 0.50);
   scrollbar-width: thin;
   scrollbar-color: rgba(237, 210, 191, 0.9) rgba(255, 255, 255, 0.04);
+  transition: transform 0.35s ease, opacity 0.25s ease, width 0.35s ease, padding 0.35s ease;
+}
+
+.rp-timeline.open {
+  overflow: hidden;
+}
+
+.rp-timeline.closed {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  opacity: 0;
+  transform: translateX(26px);
+  border-width: 0;
+  pointer-events: none;
+}
+
+.rp-timeline-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .rp-timeline::-webkit-scrollbar {
@@ -399,6 +434,219 @@
   border: 2px solid rgba(18, 18, 18, 0.8);
 }
 
+.rp-schedule-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  margin-bottom: 14px;
+}
+
+.rp-schedule-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--accent-tint), rgba(255,255,255,0.03));
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.08);
+  color: var(--text);
+  text-align: center;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.rp-schedule-trigger::before {
+  content: "⏱";
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.rp-schedule-trigger::after {
+  content: "›";
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--text);
+  opacity: 0.9;
+  transform: translateX(0);
+  transition: transform 0.18s ease;
+}
+
+.rp-schedule-trigger:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-dim);
+  background: linear-gradient(180deg, rgba(237, 210, 191, 0.2), rgba(255,255,255,0.04));
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.rp-schedule-trigger:hover::after {
+  transform: translateX(2px);
+}
+
+.rp-schedule-trigger:active {
+  transform: translateY(1px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.rp-schedule-trigger:focus-visible {
+  outline: 2px solid rgba(124, 225, 255, 0.9);
+  outline-offset: 3px;
+}
+
+.rp-kicker {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(124, 225, 255, 0.08);
+  border: 1px solid rgba(124, 225, 255, 0.18);
+  color: #bdefff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rp-schedule-trigger-text {
+  color: var(--text);
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+
+.rp-timeline-header h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  line-height: 1.2;
+}
+
+.rp-schedule-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 160px;
+  overflow: hidden;
+}
+
+.rp-schedule-popup-list {
+  overflow-y: auto;
+  padding: 8px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rp-schedule-day {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rp-schedule-day:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.rp-schedule-day strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #f3efe8;
+  letter-spacing: 0.02em;
+}
+
+.rp-schedule-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rp-schedule-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.rp-schedule-empty {
+  margin: 0;
+  padding: 12px 12px 2px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.rp-schedule-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 12, 0.56);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 80;
+  padding: 18px 12px 24px;
+}
+
+.rp-schedule-popup {
+  width: min(420px, 100%);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(18, 22, 28, 0.98);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+
+.rp-schedule-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.rp-schedule-close {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rp-schedule-popup-list {
+  overflow-y: auto;
+  padding: 8px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rp-schedule-day-popup {
+  padding: 12px 10px 0;
+}
+
 .rp-timeline-header {
   display: flex;
   align-items: end;
@@ -407,14 +655,13 @@
   margin-bottom: 18px;
 }
 
-.rp-timeline-header h2 {
-  margin: 6px 0 0;
-  font-size: clamp(1.5rem, 2vw, 2rem);
-}
-
 .rp-summary {
   color: var(--muted);
   font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
 }
 
 .rp-slider-wrap {
@@ -541,6 +788,73 @@
     overflow: auto;
     box-shadow: 0 18px 40px rgba(2, 6, 12, 0.35);
   }
+
+  .rp-timeline.closed {
+    width: auto;
+    max-height: 54px;
+    padding: 8px 12px;
+    opacity: 1;
+    transform: none;
+    border-width: 1px;
+    pointer-events: auto;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  .rp-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .rp-editor-header {
+    position: relative;
+    height: 72px;
+    flex: 0 0 72px;
+    padding: 0 20px;
+    background: rgba(12, 16, 20, 0.94);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(2, 6, 12, 0.2);
+  }
+
+  .rp-header-left,
+  .rp-header-right {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .rp-header-right {
+    justify-content: flex-end;
+  }
+
+  .rp-page-title {
+    max-width: 180px;
+  }
+
+  .rp-controls-stack {
+    position: static;
+    transform: none;
+    flex: 0 0 auto;
+  }
+
+  .rp-main-layout {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .rp-map-shell {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .rp-timeline {
+    flex: 0 1 40vh;
+    max-height: 40vh;
+    margin: 12px 20px 18px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -555,78 +869,97 @@
     position: static;
     height: auto;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 8px 10px;
-    padding: 10px 12px 8px;
-    background: rgba(12, 16, 20, 0.85);
+    flex-wrap: nowrap;
+    gap: 5px;
+    padding: 8px;
+    background: rgba(12, 16, 20, 0.88);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .rp-editor-header::-webkit-scrollbar {
+    display: none;
   }
 
   .rp-header-left,
   .rp-header-right {
     width: auto;
-    justify-content: space-between;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-width: 0;
   }
 
   .rp-header-left {
     justify-content: flex-start;
-    gap: 10px;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .rp-nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
   }
 
   .rp-header-right {
     justify-content: flex-end;
-    gap: 8px;
+    gap: 6px;
   }
 
   .rp-page-title {
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     white-space: nowrap;
+    max-width: 76px;
   }
 
   .rp-trip-name {
-    max-width: 120px;
-    padding: 6px 8px;
-    font-size: 0.82rem;
+    max-width: 56px;
+    padding: 5px 6px;
+    font-size: 0.68rem;
     border-radius: 8px;
   }
 
   .rp-save-btn {
-    padding: 9px 12px;
-    font-size: 0.78rem;
+    padding: 7px 6px;
+    font-size: 0.65rem;
     border-radius: 8px;
+    white-space: nowrap;
+    min-width: 62px;
+    line-height: 1.1;
   }
 
   .rp-controls-stack {
     position: static;
     transform: none;
     order: 3;
+    flex: 0 0 auto;
     width: auto;
-    margin-left: auto;
+    margin-left: 0;
     justify-content: flex-end;
     margin-top: 0;
+    gap: 4px;
   }
 
   .rp-control-btn {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 10px;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
   }
 
   .rp-control-btn-muted {
-    min-width: 52px;
-    padding: 0 10px;
-    font-size: 0.8rem;
+    min-width: 44px;
+    padding: 0 5px;
+    font-size: 0.64rem;
   }
 
   .rp-main-layout {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0;
     overflow: hidden;
     flex: 1;
     min-height: 0;
@@ -640,17 +973,72 @@
   }
 
   .rp-timeline {
-    position: relative;
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
     top: auto;
-    right: auto;
     width: auto;
-    margin: 0 12px 10px;
-    padding: 10px 12px 12px;
-    max-height: 176px;
+    max-height: 42vh;
+    margin: 0;
+    padding: 10px 10px 12px;
     border-radius: 18px;
-    overflow: hidden;
+    overflow: auto;
     flex-shrink: 0;
-    box-shadow: 0 12px 28px rgba(2, 6, 12, 0.28);
+    box-shadow: 0 18px 40px rgba(2, 6, 12, 0.38);
+    z-index: 30;
+  }
+
+  .rp-timeline.closed {
+    max-height: 56px;
+    padding: 8px 10px;
+    width: auto;
+    opacity: 1;
+    transform: none;
+    overflow: hidden;
+  }
+
+  .rp-timeline-toggle {
+    margin-bottom: 8px;
+    font-size: 0.62rem;
+    border-radius: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .rp-schedule-panel {
+    gap: 10px;
+    padding: 10px 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 16px;
+  }
+
+  .rp-schedule-trigger-text {
+    font-size: 0.94rem;
+  }
+
+  .rp-schedule-preview {
+    max-height: 120px;
+  }
+
+  .rp-schedule-day {
+    gap: 8px;
+    padding: 10px 8px 0;
+  }
+
+  .rp-schedule-day strong {
+    font-size: 0.8rem;
+  }
+
+  .rp-schedule-chip {
+    min-height: 28px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    border-radius: 999px;
+  }
+
+  .rp-schedule-empty {
+    padding: 8px 8px 0;
+    font-size: 0.76rem;
   }
 
   .rp-timeline-header {
@@ -666,46 +1054,66 @@
   }
 
   .rp-summary {
-    font-size: 11px;
+    font-size: 10.5px;
+    padding: 6px 8px;
   }
 
   .rp-slider-wrap {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     padding-top: 2px;
   }
 
   .rp-steps {
-    gap: 10px;
+    gap: 8px;
     margin-top: 2px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding-right: 4px;
+    scroll-snap-type: y proximity;
   }
 
   .rp-step {
     padding: 8px 10px;
     border-radius: 12px;
-    min-height: 54px;
+    min-height: 48px;
+    scroll-snap-align: start;
   }
 
   .rp-step-time {
-    min-width: 38px;
-    font-size: 11px;
+    min-width: 34px;
+    font-size: 10px;
   }
 
   .rp-step-icon {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
   }
 
   .rp-step-copy {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .rp-step-distance {
-    font-size: 10px;
-    letter-spacing: 0.05em;
+    font-size: 9px;
+    letter-spacing: 0.04em;
   }
 
   .rp-map-badge {
     left: 14px;
     bottom: 14px;
+    padding: 8px 10px;
+  }
+
+  .rp-map-badge strong {
+    font-size: 14px;
+  }
+
+  .rp-stop-label {
+    left: 12px;
+    right: 12px;
+    bottom: 76px;
+    max-width: none;
+    padding: 10px 12px;
+    border-radius: 14px;
   }
 }

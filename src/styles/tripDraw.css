@@ -3,7 +3,7 @@
   background: var(--bg);
   color: var(--text);
   padding: 32px;
-  font-family: system-ui, sans-serif;
+  font-family: inherit;
 }
 
 .td-wrap {
@@ -216,6 +216,8 @@
   border-radius: 10px;
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
+  height: auto;
+  min-height: 0;
 }
 
 .tdm-tool-btn {
@@ -279,6 +281,25 @@
   z-index: 30;
 }
 
+@media (max-width: 1180px) {
+  .tdm-toolbar {
+    top: auto;
+    bottom: 20px;
+    height: auto;
+    max-height: 58px;
+    max-width: calc(100% - 24px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+
+  .tdm-type-menu {
+    top: auto;
+    bottom: 50px;
+  }
+}
+
 .tdm-type-item {
   display: flex;
   align-items: center;
@@ -294,6 +315,39 @@
 
 .tdm-type-item:hover {
   border-color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .td-float-left {
+    top: 12px;
+    left: 12px;
+    gap: 12px;
+  }
+
+  .td-float-right {
+    top: 12px;
+    right: 12px;
+  }
+
+  .td-float-row {
+    gap: 10px;
+  }
+
+  .td-wm-title {
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .td-float-name {
+    max-width: 110px;
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+
+  .td-float-save {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
 }
 
 .tdm-type-emoji {
