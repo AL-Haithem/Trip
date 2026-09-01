@@ -6,6 +6,9 @@ import LandingPage from './Routes/LandingPage.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 import {getSession} from './services/mockApi.js'
 
+// Get the base URL from Vite's import.meta.env.BASE_URL for GitHub Pages support
+const basePath = import.meta.env.BASE_URL || "/"
+
 const HomePage = lazy(() => import('./Routes/HomePage.jsx'))
 const TripsList = lazy(() => import('./Routes/TripsList.jsx'))
 const TripForm = lazy(() => import('./Routes/TripForm.jsx'))
@@ -41,7 +44,7 @@ function RouteFallback() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basePath}>
       <ErrorBoundary>
         <Suspense fallback={<RouteFallback />}>
           <LegacyUrlGuard>

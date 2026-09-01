@@ -1,0 +1,176 @@
+{
+  "auth": {
+    "credentials": [
+      {
+        "email": "company@demo.com",
+        "password": "demo1234",
+        "role": "company"
+      }
+    ],
+    "companies": [
+      {
+        "id": "company_demo",
+        "name": "Tours Agency",
+        "email": "company@demo.com",
+        "phone": "+213 555 12 34 56",
+        "description": "A company specialized in organizing exploratory trips across the national territory.",
+        "totalTours": 12,
+        "totalTravelers": 340,
+        "rating": 4.7,
+        "logo": null
+      }
+    ],
+    "travelers": [],
+    "users": []
+  },
+  "tours": [
+    {
+      "id": "tour_1786900512351_wyrfb1",
+      "title": "Demo Tour",
+      "description": "Demoaskd owda ;dpasp samsl owoeosa, ;asodsoa asdjasdi spaldijglfs ",
+      "companyId": "company_demo",
+      "price": 2300,
+      "seats": 28,
+      "includedServices": [
+        "Transport",
+        "Lodging",
+        "Playground"
+      ],
+      "notIncludedServices": [
+        "Playground"
+      ],
+      "route": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [
+                  -0.649699595144483,
+                  35.70232733593876
+                ],
+                [
+                  -0.5768148699228561,
+                  35.715213348853766
+                ],
+                [
+                  -0.5293130606096952,
+                  35.765703299783226
+                ],
+                [
+                  -0.47270929136072937,
+                  35.80894498696169
+                ],
+                [
+                  -0.3921350694222099,
+                  35.85347781053328
+                ],
+                [
+                  -0.2612435275342193,
+                  35.797780081097414
+                ],
+                [
+                  -0.10994950361970268,
+                  35.781522683066484
+                ],
+                [
+                  0.016979004786293217,
+                  35.830420124638295
+                ],
+                [
+                  0.04822609115140608,
+                  35.892557189168116
+                ],
+                [
+                  0.09421011672787927,
+                  35.92899520047446
+                ]
+              ]
+            },
+            "properties": {
+              "routePath": true,
+              "vertTypes": [
+                "rest",
+                "attraction",
+                "normal",
+                "restaurant",
+                "camp",
+                "forest",
+                "camp",
+                "beach",
+                null
+              ],
+              "vertLabels": [
+                "Breakfast",
+                "View",
+                null,
+                "Stoping for eat",
+                "Camping 2 hours",
+                null,
+                null,
+                null,
+                null
+              ]
+            }
+          }
+        ]
+      },
+      "image": null,
+      "distanceKm": 82.6,
+      "departureSchedule": [
+        {
+          "id": "day_1788214215986_135fry",
+          "date": "2026-09-06",
+          "times": [
+            {
+              "id": "time_1788214215986_5i0e25",
+              "time": "09:00",
+              "seatsAvailable": 24,
+              "price": "1500"
+            },
+            {
+              "id": "time_1788214239946_64f4qi",
+              "time": "10:00",
+              "seatsAvailable": 28,
+              "price": "1400"
+            }
+          ]
+        },
+        {
+          "id": "day_1788214236706_7nrl09",
+          "date": "2026-09-03",
+          "times": [
+            {
+              "id": "time_1788214236706_pdw9z8",
+              "time": "19:00",
+              "seatsAvailable": 12,
+              "price": "2300"
+            }
+          ]
+        }
+      ],
+      "published": true,
+      "createdAt": 1788214211511,
+      "startPoint": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                -0.649699595144483,
+                35.70232733593876
+              ]
+            },
+            "properties": {
+              "kind": "endpoint"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

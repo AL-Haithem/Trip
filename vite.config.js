@@ -64,7 +64,7 @@ function mockApiPlugin() {
 
 export default defineConfig({
   plugins: [react(), mockApiPlugin()],
-  base: "/",
+  base: process.env.VITE_BASE || "/",
   resolve: {
     dedupe: ['react', 'react-dom'],
   },

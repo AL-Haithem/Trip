@@ -35,8 +35,19 @@ jobs:
       - name: Install Packages
         run: npm ci
 
+      - name: Configure GitHub Pages Base URL
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          if [[ "$REPO_NAME" == "${{ github.actor }}.github.io" ]]; then
+            echo "BASE=/" >> $GITHUB_ENV
+          else
+            echo "BASE=/$REPO_NAME/" >> $GITHUB_ENV
+          fi
+
       - name: Build
         run: npm run build
+        env:
+          VITE_BASE: ${{ env.BASE }}
 
       - name: Upload
         uses: actions/upload-pages-artifact@v3
