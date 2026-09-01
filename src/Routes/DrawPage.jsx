@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css"
 import "../styles/maps.css"
 import maplibregl from "maplibre-gl"
 import { useMapController } from "../Maps/useMapController.js"
-import { FpsMeter } from "../Components/ui/FpsMeter.jsx"
+import { FpsMeter } from "../components/ui/FpsMeter.jsx"
 import { CountryHoverLayer, WilayaHoverLayer } from "../Maps/HoverLayers.jsx"
 
 // ─── Zoom Slider ───────────────────────────────────────────────────────────────

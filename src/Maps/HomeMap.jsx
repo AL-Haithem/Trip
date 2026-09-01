@@ -8,7 +8,7 @@ import { useMapController } from "./UseStates/useMapController.js"
 import { useMapHover } from "./UseStates/useMapHover.js"
 import { getTours } from "../services/mockApi.js"
 import Icon from "../components/ui/Icon.jsx"
-import { FpsMeter } from "../Components/ui/FpsMeter.jsx"
+import { FpsMeter } from "../components/ui/FpsMeter.jsx"
 
 function getStartCoords(tour) {
   const sp = tour.startPoint && tour.startPoint.features && tour.startPoint.features[0]
