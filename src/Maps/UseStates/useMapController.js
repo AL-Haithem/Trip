@@ -31,7 +31,7 @@ export function useMapController() {
     registerPMTilesProtocol()
 
     axios.get(backendUrl(API_ROUTES.versions), {
-      headers: { 'Cache-Control': 'no-cache' }
+     // headers: { 'Cache-Control': 'no-cache' }
     })
       .then(({ data: versions }) => setMapStyle(buildPMTilesStyle(versions)))
       .catch(() => setMapStyle(buildPMTilesStyle()))
