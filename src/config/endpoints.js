@@ -1,7 +1,7 @@
 const trimTrailingSlash = (value) => value.replace(/\/+$/, "")
 
 export const BACKEND_BASE_URL = trimTrailingSlash("https://trip-backend-production-82d3.up.railway.app")
-export const CDN_BASE_URL = trimTrailingSlash("https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/trip")
+export const CDN_BASE_URL = trimTrailingSlash("https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev")
 
 export const API_ROUTES = {
   mock: "/api/mock",

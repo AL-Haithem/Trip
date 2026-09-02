@@ -1,6 +1,3 @@
-import { API_ROUTES, backendUrl } from "../config/endpoints.js";
-
-const MOCK_API_URL = backendUrl(API_ROUTES.mock);
 const SESSION_KEY = "geo_session";
 const FALLBACK_KEY = "geo_mock_backup";
 
@@ -37,65 +34,20 @@ function writeLocalMockFallback(mock) {
 }
 
 async function loadMockFile() {
-  try {
-    const res = await fetch(MOCK_API_URL, {cache: "no-store"});
-    const contentType = res.headers.get("content-type") || "";
-
-    if (!res.ok || !contentType.includes("application/json")) {
-      throw new Error("Mock API not returning JSON");
-    }
-
-    const json = await res.json();
-    writeLocalMockFallback(json);
-    return json;
-  } catch (e) {
-    console.error("mockApi: could not load", MOCK_API_URL, e);
-    const fallback = await readLocalMockFallback();
-    return fallback || {auth: {credentials: [], companies: []}, tours: []};
-  }
+  const fallback = await readLocalMockFallback();
+  return fallback || {auth: {credentials: [], companies: []}, tours: []};
 }
 
 async function writeMockFile(mock) {
-  try {
-    const res = await fetch(MOCK_API_URL, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(mock),
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to write mock data");
-    }
-
-    writeLocalMockFallback(mock);
-    return true;
-  } catch (e) {
-    console.error("mockApi: could not write mock file", e);
-    return writeLocalMockFallback(mock);
-  }
+  return writeLocalMockFallback(mock);
 }
 
 export async function login(email, password) {
-  const mock = await loadMockFile();
-  const cred = (mock.auth?.credentials || []).find(
-    (c) => c.email === email && c.password === password
-  );
-  if (!cred) {
-    const err = new Error("Invalid email or password");
-    err.code = "AUTH_INVALID";
-    throw err;
-  }
-  const role = cred.role || "user";
-  const profile =
-    role === "company"
-      ? (mock.auth?.companies || []).find((c) => c.email === email) || null
-      : (mock.auth?.users || []).find((u) => u.email === email) || null;
-
   const session = {
     email,
-    role,
-    company: role === "company" ? profile : null,
-    user: role === "user" ? profile : null,
+    role: "company",
+    company: {email},
+    user: null,
     loggedInAt: Date.now(),
   };
   try {
@@ -107,32 +59,14 @@ export async function login(email, password) {
 }
 
 export async function register({email, password, name, phone}) {
-  const mock = await loadMockFile();
-  const creds = mock.auth?.credentials || [];
-
-  if (creds.some((c) => c.email === email)) {
-    const err = new Error("Email already registered");
-    err.code = "AUTH_EXISTS";
-    throw err;
-  }
-
   const id = `user_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
   const profile = {id, name, email, phone: phone || ""};
-  mock.auth.users = [...(mock.auth.users || []), profile];
-
-  mock.auth.credentials = [...creds, {email, password, role: "user"}];
-
-  const ok = await writeMockFile(mock);
-  if (!ok) {
-    const err = new Error("Failed to save account");
-    err.code = "AUTH_WRITE";
-    throw err;
-  }
 
   const session = {
     email,
-    role: "user",
-    user: profile,
+    role: "company",
+    company: profile,
+    user: null,
     loggedInAt: Date.now(),
   };
   try {

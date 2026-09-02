@@ -79,16 +79,6 @@ function Auth() {
     e.preventDefault()
     setLoading(true)
     showMsg("")
-    if (password.length < 6) {
-      showMsg("Password must be at least 6 characters.", true)
-      setLoading(false)
-      return
-    }
-    if (password !== confirmPassword) {
-      showMsg("Passwords do not match.", true)
-      setLoading(false)
-      return
-    }
     try {
       await register({
         email: email.trim().toLowerCase(),
@@ -174,7 +164,7 @@ function Auth() {
 
         {view === "login" && (
           <form onSubmit={handleLogin}>
-            <Input id="login-email" label="Email Address" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="login-email" label="Email Address" type="text" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             <Input id="login-password" label="Password" type={showPassword ? "text" : "password"} placeholder="••••••••" required value={password} onChange={(e) => setPassword(e.target.value)} />
             <span className="auth-forgot-link" onClick={() => { setView("forgot"); showMsg("") }}>Forgot Password?</span>
             <Button type="submit" variant="primary" block loading={loading}><Icon name="arrow-right-to-bracket" /> Login Now</Button>
@@ -184,7 +174,7 @@ function Auth() {
         {view === "register" && (
           <form onSubmit={handleRegister}>
             <Input id="reg-name" label="Full name" type="text" placeholder="Your FullName" required value={name} onChange={(e) => setName(e.target.value)} />
-            <Input id="reg-email" label="Email Address" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="reg-email" label="Email Address" type="text" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             <Input id="reg-phone" label="Phone" type="tel" placeholder="+123 ..." value={phone} onChange={(e) => setPhone(e.target.value)} />
             <Input id="reg-password" label="Password" type={showPassword ? "text" : "password"} placeholder="At least 6 characters" required value={password} onChange={(e) => setPassword(e.target.value)} />
             <Input id="reg-confirm" label="Confirm Password" type={showPassword ? "text" : "password"} placeholder="••••••••" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />

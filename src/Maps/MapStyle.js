@@ -2,9 +2,7 @@ import { getMapColors } from "./mapTheme"
 import { buildAllLayers } from "./styles"
 import { cdnUrl } from "../config/endpoints.js"
 
-const DEFAULT_VERSIONS = { world: 0, DZA: 0, worldLabels: 0, DZALabels: 0 }
-
-export function buildPMTilesStyle(versions = DEFAULT_VERSIONS) {
+export function buildPMTilesStyle(versions) {
 
   const colors = getMapColors()
 

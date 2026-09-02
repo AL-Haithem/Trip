@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 import { Protocol } from 'pmtiles'
 import maplibregl from 'maplibre-gl'
 
@@ -29,12 +30,10 @@ export function useMapController() {
 
     registerPMTilesProtocol()
 
-    fetch(backendUrl(API_ROUTES.versions), { cache: 'no-store' })
-      .then((response) => {
-        if (!response.ok) throw new Error('Failed to load map versions')
-        return response.json()
-      })
-      .then((versions) => setMapStyle(buildPMTilesStyle(versions)))
+    axios.get(backendUrl(API_ROUTES.versions), {
+      headers: { 'Cache-Control': 'no-cache' }
+    })
+      .then(({ data: versions }) => setMapStyle(buildPMTilesStyle(versions)))
       .catch(() => setMapStyle(buildPMTilesStyle()))
 
   }, [])
