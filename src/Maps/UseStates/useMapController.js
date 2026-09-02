@@ -57,6 +57,7 @@ export function useMapController() {
 
     const cachedVersions = readCachedVersions()
     if (cachedVersions) {
+      console.info('[Map] Loaded map data from browser storage')
       setMapStyle(buildPMTilesStyle(cachedVersions))
     }
 
@@ -65,12 +66,19 @@ export function useMapController() {
         axios.get(backendUrl(API_ROUTES.versions))
       .then(({ data: versions }) => {
         if (!isActive) return
-        if (haveSameVersions(cachedVersions, versions)) return
+        if (haveSameVersions(cachedVersions, versions)) {
+          console.info('[Map] Map versions unchanged; using browser storage')
+          return
+        }
+        console.info('[Map] Loaded new map data from CDN')
         cacheVersions(versions)
         setMapStyle(buildPMTilesStyle(versions))
       })
       .catch(() => {
-        if (isActive && !cachedVersions) setMapStyle(buildPMTilesStyle())
+        if (isActive && !cachedVersions) {
+          console.info('[Map] Loaded map data from CDN using default versions')
+          setMapStyle(buildPMTilesStyle())
+        }
       })
 
     return () => {
