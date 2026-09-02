@@ -1,4 +1,6 @@
-const MOCK_API_URL = "/api/mock";
+import { API_ROUTES, backendUrl } from "../config/endpoints.js";
+
+const MOCK_API_URL = backendUrl(API_ROUTES.mock);
 const SESSION_KEY = "geo_session";
 const FALLBACK_KEY = "geo_mock_backup";
 

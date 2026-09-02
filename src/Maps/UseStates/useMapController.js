@@ -3,6 +3,7 @@ import { Protocol } from 'pmtiles'
 import maplibregl from 'maplibre-gl'
 
 import { buildPMTilesStyle } from '../MapStyle'
+import { API_ROUTES, backendUrl } from '../../config/endpoints.js'
 
 let protocolRegistered = false
 
@@ -28,7 +29,13 @@ export function useMapController() {
 
     registerPMTilesProtocol()
 
-    setMapStyle(buildPMTilesStyle())
+    fetch(backendUrl(API_ROUTES.versions), { cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) throw new Error('Failed to load map versions')
+        return response.json()
+      })
+      .then((versions) => setMapStyle(buildPMTilesStyle(versions)))
+      .catch(() => setMapStyle(buildPMTilesStyle()))
 
   }, [])
 

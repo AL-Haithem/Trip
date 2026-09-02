@@ -1,7 +1,10 @@
 import { getMapColors } from "./mapTheme"
 import { buildAllLayers } from "./styles"
+import { cdnUrl } from "../config/endpoints.js"
 
-export function buildPMTilesStyle() {
+const DEFAULT_VERSIONS = { world: 0, DZA: 0, worldLabels: 0, DZALabels: 0 }
+
+export function buildPMTilesStyle(versions = DEFAULT_VERSIONS) {
 
   const colors = getMapColors()
 
@@ -12,22 +15,22 @@ export function buildPMTilesStyle() {
 
       world: {
         type: 'vector',
-        url: 'pmtiles://https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/trip%20data/world/v0.pmtiles'
+        url: `pmtiles://${cdnUrl(`trip data/world/v${versions.world}.pmtiles`)}`
       },
 
       algeria: {
         type: 'vector',
-        url: 'pmtiles://https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/trip%20data/DZA/v0.pmtiles'
+        url: `pmtiles://${cdnUrl(`trip data/DZA/v${versions.DZA}.pmtiles`)}`
       },
 
       countryLabels: {
         type: "geojson",
-        data: "https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/trip%20data/labels/world-labels-v0.json"
+        data: cdnUrl(`trip data/labels/world-labels-v${versions.worldLabels}.json`)
       },
 
       WilayasLabels: {
         type: "geojson",
-        data: "https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/trip%20data/labels/DZA-labels-v0.json"
+        data: cdnUrl(`trip data/labels/DZA-labels-v${versions.DZALabels}.json`)
       },
 
       openfreemap: {

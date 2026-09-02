@@ -7,6 +7,7 @@ import Panel from "../components/ui/Panel.jsx"
 import Icon from "../components/ui/Icon.jsx"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
 import { brand, landing } from "../content/siteContent.js"
+import { cdnUrl } from "../config/endpoints.js"
 import "../styles/landing.css"
 
 function sectionEyebrow({ eyebrow }) {
@@ -34,7 +35,7 @@ function LandingPage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="hero">
+      <section className="hero" style={{ "--landing-hero-image": `url("${cdnUrl("img/hero_bg.jpg")}")` }}>
         <div className="lp-hero-inner">
           <div className="lp-badge">
             <Icon name="globe" /> {brand.logo} {brand.name} {brand.separator} {brand.suffix}
@@ -94,11 +95,11 @@ function LandingPage() {
         <h2 className="lp-section-title">Where your trips can take you</h2>
         <div className="lp-showcase">
           <div className="lp-showcase-card">
-            <div className="lp-showcase-img" style={{ backgroundImage: `url("https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/img/tour_1.jpg")` }} />
+            <div className="lp-showcase-img" style={{ backgroundImage: `url("${cdnUrl("img/tour_1.jpg")}")` }} />
             <div className="lp-showcase-caption">Forest mountain trail</div>
           </div>
           <div className="lp-showcase-card">
-            <div className="lp-showcase-img" style={{ backgroundImage: `url("https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/img/tour_2.jpg")` }} />
+            <div className="lp-showcase-img" style={{ backgroundImage: `url("${cdnUrl("img/tour_2.jpg")}")` }} />
             <div className="lp-showcase-caption">Crystal coast resort</div>
           </div>
         </div>
