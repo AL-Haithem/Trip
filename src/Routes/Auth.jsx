@@ -5,7 +5,7 @@ import "../styles/auth.css"
 import Button from "../components/ui/Button.jsx"
 import {Input} from "../components/ui/Input.jsx"
 import {login, register, requestPasswordReset, confirmPasswordReset} from "../services/mockApi.js"
-import {auth as authContent} from "../content/siteContent.js"
+import {auth as authContent, brand} from "../content/siteContent.js"
 import Icon from "../components/ui/Icon.jsx"
 
 function Auth() {
@@ -17,6 +17,11 @@ function Auth() {
   const [message, setMessage] = useState({text: "", isError: false})
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const isSignup = view === "register"
+    document.title = isSignup ? `Sign Up - ${brand.name}` : `Login - ${brand.name}`
+  }, [view])
 
   useEffect(() => {
     const v = searchParams.get("view")

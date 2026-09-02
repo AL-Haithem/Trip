@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react"
 import {useParams, useNavigate} from "react-router"
-
+import {brand} from "../content/siteContent.js"
 import {createEmptyTour, DEFAULT_SERVICES, findPastSlot, todayStr} from "../data/models.js"
 import {saveTour, getTour} from "../data/tourStore.js"
 import {getSession} from "../services/mockApi.js"
@@ -15,6 +15,10 @@ function TripForm() {
   const {id} = useParams()
   const isEdit = Boolean(id)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    document.title = isEdit ? `Edit Trip - ${brand.name}` : `Create Trip - ${brand.name}`
+  }, [isEdit])
 
   const [tour, setTour] = useState(createEmptyTour())
   const [saved, setSaved] = useState(false)

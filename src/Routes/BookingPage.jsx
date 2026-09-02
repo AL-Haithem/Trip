@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from "react"
 import {useNavigate, useParams} from "react-router"
 
 import {getTour} from "../data/tourStore.js"
+import {brand} from "../content/siteContent.js"
 import {Input, TextArea} from "../components/ui/Input.jsx"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
@@ -15,7 +16,9 @@ const formatDate = (dateStr) =>
     day: "numeric",
   })
 
-function BookingPage() {
+function BookingPage() {  useEffect(() => {
+    document.title = `Book Trip - ${brand.name}`
+  }, [])
   const {id} = useParams()
   const navigate = useNavigate()
 

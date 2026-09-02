@@ -1,9 +1,14 @@
+import { useEffect } from "react"
 import Button from "./components/ui/Button.jsx"
 import Panel from "./components/ui/Panel.jsx"
-import {notFound as copy} from "./content/siteContent.js"
+import {notFound as copy, brand} from "./content/siteContent.js"
 import "./styles/notFound.css"
 
 export default function NotFound() {
+  useEffect(() => {
+    document.title = `Page Not Found - ${brand.name}`
+  }, [])
+
   return (
     <main className="nf-page">
       <Panel className="nf-panel">

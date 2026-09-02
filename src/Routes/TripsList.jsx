@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
-
+import {brand} from "../content/siteContent.js"
 import {getTours, getSession} from "../services/mockApi.js"
 import {hasStartPoint, findPastSlot} from "../data/models.js"
 import {deleteTour, setPublished} from "../data/tourStore.js"
@@ -11,6 +11,10 @@ import {tripsList as copy} from "../content/siteContent.js"
 import "../styles/tripsList.css"
 
 function TripsList() {
+  useEffect(() => {
+    document.title = `My Trips - ${brand.name}`
+  }, [])
+
   const [tours, setTours] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()

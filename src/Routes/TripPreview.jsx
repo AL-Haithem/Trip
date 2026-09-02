@@ -7,11 +7,16 @@ import { getTour } from "../data/tourStore.js"
 import { useMapController } from "../Maps/UseStates/useMapController.js"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
 import { START_ICON, END_ICON, START_COLOR, END_COLOR } from "../Editor/TripDrawMap/theme.js"
+import { brand } from "../content/siteContent.js"
 import Icon from "../components/ui/Icon.jsx"
 import "../styles/routePreview.css"
 import "maplibre-gl/dist/maplibre-gl.css"
 
 function TripPreview() {
+  useEffect(() => {
+    document.title = `Trip Preview - ${brand.name}`
+  }, [])
+
   const { id } = useParams()
   const navigate = useNavigate()
   const mapRef = useRef(null)

@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: url("/TempFiles/hero_bg.jpg") center/cover no-repeat;
+  background: url("https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev/img/hero_bg.jpg") center/cover no-repeat;
   overflow: hidden;
 }
 
@@ -26,7 +26,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(20,20,20,0.9));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(20, 20, 20, 0.9));
   z-index: 1;
 }
 
@@ -42,14 +42,14 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   padding: 6px 16px;
   border-radius: 100px;
   font-size: 13px;
   font-weight: 600;
   color: var(--accent);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 24px;
 }
 
@@ -59,7 +59,7 @@
   line-height: 1.1;
   margin: 0 0 20px 0;
   color: #fff;
-  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .lp-hero-highlight {
@@ -68,7 +68,7 @@
 
 .lp-hero-subtitle {
   font-size: clamp(18px, 3vw, 22px);
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   margin: 0 auto 40px;
   max-width: 650px;
   line-height: 1.6;
@@ -81,8 +81,15 @@
 }
 
 @keyframes lpHeroFadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* --- GENERAL SECTIONS --- */
@@ -115,8 +122,13 @@
   gap: 30px;
 }
 
-.lp-grid-sm { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-.lp-grid-md { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+.lp-grid-sm {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.lp-grid-md {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
 
 /* --- SHOWCASE GALLERY (each tour image shown once) --- */
 .lp-showcase {
@@ -133,7 +145,7 @@
   border-radius: var(--r-lg);
   overflow: hidden;
   border: 1px solid var(--line);
-  box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   animation: lpCardIn 0.8s ease-out forwards;
   opacity: 0;
@@ -141,7 +153,7 @@
 
 .lp-showcase-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
 }
 
 .lp-showcase-img {
@@ -165,8 +177,8 @@
   font-size: 18px;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));
-  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .lp-card {
@@ -186,12 +198,19 @@
 .lp-card:hover {
   transform: translateY(-10px);
   border-color: var(--accent);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes lpCardIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .lp-card-icon {
@@ -264,12 +283,12 @@
 .lp-cta {
   max-width: 800px;
   margin: 0 auto;
-  background: linear-gradient(135deg, var(--bg-panel), rgba(0,0,0,0.6));
+  background: linear-gradient(135deg, var(--bg-panel), rgba(0, 0, 0, 0.6));
   backdrop-filter: blur(15px);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   padding: 60px 40px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
 }
 
 .lp-cta-title {
@@ -293,5 +312,5 @@
   border-top: 1px solid var(--line);
   font-size: 14px;
   color: var(--text-muted);
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
 }

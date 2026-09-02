@@ -3,11 +3,14 @@ import {useParams, useNavigate} from "react-router"
 
 import TripDrawMap from "../Editor/TripDrawMap/TripDrawMap.jsx"
 import {getTour, saveTour} from "../data/tourStore.js"
-import {tripDraw as copy} from "../content/siteContent.js"
+import {tripDraw as copy, brand} from "../content/siteContent.js"
 import Icon from "../components/ui/Icon.jsx"
 import "../styles/tripDraw.css"
 
 function TripDraw() {
+  useEffect(() => {
+    document.title = `Draw Route - ${brand.name}`
+  }, [])
 
   const {id} = useParams()
   const navigate = useNavigate()

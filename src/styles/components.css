@@ -123,12 +123,12 @@
 
 .btn-ghost {
   background: transparent;
-  border-color: var(--line);
+  border-color: var(--text-muted);
   color: var(--text-muted);
 }
 .btn-ghost:hover {
   color: var(--text);
-  border-color: var(--text-muted);
+  border-color: var(--text);
 }
 
 .btn-sm { padding: 7px 12px; font-size: 13px; }
