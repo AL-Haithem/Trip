@@ -7,6 +7,7 @@ export const API_ROUTES = {
   versions: "/api/public/versions",
   tripCreate: "/api/trip/create",
   trips: "/api/trip/trips",
+  tripMap: "/api/trip/trips/map",
   tripById: (id) => `/api/trip/trips/${id}`,
   tripPublish: (id) => `/api/trip/trips/publish/${id}`,
   tripUnpublish: (id) => `/api/trip/trips/unpublish/${id}`,

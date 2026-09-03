@@ -6,13 +6,12 @@ import "../styles/maps.css"
 import maplibregl from "maplibre-gl"
 import { useMapController } from "./UseStates/useMapController.js"
 import { useMapHover } from "./UseStates/useMapHover.js"
-import { getTrips } from "../services/tripApi.js"
+import { getMapTrips } from "../services/tripApi.js"
 import Icon from "../components/ui/Icon.jsx"
 import { FpsMeter } from "../components/ui/FpsMeter.jsx"
 
 function getStartCoords(tour) {
-  const sp = tour.startPoint && tour.startPoint.features && tour.startPoint.features[0]
-  const spc = sp && sp.geometry && sp.geometry.coordinates
+  const spc = tour.startPoint?.coordinates
   if (Array.isArray(spc) && spc.length >= 2) return [spc[0], spc[1]]
   const route = tour.route && tour.route.features
   const line = route && route.find(f => f.geometry && f.geometry.type === "LineString")
@@ -253,11 +252,11 @@ function TripDetailsPanel({ tour, onClose, onPreview }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div style={{ background: "var(--bg-elevated)", padding: "12px", borderRadius: 8, border: "1px solid var(--line)" }}>
             <div style={{ fontSize: 11, textTransform: "uppercase", color: "var(--muted)", letterSpacing: "0.5px" }}>Price</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)" }}>{tour.price ? `${tour.price} DZD` : "—"}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)" }}>{tour.minPrice != null ? `${tour.minPrice} DZD` : "—"}</div>
           </div>
           <div style={{ background: "var(--bg-elevated)", padding: "12px", borderRadius: 8, border: "1px solid var(--line)" }}>
             <div style={{ fontSize: 11, textTransform: "uppercase", color: "var(--muted)", letterSpacing: "0.5px" }}>Guests</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text)" }}>{tour.seats || "—"}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text)" }}>{tour.totalSeats ?? "—"}</div>
           </div>
         </div>
 
@@ -330,7 +329,7 @@ function HomeMap() {
 
   useEffect(() => {
     let mounted = true
-    getTrips().then((data) => {
+    getMapTrips().then((data) => {
       if (mounted) setTours(data || [])
     })
     return () => { mounted = false }
@@ -348,7 +347,7 @@ function HomeMap() {
 
   const zoomT = Math.max(0, Math.min(1, (zoom - minZoom) / (maxZoom - minZoom)))
   const markerScale = 0.6 + zoomT * 1.1
-  const publishedTours = tours.filter(t => t.status === "published")
+  const publishedTours = tours
   const clusterPoints = publishedTours
     .map(t => {
       const c = getStartCoords(t)
@@ -408,7 +407,7 @@ function HomeMap() {
               const t = cl.points[0].tour
               return (
                 <Marker
-                  key={t.id}
+                  key={t._id || t.id || t.title}
                   longitude={cl.lng}
                   latitude={cl.lat}
                   anchor="center"

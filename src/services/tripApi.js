@@ -11,6 +11,11 @@ export async function getTrips() {
   return response.data?.trips || []
 }
 
+export async function getMapTrips() {
+  const response = await axios.get(backendUrl(API_ROUTES.tripMap))
+  return response.data?.trips || []
+}
+
 export async function getTrip(id) {
   const response = await axios.get(backendUrl(API_ROUTES.tripById(id)))
   return response.data?.trip || response.data?.data || response.data

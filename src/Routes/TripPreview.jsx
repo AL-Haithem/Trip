@@ -49,8 +49,7 @@ function TripPreview() {
 
     const routeFeature = tour.route.features.find((feature) => feature.geometry && feature.geometry.type === "LineString")
     const coords = routeFeature?.geometry?.coordinates || []
-    const vertTypes = routeFeature?.properties?.vertTypes || []
-    const vertLabels = routeFeature?.properties?.vertLabels || []
+    const vertices = routeFeature?.properties?.vertices || []
 
     let runningDistanceKm = 0
 
@@ -75,12 +74,13 @@ function TripPreview() {
         runningDistanceKm += distanceKm
       }
 
-      const rawType = isStart ? "start" : isEnd ? "end" : (vertTypes[index] || "normal")
+      const vertex = vertices[index]
+      const rawType = isStart ? "start" : isEnd ? "end" : (vertex?.type || "normal").toLowerCase()
       const rawLabel = isStart
         ? "Start Point"
         : isEnd
           ? "Final Destination"
-          : (vertLabels[index] || "")
+          : (vertex?.label || "")
       const label = rawType === "normal" && !rawLabel ? null : (rawLabel || (rawType !== "normal" ? `${rawType} stop` : null))
 
       return {
@@ -133,12 +133,12 @@ function TripPreview() {
   }
   const interpolateAngle = (from, to, ratio) => normalizeAngle(from + shortestAngleDelta(from, to) * ratio)
 
-  const currentTravelPoint = routeData.coords.length > 1
+  const currentTravelPoint = useMemo(() => routeData.coords.length > 1
     ? interpolatePoint(routeData.coords[segmentIndex], routeData.coords[segmentIndex + 1], segmentProgress)
-    : routeData.coords[0]
-  const nextTravelPoint = routeData.coords.length > 1
+    : routeData.coords[0], [routeData.coords, segmentIndex, segmentProgress])
+  const nextTravelPoint = useMemo(() => routeData.coords.length > 1
     ? routeData.coords[Math.min(segmentIndex + 1, routeData.coords.length - 1)]
-    : routeData.coords[0]
+    : routeData.coords[0], [routeData.coords, segmentIndex])
   const currentStop = routeData.stops[currentIndex] || routeData.stops[0]
 
   const startPoint = routeData.coords[0]
@@ -160,7 +160,7 @@ function TripPreview() {
     ? interpolateAngle(previousHeading, currentHeading, turnBlend)
     : currentHeading
 
-  const cameraCenter = currentTravelPoint || startPoint || [0, 0]
+  const cameraCenter = useMemo(() => currentTravelPoint || startPoint || [0, 0], [currentTravelPoint, startPoint])
 
   const speedOptions = [0.5, 1, 1.25, 1.5, 1.75, 2]
   const currentSpeedIndex = speedOptions.indexOf(busSpeed)
@@ -193,6 +193,7 @@ function TripPreview() {
     let frameId = null
     let lastTimestamp = null
 
+    let lastStateUpdate = 0
     const animate = (timestamp) => {
       if (lastTimestamp === null) {
         lastTimestamp = timestamp
@@ -201,14 +202,17 @@ function TripPreview() {
       const elapsed = (timestamp - lastTimestamp) / 1000
       lastTimestamp = timestamp
 
-      setProgress((prev) => {
-        const next = prev + elapsed * 0.018 * busSpeed
-        if (next >= 1) {
-          setPlaying(false)
-          return 1
-        }
-        return next
-      })
+      if (timestamp - lastStateUpdate >= 33 || elapsed === 0) {
+        lastStateUpdate = timestamp
+        setProgress((prev) => {
+          const next = prev + elapsed * 0.018 * busSpeed
+          if (next >= 1) {
+            setPlaying(false)
+            return 1
+          }
+          return next
+        })
+      }
 
       frameId = requestAnimationFrame(animate)
     }
@@ -264,7 +268,7 @@ function TripPreview() {
           <button
             className="rp-save-btn rp-booking-btn"
             type="button"
-            onClick={() => navigate(`/booking/${tour.id}`)}
+            onClick={() => navigate(`/booking/${tour._id}`)}
           >
             <Icon name="calendar-check" /> Book Now
           </button>
@@ -434,9 +438,7 @@ function TripPreview() {
               return (
                 <Marker key={stop.id} longitude={lng} latitude={lat} anchor="center">
                   <div className={`rp-stop ${isActive ? "active" : ""} ${markerClass}`} title={stop.label}>
-                    <span>
-                      {isStart || isEnd ? <Icon name={markerIcon} /> : <span>{index + 1}</span>}
-                    </span>
+                    <span><Icon name={markerIcon} /></span>
                   </div>
                 </Marker>
               )

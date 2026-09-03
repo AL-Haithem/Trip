@@ -50,6 +50,18 @@ function svgToUrl(svg) {
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg)
 }
 
+function setMarkerIcon(element, svg) {
+  const image = document.createElement("img")
+  image.src = svgToUrl(svg)
+  image.alt = ""
+  image.draggable = false
+  image.style.display = "block"
+  image.style.width = "100%"
+  image.style.height = "100%"
+  image.style.pointerEvents = "none"
+  element.appendChild(image)
+}
+
 function haversineKm(a, b) {
   const R = 6371
   const dLat = (b.lat - a.lat) * Math.PI / 180
@@ -288,7 +300,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
         el.style.borderColor = ROUTE_PIN_COLOR
       } else {
         el.className = "td-endpoint-marker" + (selWaypoint === w.id ? " td-pin-selected" : "")
-        el.style.backgroundImage = `url("${svgToUrl(pinSvg(w.type, selWaypoint === w.id))}")`
+        setMarkerIcon(el, pinSvg(w.type, selWaypoint === w.id))
       }
       el.title = isDefault ? "" : ((WAYPOINT_TYPES.find(t => t.id === w.type) || {}).label || "")
       appendLabel(el, w.label)
@@ -316,7 +328,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
       const el = document.createElement("div")
       if (isLast) {
         el.className = "td-endpoint-marker td-endpoint-end" + (selVertex === i ? " td-vtx-selected" : "")
-        el.style.backgroundImage = `url("${svgToUrl(flagSvg('end'))}")`
+        setMarkerIcon(el, flagSvg("end"))
       } else {
         const isDefault = !v.type || v.type.toLowerCase() === "normal"
         if (isDefault) {
@@ -324,7 +336,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
           el.style.borderColor = ROUTE_PIN_COLOR
         } else {
           el.className = "td-endpoint-marker" + (selVertex === i ? " td-pin-selected" : "")
-          el.style.backgroundImage = `url("${svgToUrl(pinSvg(v.type, selVertex === i))}")`
+          setMarkerIcon(el, pinSvg(v.type, selVertex === i))
         }
       }
       appendLabel(el, v.label)
@@ -362,7 +374,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
       const canDrag = pointMode === kind
       const el = document.createElement("div")
       el.className = "td-endpoint-marker td-endpoint-" + kind + (canDrag ? " td-endpoint-unlocked" : " td-endpoint-locked")
-      el.style.backgroundImage = `url("${svgToUrl(flagSvg(kind))}")`
+      setMarkerIcon(el, flagSvg(kind))
       
       el.title = canDrag
         ? (kind === "start" ? "Start — drag to move" : "End — drag to move")
