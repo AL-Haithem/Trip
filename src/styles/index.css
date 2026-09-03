@@ -21,3 +21,16 @@ body {
   height: 100%;
   overflow: auto;
 }
+
+.app-version-badge {
+  position: fixed;
+  right: 8px;
+  bottom: 5px;
+  z-index: 9999;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+}

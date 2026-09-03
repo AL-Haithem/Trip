@@ -31,6 +31,7 @@ function TripPreview() {
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [busSpeed, setBusSpeed] = useState(1)
+  const [viewMode, setViewMode] = useState("2d")
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const activeStepRef = useRef(null)
   const progressRef = useRef(0)
@@ -166,6 +167,8 @@ function TripPreview() {
     : 24
 
   const cameraCenter = useMemo(() => currentTravelPoint || startPoint || [0, 0], [currentTravelPoint, startPoint])
+  const cameraBearingValue = viewMode === "3d" ? cameraBearing : 0
+  const cameraPitch = viewMode === "3d" ? 62 : 0
   const routeGeoJson = useMemo(() => ({
     type: "FeatureCollection",
     features: [{
@@ -198,12 +201,12 @@ function TripPreview() {
     mapRef.current.jumpTo({
       center: cameraCenter,
       zoom: 16,
-      pitch: 62,
-      bearing: cameraBearing,
+      pitch: cameraPitch,
+      bearing: cameraBearingValue,
       animate: false,
       essential: true,
     })
-  }, [cameraBearing, cameraCenter, currentTravelPoint, getRouteHeading, playing, routeData.coords.length])
+  }, [cameraBearingValue, cameraCenter, cameraPitch, currentTravelPoint, getRouteHeading, playing, routeData.coords.length])
 
   useEffect(() => {
     if (!playing || !routeData.coords.length) return
@@ -235,8 +238,8 @@ function TripPreview() {
         mapRef.current.jumpTo({
           center,
           zoom: 16,
-          pitch: 62,
-          bearing: getRouteHeading(segment, ratio),
+          pitch: viewMode === "3d" ? 62 : 0,
+          bearing: viewMode === "3d" ? getRouteHeading(segment, ratio) : 0,
           animate: false,
           essential: true,
         })
@@ -259,7 +262,7 @@ function TripPreview() {
     return () => {
       if (frameId) cancelAnimationFrame(frameId)
     }
-  }, [busSpeed, getRouteHeading, playing, playbackDurationMs, routeLength, routeData.coords])
+  }, [busSpeed, getRouteHeading, playing, playbackDurationMs, routeLength, routeData.coords, viewMode])
 
   useEffect(() => {
     if (!activeStepRef.current) return
@@ -288,6 +291,15 @@ function TripPreview() {
         <div className="rp-controls-stack" aria-label="Route controls">
           <button className="rp-control-btn rp-control-btn-icon" onClick={handlePlayToggle} type="button" title={playing ? "Pause" : "Play route"}>
             <Icon name={playing ? "pause" : "play"} />
+          </button>
+
+          <button
+            className="rp-control-btn rp-view-toggle"
+            onClick={() => setViewMode((mode) => mode === "2d" ? "3d" : "2d")}
+            type="button"
+            title={`Switch to ${viewMode === "2d" ? "3D" : "2D"} view`}
+          >
+            <Icon name={viewMode === "2d" ? "cube" : "map"} /> {viewMode.toUpperCase()}
           </button>
 
           <button
@@ -426,8 +438,8 @@ function TripPreview() {
               longitude: startPoint[0],
               latitude: startPoint[1],
               zoom: 16,
-              pitch: 62,
-              bearing: 24,
+              pitch: viewMode === "3d" ? 62 : 0,
+              bearing: viewMode === "3d" ? 24 : 0,
             }}
             style={{ width: "100%", height: "100%" }}
             scrollZoom={false}

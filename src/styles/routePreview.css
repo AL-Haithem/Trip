@@ -113,6 +113,12 @@
   font-size: 17px;
 }
 
+.rp-view-toggle {
+  min-width: 64px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
 .rp-control-btn-primary {
   background: rgba(255,255,255,0.06);
   border-color: rgba(255,255,255,0.08);

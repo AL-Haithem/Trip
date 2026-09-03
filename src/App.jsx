@@ -4,6 +4,7 @@ import { Suspense, lazy } from "react";
 import NotFound from './NotFound.jsx'
 import LandingPage from './Routes/LandingPage.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
+import VersionBadge from './components/VersionBadge.jsx'
 
 // Get the base URL from Vite's import.meta.env.BASE_URL for GitHub Pages support
 const basePath = import.meta.env.BASE_URL || "/"
@@ -37,33 +38,36 @@ function RouteFallback() {
 
 function App() {
   return (
-    <BrowserRouter basename={basePath}>
-      <ErrorBoundary>
-        <Suspense fallback={<RouteFallback />}>
-          <LegacyUrlGuard>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/map" element={<HomePage />} />
-              <Route path="/trips" element={<TripsList />} />
-              <Route path="/trips/create" element={<TripForm />} />
-              <Route path="/create" element={<TripForm />} />
-              <Route path="/trips/edit/:id" element={<TripForm />} />
-              <Route path="/trips/edit:id" element={<TripForm />} />
-              <Route path="/edit/:id" element={<TripForm />} />
-              <Route path="/edit:id" element={<TripForm />} />
-              <Route path="/trips/draw/:id" element={<TripDraw />} />
-              <Route path="/Preview/:id" element={<TripPreview />} />
-              <Route path="/Preview:id" element={<TripPreview />} />
-              <Route path="/booking/:id" element={<BookingPage />} />
-              <Route path="/login" element={<Auth />} />
-              <Route path="/register" element={<Auth />} />
-              <Route path="/signup" element={<Auth />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </LegacyUrlGuard>
-        </Suspense>
-      </ErrorBoundary>
-    </BrowserRouter>
+    <>
+      <BrowserRouter basename={basePath}>
+        <ErrorBoundary>
+          <Suspense fallback={<RouteFallback />}>
+            <LegacyUrlGuard>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/map" element={<HomePage />} />
+                <Route path="/trips" element={<TripsList />} />
+                <Route path="/trips/create" element={<TripForm />} />
+                <Route path="/create" element={<TripForm />} />
+                <Route path="/trips/edit/:id" element={<TripForm />} />
+                <Route path="/trips/edit:id" element={<TripForm />} />
+                <Route path="/edit/:id" element={<TripForm />} />
+                <Route path="/edit:id" element={<TripForm />} />
+                <Route path="/trips/draw/:id" element={<TripDraw />} />
+                <Route path="/Preview/:id" element={<TripPreview />} />
+                <Route path="/Preview:id" element={<TripPreview />} />
+                <Route path="/booking/:id" element={<BookingPage />} />
+                <Route path="/login" element={<Auth />} />
+                <Route path="/register" element={<Auth />} />
+                <Route path="/signup" element={<Auth />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </LegacyUrlGuard>
+          </Suspense>
+        </ErrorBoundary>
+      </BrowserRouter>
+      <VersionBadge />
+    </>
   )
 }
 
