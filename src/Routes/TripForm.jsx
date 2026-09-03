@@ -84,7 +84,10 @@ function TripForm() {
     setTour(prev => {
       const schedule = [...(prev.departureSchedule || [])]
       const times = [...(schedule[dayIndex]?.times || [])]
-      times[timeIndex] = { ...times[timeIndex], [field]: field === "seatsAvailable" ? Math.max(0, Number(value) || 0) : value }
+      times[timeIndex] = {
+        ...times[timeIndex],
+        [field]: value,
+      }
       schedule[dayIndex] = { ...schedule[dayIndex], times }
       return { ...prev, departureSchedule: schedule }
     })
@@ -139,15 +142,31 @@ function TripForm() {
 
     const missingFields = []
     if (!payload.title) missingFields.push("Title")
-    ;(tour.departureSchedule || []).forEach((day, dayIndex) => {
-      if (!day.date) missingFields.push(`Departure date #${dayIndex + 1}`)
+    const schedule = tour.departureSchedule || []
+    if (!schedule.length) missingFields.push("At least one departure date and time")
+
+    schedule.forEach((day, dayIndex) => {
+      if (!day.date) {
+        missingFields.push(`Departure date #${dayIndex + 1}`)
+      } else if (day.date < todayStr()) {
+        missingFields.push(`Departure date #${dayIndex + 1} must be today or later`)
+      }
+
+      if (!(day.times || []).length) {
+        missingFields.push(`At least one time for date #${dayIndex + 1}`)
+      }
+
       ;(day.times || []).forEach((slot, timeIndex) => {
-        if (!slot.time) missingFields.push(`Time #${timeIndex + 1} for date #${dayIndex + 1}`)
-        if (slot.seatsAvailable === undefined || slot.seatsAvailable === null || Number.isNaN(slot.seatsAvailable)) {
-          missingFields.push(`Seats for time #${timeIndex + 1} on date #${dayIndex + 1}`)
+        const timeLabel = `time #${timeIndex + 1} on date #${dayIndex + 1}`
+        const seats = slot.seatsAvailable
+        const price = slot.price
+
+        if (!slot.time) missingFields.push(`Time for ${timeLabel}`)
+        if (seats === "" || seats === undefined || seats === null || !Number.isInteger(Number(seats)) || Number(seats) < 0) {
+          missingFields.push(`Seats for ${timeLabel}`)
         }
-        if (slot.price === undefined || slot.price === null || Number.isNaN(slot.price)) {
-          missingFields.push(`Price for time #${timeIndex + 1} on date #${dayIndex + 1}`)
+        if (price === "" || price === undefined || price === null || !Number.isFinite(Number(price)) || Number(price) < 0) {
+          missingFields.push(`Price for ${timeLabel}`)
         }
       })
     })
