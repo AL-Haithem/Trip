@@ -9,6 +9,7 @@ export const API_ROUTES = {
   trips: "/api/trip/trips",
   tripById: (id) => `/api/trip/trips/${id}`,
   tripPublish: (id) => `/api/trip/trips/publish/${id}`,
+  tripUnpublish: (id) => `/api/trip/trips/unpublish/${id}`,
   tripRoute: (id) => `/api/trip/trips/${id}/route`,
 }
 

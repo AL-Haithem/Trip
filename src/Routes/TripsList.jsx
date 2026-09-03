@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
-import {getTrips, publishTrip} from "../services/tripApi.js"
+import {getTrips, publishTrip, unpublishTrip} from "../services/tripApi.js"
 import {deleteTrip} from "../services/tripApi.js"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
@@ -41,15 +41,17 @@ function TripsList() {
   };
 
   const handleTogglePublish = async (tour) => {
-    if (tour.status === "published") return;
+    const isPublished = tour.status === "published"
 
     try {
-      const response = await publishTrip(tour._id)
-      const status = response.data?.status || "published"
+      const response = isPublished
+        ? await unpublishTrip(tour._id)
+        : await publishTrip(tour._id)
+      const status = response.data?.status || (isPublished ? "draft" : "published")
       setTours(prev => prev.map(t => t._id === tour._id ? {...t, status} : t))
-      showPopup(response.message || "Trip published successfully", "success")
+      showPopup(response.message || (isPublished ? "Trip unpublished successfully" : "Trip published successfully"), "success")
     } catch (error) {
-      showPopup(error.response?.data?.message || error.message || "Could not publish the trip.")
+      showPopup(error.response?.data?.message || error.message || (isPublished ? "Could not unpublish the trip." : "Could not publish the trip."))
     }
   };
 
