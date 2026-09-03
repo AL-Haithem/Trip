@@ -7,8 +7,9 @@ import "./styles/booking.css"
 import App from "./App.jsx"
 
 const redirect = sessionStorage.getItem("redirect")
+const basePath = import.meta.env.BASE_URL || "/"
 
-if (redirect && location.pathname === "/") {
+if (redirect && location.pathname === basePath) {
   window.history.replaceState(null, "", redirect)
   sessionStorage.removeItem("redirect")
 }
