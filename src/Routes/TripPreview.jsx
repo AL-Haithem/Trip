@@ -169,6 +169,8 @@ function TripPreview() {
   const traveledDistanceKm = tour?.distanceKm
     ? Number((tour.distanceKm * progress).toFixed(1))
     : 0
+  const totalDistanceKm = Number(tour?.distanceKm || routeData.stops.at(-1)?.distanceKm || 0)
+  const playbackDurationMs = Math.max(totalDistanceKm * 2500, 5000)
 
   const handlePlayToggle = () => {
     setPlaying((value) => !value)
@@ -205,7 +207,7 @@ function TripPreview() {
       if (timestamp - lastStateUpdate >= 33 || elapsed === 0) {
         lastStateUpdate = timestamp
         setProgress((prev) => {
-          const next = prev + elapsed * 0.018 * busSpeed
+          const next = prev + (elapsed * 1000 * busSpeed) / playbackDurationMs
           if (next >= 1) {
             setPlaying(false)
             return 1
@@ -222,7 +224,7 @@ function TripPreview() {
     return () => {
       if (frameId) cancelAnimationFrame(frameId)
     }
-  }, [busSpeed, playing, routeData.coords.length])
+  }, [busSpeed, playing, playbackDurationMs, routeData.coords.length])
 
   useEffect(() => {
     if (!activeStepRef.current) return
