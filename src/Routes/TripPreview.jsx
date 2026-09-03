@@ -3,7 +3,7 @@ import Map, { Marker, Source, Layer } from "react-map-gl/maplibre"
 import { useNavigate, useParams } from "react-router"
 import maplibregl from "maplibre-gl"
 
-import { getTour } from "../data/tourStore.js"
+import { getTrip } from "../services/tripApi.js"
 import { useMapController } from "../Maps/UseStates/useMapController.js"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
 import { START_ICON, END_ICON, START_COLOR, END_COLOR } from "../Editor/TripDrawMap/theme.js"
@@ -33,7 +33,7 @@ function TripPreview() {
   useEffect(() => {
     let mounted = true
 
-    getTour(id).then((data) => {
+    getTrip(id).then((data) => {
       if (mounted) setTour(data)
     })
 

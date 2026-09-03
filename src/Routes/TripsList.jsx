@@ -2,7 +2,7 @@ import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
 import {getTrips, publishTrip} from "../services/tripApi.js"
-import {deleteTour} from "../data/tourStore.js"
+import {deleteTrip} from "../services/tripApi.js"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Icon from "../components/ui/Icon.jsx"
@@ -32,8 +32,12 @@ function TripsList() {
 
   const handleDelete = async (tourId) => {
     if (!confirm(copy.deleteConfirm)) return;
-    await deleteTour(tourId);
-    setTours(prev => prev.filter(t => t.id !== tourId));
+    try {
+      await deleteTrip(tourId)
+      setTours(prev => prev.filter(t => t._id !== tourId))
+    } catch (error) {
+      showPopup(error.response?.data?.message || error.message || "Could not delete the trip.")
+    }
   };
 
   const handleTogglePublish = async (tour) => {
@@ -131,7 +135,7 @@ function TripsList() {
                   <Button variant="info" size="sm" onClick={() => navigate(`/trips/edit/${tour._id}`)}>
                     <Icon name="pencil" /> {copy.edit}
                   </Button>
-                  <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour._id}`)}>
+                  <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour._id}`, {state: {title: tour.title}})}>
                     <Icon name="map-location-dot" /> {copy.draw}
                   </Button>
                   <Button

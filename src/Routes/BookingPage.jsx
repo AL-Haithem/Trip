@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from "react"
 import {useNavigate, useParams} from "react-router"
 
-import {getTour} from "../data/tourStore.js"
+import {getTrip} from "../services/tripApi.js"
 import {brand} from "../content/siteContent.js"
 import {Input, TextArea} from "../components/ui/Input.jsx"
 import Button from "../components/ui/Button.jsx"
@@ -37,7 +37,7 @@ function BookingPage() {  useEffect(() => {
   useEffect(() => {
     let mounted = true
 
-    getTour(id).then((data) => {
+    getTrip(id).then((data) => {
       if (mounted && data) {
         setTour(data)
         const schedule = (data.departureSchedule || []).filter((day) => day && day.date)

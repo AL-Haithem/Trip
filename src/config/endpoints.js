@@ -4,10 +4,10 @@ export const BACKEND_BASE_URL = trimTrailingSlash("https://trip-backend-producti
 export const CDN_BASE_URL = trimTrailingSlash("https://pub-7e98b7cbd8d54f91a1f94a9b9e71316b.r2.dev")
 
 export const API_ROUTES = {
-  mock: "/api/mock",
   versions: "/api/public/versions",
   tripCreate: "/api/trip/create",
   trips: "/api/trip/trips",
+  tripById: (id) => `/api/trip/trips/${id}`,
   tripPublish: (id) => `/api/trip/trips/publish/${id}`,
   tripRoute: (id) => `/api/trip/trips/${id}/route`,
 }

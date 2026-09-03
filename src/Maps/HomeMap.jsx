@@ -6,7 +6,7 @@ import "../styles/maps.css"
 import maplibregl from "maplibre-gl"
 import { useMapController } from "./UseStates/useMapController.js"
 import { useMapHover } from "./UseStates/useMapHover.js"
-import { getTours } from "../services/mockApi.js"
+import { getTrips } from "../services/tripApi.js"
 import Icon from "../components/ui/Icon.jsx"
 import { FpsMeter } from "../components/ui/FpsMeter.jsx"
 
@@ -330,7 +330,7 @@ function HomeMap() {
 
   useEffect(() => {
     let mounted = true
-    getTours().then((data) => {
+    getTrips().then((data) => {
       if (mounted) setTours(data || [])
     })
     return () => { mounted = false }
@@ -348,7 +348,7 @@ function HomeMap() {
 
   const zoomT = Math.max(0, Math.min(1, (zoom - minZoom) / (maxZoom - minZoom)))
   const markerScale = 0.6 + zoomT * 1.1
-  const publishedTours = tours.filter(t => t.published)
+  const publishedTours = tours.filter(t => t.status === "published")
   const clusterPoints = publishedTours
     .map(t => {
       const c = getStartCoords(t)
@@ -369,7 +369,7 @@ function HomeMap() {
 
   const handlePreviewTour = (tour) => {
     setSelectedTour(null)
-    navigate(`/Preview/${tour.id}`)
+    navigate(`/Preview/${tour._id}`)
   }
 
   return (

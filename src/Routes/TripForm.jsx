@@ -2,7 +2,7 @@ import {useState, useEffect} from "react"
 import {useParams, useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
 import {createEmptyTour, toCreateTripPayload, DEFAULT_SERVICES, todayStr} from "../data/models.js"
-import {saveTour, getTour} from "../data/tourStore.js"
+import {getTrip, updateTrip} from "../services/tripApi.js"
 import {createTrip} from "../services/tripApi.js"
 import {Input, TextArea} from "../components/ui/Input.jsx"
 import Button from "../components/ui/Button.jsx"
@@ -39,7 +39,7 @@ function TripForm() {
   useEffect(() => {
     if (!id) return;
     let mounted = true;
-    getTour(id).then((data) => {
+    getTrip(id).then((data) => {
       if (mounted && data) setTour({
         ...createEmptyTour(),
         ...data,
@@ -180,7 +180,7 @@ function TripForm() {
       if (!isEdit) {
         await createTrip(payload)
       } else {
-        await saveTour({...payload, id: tour.id})
+        await updateTrip(id, payload)
       }
     } catch (error) {
       const details = error.response?.data?.details

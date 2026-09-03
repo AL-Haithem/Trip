@@ -1,9 +1,8 @@
 import {useState, useEffect, useRef} from "react"
-import {useParams, useNavigate} from "react-router"
+import {useParams, useNavigate, useLocation} from "react-router"
 
 import TripDrawMap from "../Editor/TripDrawMap/TripDrawMap.jsx"
-import {getTour} from "../data/tourStore.js"
-import {saveTripRoute} from "../services/tripApi.js"
+import {getTripRoute, saveTripRoute} from "../services/tripApi.js"
 import {tripDraw as copy, brand} from "../content/siteContent.js"
 import Icon from "../components/ui/Icon.jsx"
 import {usePopup} from "../components/ui/Popup.jsx"
@@ -16,9 +15,10 @@ function TripDraw() {
 
   const {id} = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const {showPopup} = usePopup()
 
-  const [tour, setTour] = useState(null)
+  const [tour, setTour] = useState({title: location.state?.title || ""})
   const [saved, setSaved] = useState(false)
   const [pointMode, setPointMode] = useState(null)
   const [hasStart, setHasStart] = useState(false)
@@ -31,15 +31,17 @@ function TripDraw() {
 
   useEffect(() => {
     let mounted = true
-    getTour(id).then((data) => {
-      if (mounted && data) {
-        setTour(data)
+    getTripRoute(id).then((response) => {
+      if (mounted && response?.data) {
         setInitialData({
-          route: data.route || null,
-          start: data.startPoint || null,
+          route: response.data.route || null,
+          start: response.data.startPoint || null,
+          distanceKm: response.data.distanceKm || 0,
         })
-        setHasStart(Boolean(data.startPoint?.coordinates?.length === 2))
+        setHasStart(Boolean(response.data.startPoint?.coordinates?.length === 2))
       }
+    }).catch((error) => {
+      if (mounted) showPopup(error.response?.data?.message || error.message || "Could not load the trip route.")
     })
     return () => { mounted = false }
   }, [id])
