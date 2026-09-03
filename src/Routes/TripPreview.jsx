@@ -32,8 +32,8 @@ function TripPreview() {
   const [playing, setPlaying] = useState(true)
   const [busSpeed, setBusSpeed] = useState(1)
   const [scheduleOpen, setScheduleOpen] = useState(false)
-  const initialCameraRef = useRef(false)
   const activeStepRef = useRef(null)
+  const progressRef = useRef(0)
 
   useEffect(() => {
     let mounted = true
@@ -147,7 +147,6 @@ function TripPreview() {
   const currentStop = routeData.stops[currentIndex] || routeData.stops[0]
 
   const startPoint = routeData.coords[0]
-  const endPoint = routeData.coords[routeData.coords.length - 1]
 
   const currentHeading = currentTravelPoint && nextTravelPoint
     ? getBearingToTarget(currentTravelPoint, nextTravelPoint)
@@ -166,6 +165,17 @@ function TripPreview() {
     : currentHeading
 
   const cameraCenter = useMemo(() => currentTravelPoint || startPoint || [0, 0], [currentTravelPoint, startPoint])
+  const routeGeoJson = useMemo(() => ({
+    type: "FeatureCollection",
+    features: [{
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: routeData.coords,
+      },
+      properties: {},
+    }],
+  }), [routeData.coords])
 
   const speedOptions = [0.5, 1, 1.25, 1.5, 1.75, 2]
   const currentSpeedIndex = speedOptions.indexOf(busSpeed)
@@ -182,7 +192,7 @@ function TripPreview() {
   }
 
   useEffect(() => {
-    if (!routeData.coords.length || !mapRef.current || !currentTravelPoint) return
+    if (playing || !routeData.coords.length || !mapRef.current || !currentTravelPoint) return
 
     mapRef.current.jumpTo({
       center: cameraCenter,
@@ -192,15 +202,14 @@ function TripPreview() {
       animate: false,
       essential: true,
     })
-  }, [cameraBearing, cameraCenter, currentTravelPoint, routeData.coords.length])
+  }, [cameraBearing, cameraCenter, currentTravelPoint, playing, routeData.coords.length])
 
   useEffect(() => {
     if (!playing || !routeData.coords.length) return
 
     let frameId = null
     let lastTimestamp = null
-
-    let lastStateUpdate = 0
+    let lastUiUpdate = 0
     const animate = (timestamp) => {
       if (lastTimestamp === null) {
         lastTimestamp = timestamp
@@ -209,19 +218,39 @@ function TripPreview() {
       const elapsed = (timestamp - lastTimestamp) / 1000
       lastTimestamp = timestamp
 
-      if (timestamp - lastStateUpdate >= 33 || elapsed === 0) {
-        lastStateUpdate = timestamp
-        setProgress((prev) => {
-          const next = prev + (elapsed * 1000 * busSpeed) / playbackDurationMs
-          if (next >= 1) {
-            setPlaying(false)
-            return 1
-          }
-          return next
+      const nextProgress = Math.min(
+        progressRef.current + (elapsed * 1000 * busSpeed) / playbackDurationMs,
+        1,
+      )
+      progressRef.current = nextProgress
+
+      const segment = Math.min(routeData.coords.length - 2, Math.max(0, Math.floor(nextProgress * routeLength)))
+      const ratio = (nextProgress * routeLength) - segment
+      const from = routeData.coords[segment]
+      const to = routeData.coords[Math.min(segment + 1, routeData.coords.length - 1)]
+
+      if (from && to && mapRef.current) {
+        const center = interpolatePoint(from, to, ratio)
+        mapRef.current.jumpTo({
+          center,
+          zoom: 16,
+          pitch: 62,
+          bearing: getBearingToTarget(center, to),
+          animate: false,
+          essential: true,
         })
       }
 
-      frameId = requestAnimationFrame(animate)
+      if (timestamp - lastUiUpdate >= 100 || nextProgress >= 1) {
+        lastUiUpdate = timestamp
+        setProgress(nextProgress)
+      }
+
+      if (nextProgress >= 1) {
+        setPlaying(false)
+      } else {
+        frameId = requestAnimationFrame(animate)
+      }
     }
 
     frameId = requestAnimationFrame(animate)
@@ -229,7 +258,7 @@ function TripPreview() {
     return () => {
       if (frameId) cancelAnimationFrame(frameId)
     }
-  }, [busSpeed, playing, playbackDurationMs, routeData.coords.length])
+  }, [busSpeed, playing, playbackDurationMs, routeLength, routeData.coords])
 
   useEffect(() => {
     if (!activeStepRef.current) return
@@ -343,6 +372,7 @@ function TripPreview() {
               value={progress}
               onChange={(event) => {
                 const value = Number(event.target.value)
+                progressRef.current = value
                 setProgress(value)
                 setPlaying(false)
               }}
@@ -410,17 +440,7 @@ function TripPreview() {
             <Source
               id="preview-route-source"
               type="geojson"
-              data={{
-                type: "FeatureCollection",
-                features: [{
-                  type: "Feature",
-                  geometry: {
-                    type: "LineString",
-                    coordinates: routeData.coords,
-                  },
-                  properties: {},
-                }],
-              }}
+              data={routeGeoJson}
             >
               <Layer
                 id="preview-route-layer"

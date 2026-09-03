@@ -14,11 +14,24 @@ class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error("ErrorBoundary caught:", error, info)
+
+    if (this.isChunkLoadError(error) && !sessionStorage.getItem("chunk-reload-attempted")) {
+      sessionStorage.setItem("chunk-reload-attempted", "1")
+      const url = new URL(window.location.href)
+      url.searchParams.set("chunk-reload", Date.now().toString())
+      window.location.replace(url.toString())
+    }
+  }
+
+  isChunkLoadError = (error) => {
+    const message = String(error?.message || error || "")
+    return /failed to fetch dynamically imported module|importing a module script failed|loading chunk|chunk load error/i.test(message)
   }
 
   handleReload = () => {
     this.setState({error: null})
-    window.location.reload()
+    sessionStorage.removeItem("chunk-reload-attempted")
+    window.location.replace(window.location.href)
   }
 
   render() {
