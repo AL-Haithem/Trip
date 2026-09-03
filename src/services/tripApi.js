@@ -1,8 +1,9 @@
 import axios from "axios"
 import {API_ROUTES, backendUrl} from "../config/endpoints.js"
 
-export function createTrip(payload) {
-  return axios.post(backendUrl(API_ROUTES.tripCreate), payload)
+export async function createTrip(payload) {
+  const response = await axios.post(backendUrl(API_ROUTES.tripCreate), payload)
+  return response.data
 }
 
 export async function getTrips() {

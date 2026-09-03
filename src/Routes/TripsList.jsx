@@ -17,7 +17,7 @@ function TripsList() {
   const [tours, setTours] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const {showPopup} = usePopup()
+  const {showPopup, confirmPopup} = usePopup()
 
   useEffect(() => {
     let mounted = true;
@@ -30,7 +30,8 @@ function TripsList() {
   }, [])
 
   const handleDelete = async (tourId) => {
-    if (!confirm(copy.deleteConfirm)) return;
+    const confirmed = await confirmPopup(copy.deleteConfirm)
+    if (!confirmed) return
     try {
       const response = await deleteTrip(tourId)
       setTours(prev => prev.filter(t => t._id !== tourId))

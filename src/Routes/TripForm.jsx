@@ -2,8 +2,7 @@ import {useState, useEffect} from "react"
 import {useParams, useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
 import {createEmptyTour, toCreateTripPayload, DEFAULT_SERVICES, todayStr} from "../data/models.js"
-import {getTrip, updateTrip} from "../services/tripApi.js"
-import {createTrip} from "../services/tripApi.js"
+import {createTrip, getTrip, updateTrip} from "../services/tripApi.js"
 import {Input, TextArea} from "../components/ui/Input.jsx"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
@@ -140,48 +139,14 @@ function TripForm() {
   const handleSave = async () => {
     const payload = toCreateTripPayload(tour)
 
-    const missingFields = []
-    if (!payload.title) missingFields.push("Title")
-    const schedule = tour.departureSchedule || []
-    if (!schedule.length) missingFields.push("At least one departure date and time")
-
-    schedule.forEach((day, dayIndex) => {
-      if (!day.date) {
-        missingFields.push(`Departure date #${dayIndex + 1}`)
-      } else if (day.date < todayStr()) {
-        missingFields.push(`Departure date #${dayIndex + 1} must be today or later`)
-      }
-
-      if (!(day.times || []).length) {
-        missingFields.push(`At least one time for date #${dayIndex + 1}`)
-      }
-
-      ;(day.times || []).forEach((slot, timeIndex) => {
-        const timeLabel = `time #${timeIndex + 1} on date #${dayIndex + 1}`
-        const seats = slot.seatsAvailable
-        const price = slot.price
-
-        if (!slot.time) missingFields.push(`Time for ${timeLabel}`)
-        if (seats === "" || seats === undefined || seats === null || !Number.isInteger(Number(seats)) || Number(seats) < 0) {
-          missingFields.push(`Seats for ${timeLabel}`)
-        }
-        if (price === "" || price === undefined || price === null || !Number.isFinite(Number(price)) || Number(price) <= 0) {
-          missingFields.push(`Price for ${timeLabel} must be greater than 0`)
-        }
-      })
-    })
-
-    if (missingFields.length) {
-      showPopup(`Please complete: ${missingFields.join(", ")}`)
-      return
-    }
-
     try {
+      let response
       if (!isEdit) {
-        await createTrip(payload)
+        response = await createTrip(payload)
       } else {
-        await updateTrip(id, payload)
+        response = await updateTrip(id, payload)
       }
+      showPopup(response.message || (isEdit ? "Trip updated successfully" : "Trip created successfully"), "success")
     } catch (error) {
       const details = error.response?.data?.details
       const apiMessage = Array.isArray(details)
