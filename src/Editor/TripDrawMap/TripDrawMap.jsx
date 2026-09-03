@@ -94,10 +94,11 @@ function parseInitial(routeFc, startFc, endFc) {
       }
       // Legacy safety: if vertTypes length matches coordinates (includes start), drop the first
       if (types && types.length === coords.length) types = types.slice(1)
+      if (labels && labels.length === coords.length) labels = labels.slice(1)
       // coords[0] is the start (excluded from verts); vertTypes[idx] maps to coords[idx+1]
       verts = coords.slice(1).map(([lng, lat], idx) => ({
         lng, lat,
-        type: (types && types[idx]) || null,
+        type: (types && types[idx]) || "Normal",
         label: (labels && labels[idx]) || null,
       }))
       pendingVertTypes = types
@@ -281,7 +282,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
 
     waypoints.forEach((w) => {
       const el = document.createElement("div")
-      const isDefault = !w.type || w.type === "normal"
+      const isDefault = !w.type || w.type.toLowerCase() === "normal"
       if (isDefault) {
         el.className = "td-vtx" + (selWaypoint === w.id ? " td-vtx-selected" : "")
         el.style.borderColor = ROUTE_PIN_COLOR
@@ -317,7 +318,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
         el.className = "td-endpoint-marker td-endpoint-end" + (selVertex === i ? " td-vtx-selected" : "")
         el.style.backgroundImage = `url("${svgToUrl(flagSvg('end'))}")`
       } else {
-        const isDefault = !v.type || v.type === "normal"
+        const isDefault = !v.type || v.type.toLowerCase() === "normal"
         if (isDefault) {
           el.className = "td-vtx" + (selVertex === i ? " td-vtx-selected" : "")
           el.style.borderColor = ROUTE_PIN_COLOR
