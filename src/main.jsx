@@ -5,6 +5,7 @@ import "./styles/components.css"
 import "./styles/maps.css"
 import "./styles/booking.css"
 import App from "./App.jsx"
+import {PopupProvider} from "./components/ui/Popup.jsx"
 
 const redirect = sessionStorage.getItem("redirect")
 const basePath = import.meta.env.BASE_URL || "/"
@@ -14,4 +15,8 @@ if (redirect && location.pathname === basePath) {
   sessionStorage.removeItem("redirect")
 }
 
-createRoot(document.getElementById("root")).render(<App />)
+createRoot(document.getElementById("root")).render(
+  <PopupProvider>
+    <App />
+  </PopupProvider>
+)

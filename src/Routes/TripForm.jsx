@@ -9,12 +9,14 @@ import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Icon from "../components/ui/Icon.jsx"
 import {tripForm as copy} from "../content/siteContent.js"
+import {usePopup} from "../components/ui/Popup.jsx"
 import "../styles/tripForm.css"
 
 function TripForm() {
   const {id} = useParams()
   const isEdit = Boolean(id)
   const navigate = useNavigate()
+  const {showPopup} = usePopup()
 
   useEffect(() => {
     document.title = isEdit ? `Edit Trip - ${brand.name}` : `Create Trip - ${brand.name}`
@@ -41,6 +43,8 @@ function TripForm() {
       if (mounted && data) setTour({
         ...createEmptyTour(),
         ...data,
+        includedServices: data.includedServices || [],
+        notIncludedServices: data.notIncludedServices || [],
         departureSchedule: data.departureSchedule || [],
       });
     });
@@ -54,6 +58,9 @@ function TripForm() {
 
   const toggleService = (service, list) => {
     setTour(prev => {
+      const otherList = list === "includedServices" ? "notIncludedServices" : "includedServices"
+      if (prev[otherList].includes(service)) return prev
+
       const current = prev[list];
       const exists = current.includes(service);
       const next = exists
@@ -130,10 +137,39 @@ function TripForm() {
   const handleSave = async () => {
     const payload = toCreateTripPayload(tour)
 
-    if (!isEdit) {
-      await createTrip(payload)
-    } else {
-      await saveTour(payload)
+    const missingFields = []
+    if (!payload.title) missingFields.push("Title")
+    ;(tour.departureSchedule || []).forEach((day, dayIndex) => {
+      if (!day.date) missingFields.push(`Departure date #${dayIndex + 1}`)
+      ;(day.times || []).forEach((slot, timeIndex) => {
+        if (!slot.time) missingFields.push(`Time #${timeIndex + 1} for date #${dayIndex + 1}`)
+        if (slot.seatsAvailable === undefined || slot.seatsAvailable === null || Number.isNaN(slot.seatsAvailable)) {
+          missingFields.push(`Seats for time #${timeIndex + 1} on date #${dayIndex + 1}`)
+        }
+        if (slot.price === undefined || slot.price === null || Number.isNaN(slot.price)) {
+          missingFields.push(`Price for time #${timeIndex + 1} on date #${dayIndex + 1}`)
+        }
+      })
+    })
+
+    if (missingFields.length) {
+      showPopup(`Please complete: ${missingFields.join(", ")}`)
+      return
+    }
+
+    try {
+      if (!isEdit) {
+        await createTrip(payload)
+      } else {
+        await saveTour({...payload, id: tour.id})
+      }
+    } catch (error) {
+      const details = error.response?.data?.details
+      const apiMessage = Array.isArray(details)
+        ? details.map((detail) => detail.message || detail).join(", ")
+        : error.response?.data?.message
+      showPopup(apiMessage || error.message || "Could not save the trip.")
+      return
     }
 
     setSaved(true);
@@ -148,7 +184,7 @@ function TripForm() {
         </button>
         <h1 className="tf-title"><Icon name={isEdit ? "pen-to-square" : "plus-circle"} /> {isEdit ? copy.editTitle : copy.createTitle}</h1>
 
-        <Input label={copy.titleLabel} value={tour.title} onChange={(e) => updateField("title", e.target.value)} placeholder={copy.titlePlaceholder} />
+        <Input label={copy.titleLabel} required value={tour.title} onChange={(e) => updateField("title", e.target.value)} placeholder={copy.titlePlaceholder} />
         <TextArea label={copy.descriptionLabel} value={tour.description} onChange={(e) => updateField("description", e.target.value)} placeholder={copy.descriptionPlaceholder} />
 
         <div className="tf-schedule-block">
@@ -163,6 +199,7 @@ function TripForm() {
                 <input
                   type="date"
                   min={todayStr()}
+                  required
                   className="input"
                   value={day.date || ""}
                   onChange={(e) => updateDepartureDay(dayIndex, "date", e.target.value)}
@@ -175,6 +212,7 @@ function TripForm() {
                   <div className="tf-time-row">
                     <input
                       type="time"
+                      required
                       className="input"
                       value={slot.time || "09:00"}
                       onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "time", e.target.value)}
@@ -183,6 +221,7 @@ function TripForm() {
                       type="number"
                       min="0"
                       className="input"
+                      required
                       value={slot.seatsAvailable ?? 0}
                       placeholder="Seats"
                       onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "seatsAvailable", e.target.value)}
@@ -191,6 +230,7 @@ function TripForm() {
                       type="number"
                       min="0"
                       className="input"
+                      required
                       value={slot.price ?? 0}
                       placeholder="Price"
                       onChange={(e) => updateDepartureTime(dayIndex, timeIndex, "price", e.target.value)}
@@ -215,14 +255,20 @@ function TripForm() {
         <label className="tf-label">{copy.includedLabel}</label>
         <div className="tf-chips">
           {DEFAULT_SERVICES.map(service => (
-            <Chip
-              key={service}
-              green={tour.includedServices.includes(service)}
-              onClick={() => toggleService(service, "includedServices")}
-              className={`tf-chip ${tour.includedServices.includes(service) ? "tf-chip-active" : ""}`}
-            >
-              {service}
-            </Chip>
+            (() => {
+              const active = tour.includedServices.includes(service)
+              const disabled = tour.notIncludedServices.includes(service)
+              return (
+                <Chip
+                  key={service}
+                  green={active}
+                  onClick={disabled ? undefined : () => toggleService(service, "includedServices")}
+                  className={`tf-chip ${active ? "tf-chip-active" : ""} ${disabled ? "tf-chip-disabled" : ""}`}
+                >
+                  {service}
+                </Chip>
+              )
+            })()
           ))}
         </div>
 
@@ -230,11 +276,12 @@ function TripForm() {
         <div className="tf-chips">
           {DEFAULT_SERVICES.map(service => {
             const active = tour.notIncludedServices.includes(service)
+            const disabled = tour.includedServices.includes(service)
             return (
               <Chip
                 key={service}
-                onClick={() => toggleService(service, "notIncludedServices")}
-                className={`tf-chip ${active ? "tf-chip-excluded" : ""}`}
+                onClick={disabled ? undefined : () => toggleService(service, "notIncludedServices")}
+                className={`tf-chip ${active ? "tf-chip-excluded" : ""} ${disabled ? "tf-chip-disabled" : ""}`}
               >
                 {service}
               </Chip>
