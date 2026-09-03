@@ -165,8 +165,8 @@ function TripForm() {
         if (seats === "" || seats === undefined || seats === null || !Number.isInteger(Number(seats)) || Number(seats) < 0) {
           missingFields.push(`Seats for ${timeLabel}`)
         }
-        if (price === "" || price === undefined || price === null || !Number.isFinite(Number(price)) || Number(price) < 0) {
-          missingFields.push(`Price for ${timeLabel}`)
+        if (price === "" || price === undefined || price === null || !Number.isFinite(Number(price)) || Number(price) <= 0) {
+          missingFields.push(`Price for ${timeLabel} must be greater than 0`)
         }
       })
     })
