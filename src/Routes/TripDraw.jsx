@@ -22,6 +22,7 @@ function TripDraw() {
   const [saved, setSaved] = useState(false)
   const [pointMode, setPointMode] = useState(null)
   const [hasStart, setHasStart] = useState(false)
+  const [routeError, setRouteError] = useState("")
 
 
   // Initial editor load data (read once) //
@@ -41,7 +42,17 @@ function TripDraw() {
         setHasStart(Boolean(response.data.startPoint?.coordinates?.length === 2))
       }
     }).catch((error) => {
-      if (mounted) showPopup(error.response?.data?.message || error.message || "Could not load the trip route.")
+      if (!mounted) return
+      const message = error.response?.data?.message || error.message || "Could not load the trip route."
+
+      if (message === "Trip route not found") {
+        setInitialData({route: null, start: null, distanceKm: 0})
+        setHasStart(false)
+        return
+      }
+
+      setRouteError(message)
+      showPopup(message)
     })
     return () => { mounted = false }
   }, [id])
@@ -74,6 +85,10 @@ function TripDraw() {
     } catch (error) {
       showPopup(error.response?.data?.message || error.message || "Could not save the trip route.")
     }
+  }
+
+  if (routeError) {
+    return <div className="td-loading">{routeError}</div>
   }
 
   if (!tour || !initialData) {
