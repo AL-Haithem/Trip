@@ -1,8 +1,7 @@
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
-import {getTrips, publishTrip, unpublishTrip} from "../services/tripApi.js"
-import {deleteTrip} from "../services/tripApi.js"
+import {deleteTrip, getTrips, publishTrip, unpublishTrip} from "../services/tripApi.js"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Icon from "../components/ui/Icon.jsx"
@@ -33,8 +32,9 @@ function TripsList() {
   const handleDelete = async (tourId) => {
     if (!confirm(copy.deleteConfirm)) return;
     try {
-      await deleteTrip(tourId)
+      const response = await deleteTrip(tourId)
       setTours(prev => prev.filter(t => t._id !== tourId))
+      showPopup(response.message || "Trip deleted successfully", "success")
     } catch (error) {
       showPopup(error.response?.data?.message || error.message || "Could not delete the trip.")
     }
