@@ -6,11 +6,27 @@ import maplibregl from "maplibre-gl"
 import { getTrip } from "../services/tripApi.js"
 import { useMapController } from "../Maps/UseStates/useMapController.js"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
-import { START_ICON, END_ICON, START_COLOR, END_COLOR } from "../Editor/TripDrawMap/theme.js"
+import { START_ICON, END_ICON, START_COLOR, END_COLOR, WAYPOINT_COLORS, ROUTE_PIN_COLOR } from "../Editor/TripDrawMap/theme.js"
 import { brand } from "../content/siteContent.js"
 import Icon from "../components/ui/Icon.jsx"
 import "../styles/routePreview.css"
 import "maplibre-gl/dist/maplibre-gl.css"
+
+const DEFAULT_PIN_PATH = "M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"
+
+function stopIconSvg(typeId, kind) {
+  const type = WAYPOINT_TYPES.find((item) => item.id === typeId)
+  const iconPath = type?.path || DEFAULT_PIN_PATH
+  const viewBox = type?.vb || 384
+  const isStart = kind === "start"
+  const isEnd = kind === "end"
+  const color = isStart ? START_COLOR : isEnd ? END_COLOR : (WAYPOINT_COLORS[typeId] || ROUTE_PIN_COLOR)
+  const iconFill = isStart || isEnd ? "#06210b" : "#fff"
+
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="${color}" stroke="#06210b" stroke-width="1.8"/><svg x="9" y="9" width="18" height="18" viewBox="0 0 ${viewBox} ${viewBox}" preserveAspectRatio="xMidYMid meet"><path d="${iconPath}" fill="${iconFill}"/></svg></svg>`
+  )}`
+}
 
 function TripPreview() {
   useEffect(() => {
@@ -25,9 +41,8 @@ function TripPreview() {
   const [tour, setTour] = useState(null)
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(true)
-  const [busSpeed, setBusSpeed] = useState(1)
+  const [busSpeed, setBusSpeed] = useState(4)
   const [scheduleOpen, setScheduleOpen] = useState(false)
-  const initialCameraRef = useRef(false)
   const activeStepRef = useRef(null)
 
   useEffect(() => {
@@ -142,8 +157,6 @@ function TripPreview() {
   const currentStop = routeData.stops[currentIndex] || routeData.stops[0]
 
   const startPoint = routeData.coords[0]
-  const endPoint = routeData.coords[routeData.coords.length - 1]
-
   const currentHeading = currentTravelPoint && nextTravelPoint
     ? getBearingToTarget(currentTravelPoint, nextTravelPoint)
     : 24
@@ -162,7 +175,7 @@ function TripPreview() {
 
   const cameraCenter = useMemo(() => currentTravelPoint || startPoint || [0, 0], [currentTravelPoint, startPoint])
 
-  const speedOptions = [0.5, 1, 1.25, 1.5, 1.75, 2]
+  const speedOptions = [1, 2, 4, 8, 12, 16]
   const currentSpeedIndex = speedOptions.indexOf(busSpeed)
   const nextSpeed = speedOptions[(currentSpeedIndex + 1) % speedOptions.length]
 
@@ -170,7 +183,7 @@ function TripPreview() {
     ? Number((tour.distanceKm * progress).toFixed(1))
     : 0
   const totalDistanceKm = Number(tour?.distanceKm || routeData.stops.at(-1)?.distanceKm || 0)
-  const playbackDurationMs = Math.max(totalDistanceKm * 800, 2000)
+  const playbackDurationMs = Math.max(totalDistanceKm * 180, 2500)
 
   const handlePlayToggle = () => {
     setPlaying((value) => !value)
@@ -437,10 +450,15 @@ function TripPreview() {
               const isEnd = index === routeData.stops.length - 1
               const markerIcon = isStart ? START_ICON : isEnd ? END_ICON : typeMeta?.icon || "location-dot"
               const markerClass = isStart ? "start" : isEnd ? "end" : ""
+              const markerKind = isStart ? "start" : isEnd ? "end" : "waypoint"
               return (
                 <Marker key={stop.id} longitude={lng} latitude={lat} anchor="center">
                   <div className={`rp-stop ${isActive ? "active" : ""} ${markerClass}`} title={stop.label}>
-                    <span><Icon name={markerIcon} /></span>
+                    <span
+                      className="rp-stop-icon"
+                      style={{ backgroundImage: `url(${stopIconSvg(stop.type, markerKind)})` }}
+                      aria-label={typeMeta?.label || markerIcon}
+                    />
                   </div>
                 </Marker>
               )
