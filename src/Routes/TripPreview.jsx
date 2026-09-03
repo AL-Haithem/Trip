@@ -175,7 +175,7 @@ function TripPreview() {
 
   const cameraCenter = useMemo(() => currentTravelPoint || startPoint || [0, 0], [currentTravelPoint, startPoint])
 
-  const speedOptions = [1, 2, 4, 8, 12, 16]
+  const speedOptions = [0.5, 1, 1.25, 1.5, 1.75, 2]
   const currentSpeedIndex = speedOptions.indexOf(busSpeed)
   const nextSpeed = speedOptions[(currentSpeedIndex + 1) % speedOptions.length]
 
