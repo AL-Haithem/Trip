@@ -41,7 +41,7 @@ function TripPreview() {
   const [tour, setTour] = useState(null)
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(true)
-  const [busSpeed, setBusSpeed] = useState(4)
+  const [busSpeed, setBusSpeed] = useState(2)
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const activeStepRef = useRef(null)
 
@@ -152,7 +152,7 @@ function TripPreview() {
     ? interpolatePoint(routeData.coords[segmentIndex], routeData.coords[segmentIndex + 1], segmentProgress)
     : routeData.coords[0], [routeData.coords, segmentIndex, segmentProgress])
   const nextTravelPoint = useMemo(() => routeData.coords.length > 1
-    ? routeData.coords[Math.min(segmentIndex + 1, routeData.coords.length - 1)]
+    ? routeData.coords[Math.min(segmentIndex + 2, routeData.coords.length - 1)]
     : routeData.coords[0], [routeData.coords, segmentIndex])
   const currentStop = routeData.stops[currentIndex] || routeData.stops[0]
 
@@ -161,7 +161,7 @@ function TripPreview() {
     ? getBearingToTarget(currentTravelPoint, nextTravelPoint)
     : 24
 
-  const previousTravelPoint = routeData.coords[Math.max(segmentIndex - 1, 0)] || currentTravelPoint
+  const previousTravelPoint = routeData.coords[Math.max(segmentIndex - 2, 0)] || currentTravelPoint
   const previousHeading = previousTravelPoint && currentTravelPoint
     ? getBearingToTarget(previousTravelPoint, currentTravelPoint)
     : currentHeading
@@ -197,7 +197,6 @@ function TripPreview() {
       zoom: 16,
       pitch: 62,
       bearing: cameraBearing,
-      animate: false,
       essential: true,
     })
   }, [cameraBearing, cameraCenter, currentTravelPoint, routeData.coords.length])
@@ -220,7 +219,7 @@ function TripPreview() {
       if (timestamp - lastStateUpdate >= 33 || elapsed === 0) {
         lastStateUpdate = timestamp
         setProgress((prev) => {
-          const next = prev + (elapsed * 1000 * busSpeed) / playbackDurationMs
+          const next = prev + (elapsed * 1000 * (busSpeed / 2)) / playbackDurationMs
           if (next >= 1) {
             setPlaying(false)
             return 1
