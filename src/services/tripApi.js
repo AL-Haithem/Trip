@@ -14,3 +14,8 @@ export async function publishTrip(id) {
   const response = await axios.post(backendUrl(API_ROUTES.tripPublish(id)))
   return response.data
 }
+
+export async function saveTripRoute(id, payload) {
+  const response = await axios.patch(backendUrl(API_ROUTES.tripRoute(id)), payload)
+  return response.data
+}

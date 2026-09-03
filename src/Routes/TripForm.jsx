@@ -3,7 +3,7 @@ import {useParams, useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
 import {createEmptyTour, toCreateTripPayload, DEFAULT_SERVICES, todayStr} from "../data/models.js"
 import {saveTour, getTour} from "../data/tourStore.js"
-import {createTrip, getTrips} from "../services/tripApi.js"
+import {createTrip} from "../services/tripApi.js"
 import {Input, TextArea} from "../components/ui/Input.jsx"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
@@ -179,7 +179,6 @@ function TripForm() {
     try {
       if (!isEdit) {
         await createTrip(payload)
-        await getTrips()
       } else {
         await saveTour({...payload, id: tour.id})
       }

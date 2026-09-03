@@ -2,9 +2,11 @@ import {useState, useEffect, useRef} from "react"
 import {useParams, useNavigate} from "react-router"
 
 import TripDrawMap from "../Editor/TripDrawMap/TripDrawMap.jsx"
-import {getTour, saveTour} from "../data/tourStore.js"
+import {getTour} from "../data/tourStore.js"
+import {saveTripRoute} from "../services/tripApi.js"
 import {tripDraw as copy, brand} from "../content/siteContent.js"
 import Icon from "../components/ui/Icon.jsx"
+import {usePopup} from "../components/ui/Popup.jsx"
 import "../styles/tripDraw.css"
 
 function TripDraw() {
@@ -14,6 +16,7 @@ function TripDraw() {
 
   const {id} = useParams()
   const navigate = useNavigate()
+  const {showPopup} = usePopup()
 
   const [tour, setTour] = useState(null)
   const [saved, setSaved] = useState(false)
@@ -35,7 +38,7 @@ function TripDraw() {
           route: data.route || null,
           start: data.startPoint || null,
         })
-        setHasStart(!!(data.startPoint && data.startPoint.features && data.startPoint.features.length))
+        setHasStart(Boolean(data.startPoint?.coordinates?.length === 2))
       }
     })
     return () => { mounted = false }
@@ -43,7 +46,7 @@ function TripDraw() {
 
   // When opening the page with no starting point, automatically enter start-drawing mode
   useEffect(() => {
-    if (initialData && !(initialData.start && initialData.start.features && initialData.start.features.length)) {
+    if (initialData && !(initialData.start && initialData.start.coordinates?.length === 2)) {
       setPointMode("start")
     }
   }, [initialData])
@@ -52,17 +55,23 @@ function TripDraw() {
     if (!tour) return
     const editorData = editorRef.current ? editorRef.current.getData() : null
 
-    const finalTour = {
-      ...tour,
-      route: editorData && editorData.route !== null ? editorData.route : tour.route,
-      distanceKm: editorData && editorData.distanceKm ? editorData.distanceKm : tour.distanceKm,
-      startPoint: editorData ? editorData.startPoint : tour.startPoint,
+    if (!editorData?.route || !editorData.startPoint) {
+      showPopup("A valid route and start point are required.")
+      return
     }
 
-    await saveTour(finalTour)
-    setTour(finalTour)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 1500)
+    try {
+      const response = await saveTripRoute(id, {
+        route: editorData.route,
+        startPoint: editorData.startPoint,
+      })
+      setTour(prev => ({...prev, route: editorData.route, startPoint: editorData.startPoint, distanceKm: response.data?.distanceKm || editorData.distanceKm}))
+      setSaved(true)
+      showPopup(response.message || "Trip route saved successfully", "success")
+      setTimeout(() => setSaved(false), 1500)
+    } catch (error) {
+      showPopup(error.response?.data?.message || error.message || "Could not save the trip route.")
+    }
   }
 
   if (!tour || !initialData) {

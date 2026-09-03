@@ -7,6 +7,7 @@ import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Icon from "../components/ui/Icon.jsx"
 import {tripsList as copy} from "../content/siteContent.js"
+import {usePopup} from "../components/ui/Popup.jsx"
 import "../styles/tripsList.css"
 
 function TripsList() {
@@ -17,6 +18,7 @@ function TripsList() {
   const [tours, setTours] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const {showPopup} = usePopup()
 
   useEffect(() => {
     let mounted = true;
@@ -39,10 +41,11 @@ function TripsList() {
 
     try {
       const response = await publishTrip(tour._id)
-      const status = response.data?.status || response.status || "published"
+      const status = response.data?.status || "published"
       setTours(prev => prev.map(t => t._id === tour._id ? {...t, status} : t))
+      showPopup(response.message || "Trip published successfully", "success")
     } catch (error) {
-      alert(error.response?.data?.message || error.message || "Could not publish the trip.")
+      showPopup(error.response?.data?.message || error.message || "Could not publish the trip.")
     }
   };
 

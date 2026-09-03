@@ -67,7 +67,7 @@ function computeDistance(verts) {
 
 function parseInitial(routeFc, startFc, endFc) {
   const readPoint = (fc) => {
-    const f = fc && fc.features && fc.features[0]
+    const f = fc?.type === "Point" ? fc : fc && fc.features && fc.features[0]
     if (!f || !f.geometry) return null
     if (!Array.isArray(f.geometry.coordinates)) return null
     return {lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1]}
@@ -85,6 +85,11 @@ function parseInitial(routeFc, startFc, endFc) {
       const coords = g.coordinates
       let types = f.properties?.vertTypes
       let labels = f.properties?.vertLabels
+      const vertices = f.properties?.vertices
+      if (Array.isArray(vertices)) {
+        types = vertices.map((vertex) => vertex?.type || null)
+        labels = vertices.map((vertex) => vertex?.label || null)
+      }
       // Legacy safety: if vertTypes length matches coordinates (includes start), drop the first
       if (types && types.length === coords.length) types = types.slice(1)
       // coords[0] is the start (excluded from verts); vertTypes[idx] maps to coords[idx+1]
@@ -197,27 +202,20 @@ const TripDrawMap = forwardRef(function TripDrawMap(
         features.push({
           type: "Feature",
           geometry: {type: "LineString", coordinates: routeCoords.map(v => [v.lng, v.lat])},
-          properties: {routePath: true, vertTypes: s.verts.map(v => v.type || null), vertLabels: s.verts.map(v => v.label || null)},
-        })
-      }
-      s.waypoints.forEach(w => {
-        features.push({
-          type: "Feature",
-          geometry: {type: "Point", coordinates: [w.lng, w.lat]},
           properties: {
-            waypointType: w.type,
-            waypointLabel: w.label || "",
+            routePath: true,
+            vertices: routeCoords.map((v, index) => ({
+              coordinates: [v.lng, v.lat],
+              ...(index === 0
+                ? {type: "start", label: "Starting point"}
+                : {
+                    ...(s.verts[index - 1]?.type ? {type: s.verts[index - 1].type} : {}),
+                    ...(s.verts[index - 1]?.label ? {label: s.verts[index - 1].label} : {}),
+                  }),
+            })),
           },
         })
-      })
-      const pointFC = (p) => ({
-        type: "FeatureCollection",
-        features: p ? [{
-          type: "Feature",
-          geometry: {type: "Point", coordinates: [p.lng, p.lat]},
-          properties: {kind: "endpoint"},
-        }] : [],
-      })
+      }
       const dist = routeCoords.length >= 2 ? parseFloat(computeDistance(routeCoords)) : 0
       
       const lastVert = s.verts && s.verts.length > 0 ? s.verts[s.verts.length - 1] : null
@@ -225,8 +223,8 @@ const TripDrawMap = forwardRef(function TripDrawMap(
       return {
         route: features.length > 0 ? {type: "FeatureCollection", features} : null,
         distanceKm: dist,
-        startPoint: pointFC(s.startPoint),
-        endPoint: pointFC(lastVert),
+        startPoint: s.startPoint ? {type: "Point", coordinates: [s.startPoint.lng, s.startPoint.lat]} : null,
+        endPoint: lastVert ? {type: "Point", coordinates: [lastVert.lng, lastVert.lat]} : null,
       }
     },
   }), [])

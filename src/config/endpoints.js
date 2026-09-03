@@ -9,6 +9,7 @@ export const API_ROUTES = {
   tripCreate: "/api/trip/create",
   trips: "/api/trip/trips",
   tripPublish: (id) => `/api/trip/trips/publish/${id}`,
+  tripRoute: (id) => `/api/trip/trips/${id}/route`,
 }
 
 export function backendUrl(route) {
