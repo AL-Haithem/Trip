@@ -68,9 +68,11 @@ function computeDistance(verts) {
 function parseInitial(routeFc, startFc, endFc) {
   const readPoint = (fc) => {
     const f = fc?.type === "Point" ? fc : fc && fc.features && fc.features[0]
-    if (!f || !f.geometry) return null
-    if (!Array.isArray(f.geometry.coordinates)) return null
-    return {lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1]}
+    if (!f) return null
+
+    const coordinates = f.type === "Point" ? f.coordinates : f.geometry?.coordinates
+    if (!Array.isArray(coordinates)) return null
+    return {lng: coordinates[0], lat: coordinates[1]}
   }
   const start = readPoint(startFc)
   const waypoints = []
@@ -509,10 +511,17 @@ const TripDrawMap = forwardRef(function TripDrawMap(
     }
     setMapReady(true)
     const s = stateRef.current
-    const coords = composeRoute(s)
-    if (s.startPoint && coords.length >= 2) {
+    const routeFeature = initialRoute?.features?.find(
+      (feature) => feature.geometry?.type === "LineString"
+    )
+    const routeCoordinates = routeFeature?.geometry?.coordinates || []
+    const coords = routeCoordinates.length >= 2
+      ? routeCoordinates
+      : composeRoute(s).map((point) => [point.lng, point.lat])
+
+    if (coords.length >= 2) {
       const bounds = new maplibregl.LngLatBounds()
-      coords.forEach(c => bounds.extend([c.lng, c.lat]))
+      coords.forEach(c => bounds.extend(c))
       if (!bounds.isEmpty()) {
         event.target.fitBounds(bounds, {
           padding: {top: 80, bottom: 80, left: 80, right: 80},
