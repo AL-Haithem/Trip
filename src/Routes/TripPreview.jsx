@@ -170,11 +170,7 @@ function TripPreview() {
     ? Number((tour.distanceKm * progress).toFixed(1))
     : 0
   const totalDistanceKm = Number(tour?.distanceKm || routeData.stops.at(-1)?.distanceKm || 0)
-  const playbackSpeedMultiplier = 3
-  const playbackDurationMs = Math.max(
-    (totalDistanceKm * 2500) / playbackSpeedMultiplier,
-    5000 / playbackSpeedMultiplier,
-  )
+  const playbackDurationMs = Math.max(totalDistanceKm * 800, 2000)
 
   const handlePlayToggle = () => {
     setPlaying((value) => !value)
