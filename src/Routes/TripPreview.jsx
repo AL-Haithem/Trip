@@ -41,7 +41,7 @@ function TripPreview() {
   const [tour, setTour] = useState(null)
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(true)
-  const [busSpeed, setBusSpeed] = useState(2)
+  const [busSpeed, setBusSpeed] = useState(1)
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const activeStepRef = useRef(null)
 
