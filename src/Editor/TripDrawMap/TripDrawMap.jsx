@@ -416,13 +416,9 @@ const TripDrawMap = forwardRef(function TripDrawMap(
       pushHistory()
       const newVertex = {lng: e.lngLat.lng, lat: e.lngLat.lat, type: null, label: null}
       const curLen = s.verts.length
-      setVerts(prev => {
-        if (prev.length === 0) return [newVertex]
-        // Insert before the fixed end point: [ ...prev.slice(0,-1), newVertex, last ]
-        return [...prev.slice(0, -1), newVertex, prev[prev.length - 1]]
-      })
-      // Select the new point immediately to ease changing its type (the one before last)
-      setSelVertex(curLen === 0 ? 0 : curLen - 1)
+      setVerts(prev => [...prev, newVertex])
+      // The newest point is always the current endpoint.
+      setSelVertex(curLen)
       setSelWaypoint(null)
       setShowTypeMenu(false)
       return

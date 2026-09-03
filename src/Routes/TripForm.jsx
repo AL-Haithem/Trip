@@ -24,6 +24,12 @@ function TripForm() {
   const [tour, setTour] = useState(createEmptyTour())
   const [saved, setSaved] = useState(false)
 
+  const formatDateInput = (date) => {
+    if (!date) return ""
+    if (typeof date === "string") return date.slice(0, 10)
+    return new Date(date).toISOString().slice(0, 10)
+  }
+
   const createDepartureDay = () => ({
     id: `day_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     date: "",
@@ -44,7 +50,11 @@ function TripForm() {
         ...data,
         includedServices: data.includedServices || [],
         notIncludedServices: data.notIncludedServices || [],
-        departureSchedule: data.departureSchedule || [],
+        departureSchedule: (data.departureSchedule || []).map((day) => ({
+          ...day,
+          date: formatDateInput(day.date),
+          times: day.times || [],
+        })),
       });
     });
     return () => { mounted = false; };
