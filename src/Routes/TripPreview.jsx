@@ -6,11 +6,16 @@ import maplibregl from "maplibre-gl"
 import { getTrip } from "../services/tripApi.js"
 import { useMapController } from "../Maps/UseStates/useMapController.js"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
-import { START_ICON, END_ICON, START_COLOR, END_COLOR } from "../Editor/TripDrawMap/theme.js"
+import { START_ICON, END_ICON } from "../Editor/TripDrawMap/theme.js"
+import { flagSvg, pinSvg } from "../Editor/TripDrawMap/TripDrawMap.jsx"
 import { brand } from "../content/siteContent.js"
 import Icon from "../components/ui/Icon.jsx"
 import "../styles/routePreview.css"
 import "maplibre-gl/dist/maplibre-gl.css"
+
+function svgToUrl(svg) {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+}
 
 function TripPreview() {
   useEffect(() => {
@@ -430,17 +435,21 @@ function TripPreview() {
             </Source>
 
             {routeData.stops.map((stop, index) => {
+              if (stop.type === "normal") return null
+
               const isActive = index <= currentIndex
               const [lng, lat] = stop.coords
               const typeMeta = WAYPOINT_TYPES.find((item) => item.id === stop.type) || WAYPOINT_TYPES[0]
               const isStart = index === 0
               const isEnd = index === routeData.stops.length - 1
-              const markerIcon = isStart ? START_ICON : isEnd ? END_ICON : typeMeta?.icon || "location-dot"
               const markerClass = isStart ? "start" : isEnd ? "end" : ""
+              const markerSvg = isStart || isEnd
+                ? flagSvg(isStart ? "start" : "end")
+                : pinSvg(stop.type, false)
               return (
                 <Marker key={stop.id} longitude={lng} latitude={lat} anchor="center">
-                  <div className={`rp-stop ${isActive ? "active" : ""} ${markerClass}`} title={stop.label}>
-                    <span><Icon name={markerIcon} /></span>
+                  <div className={`rp-stop ${isActive ? "active" : ""} ${markerClass}`} title={stop.label || typeMeta?.label || "Stop"}>
+                    <img src={svgToUrl(markerSvg)} alt="" draggable="false" />
                   </div>
                 </Marker>
               )
