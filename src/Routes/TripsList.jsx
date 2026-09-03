@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
-import {getTours, getSession} from "../services/mockApi.js"
+import {getTours} from "../services/mockApi.js"
 import {hasStartPoint, findPastSlot} from "../data/models.js"
 import {deleteTour, setPublished} from "../data/tourStore.js"
 import Button from "../components/ui/Button.jsx"
@@ -18,21 +18,16 @@ function TripsList() {
   const [tours, setTours] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const sessionCompany = getSession()?.company || null
 
   useEffect(() => {
     let mounted = true;
     getTours().then((data) => {
       if (!mounted) return;
-      const companyId = sessionCompany ? sessionCompany.id : null;
-      const filtered = companyId
-        ? (data || []).filter((t) => t.companyId === companyId)
-        : (data || []);
-      setTours(filtered);
+      setTours(data || []);
       setLoading(false);
     });
     return () => { mounted = false; };
-  }, [sessionCompany])
+  }, [])
 
   const handleDelete = async (tourId) => {
     if (!confirm(copy.deleteConfirm)) return;
@@ -72,11 +67,6 @@ function TripsList() {
       <div className="tl-head">
         <div style={{display: "flex", flexDirection: "column"}}>
           <h1 className="tl-title"><Icon name="route" /> {copy.title}</h1>
-          {sessionCompany && (
-            <div className="tl-managed">
-              <Icon name="building" /> {copy.managedBy(sessionCompany.name)}
-            </div>
-          )}
         </div>
         <Button variant="primary" onClick={() => navigate("/trips/create")}>
           <Icon name="plus" /> {copy.createButton}

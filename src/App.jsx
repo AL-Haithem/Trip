@@ -1,10 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { Suspense, lazy } from "react";
 
 import NotFound from './NotFound.jsx'
 import LandingPage from './Routes/LandingPage.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
-import {getSession} from './services/mockApi.js'
 
 // Get the base URL from Vite's import.meta.env.BASE_URL for GitHub Pages support
 const basePath = import.meta.env.BASE_URL || "/"
@@ -16,12 +15,6 @@ const TripDraw = lazy(() => import('./Routes/TripDraw.jsx'))
 const BookingPage = lazy(() => import('./Routes/BookingPage.jsx'))
 const TripPreview = lazy(() => import('./Routes/TripPreview.jsx'))
 const Auth = lazy(() => import('./Routes/Auth.jsx'))
-
-function RequireCompany({children}) {
-  const session = getSession()
-  if (!session || session.role !== "company") {return <Navigate to="/login" replace />}
-  return children
-}
 
 function LegacyUrlGuard({children}) {
   const location = useLocation()
@@ -52,13 +45,13 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/map" element={<HomePage />} />
               <Route path="/trips" element={<TripsList />} />
-              <Route path="/trips/create" element={<RequireCompany><TripForm /></RequireCompany>} />
-              <Route path="/create" element={<RequireCompany><TripForm /></RequireCompany>} />
-              <Route path="/trips/edit/:id" element={<RequireCompany><TripForm /></RequireCompany>} />
-              <Route path="/trips/edit:id" element={<RequireCompany><TripForm /></RequireCompany>} />
-              <Route path="/edit/:id" element={<RequireCompany><TripForm /></RequireCompany>} />
-              <Route path="/edit:id" element={<RequireCompany><TripForm /></RequireCompany>} />
-              <Route path="/trips/draw/:id" element={<RequireCompany><TripDraw /></RequireCompany>} />
+              <Route path="/trips/create" element={<TripForm />} />
+              <Route path="/create" element={<TripForm />} />
+              <Route path="/trips/edit/:id" element={<TripForm />} />
+              <Route path="/trips/edit:id" element={<TripForm />} />
+              <Route path="/edit/:id" element={<TripForm />} />
+              <Route path="/edit:id" element={<TripForm />} />
+              <Route path="/trips/draw/:id" element={<TripDraw />} />
               <Route path="/Preview/:id" element={<TripPreview />} />
               <Route path="/Preview:id" element={<TripPreview />} />
               <Route path="/booking/:id" element={<BookingPage />} />

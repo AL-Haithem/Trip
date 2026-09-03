@@ -1,9 +1,9 @@
 import {useState, useEffect} from "react"
 import {useParams, useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
-import {createEmptyTour, DEFAULT_SERVICES, findPastSlot, todayStr} from "../data/models.js"
+import {createEmptyTour, toCreateTripPayload, DEFAULT_SERVICES, todayStr} from "../data/models.js"
 import {saveTour, getTour} from "../data/tourStore.js"
-import {getSession} from "../services/mockApi.js"
+import {createTrip} from "../services/tripApi.js"
 import {Input, TextArea} from "../components/ui/Input.jsx"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
@@ -22,7 +22,6 @@ function TripForm() {
 
   const [tour, setTour] = useState(createEmptyTour())
   const [saved, setSaved] = useState(false)
-  const sessionCompany = getSession()?.company || null
 
   const createDepartureDay = () => ({
     id: `day_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -129,41 +128,14 @@ function TripForm() {
   }
 
   const handleSave = async () => {
-    if (!tour.title || tour.title.trim().length === 0) {
-      alert(copy.titleRequired);
-      return;
+    const payload = toCreateTripPayload(tour)
+
+    if (!isEdit) {
+      await createTrip(payload)
+    } else {
+      await saveTour(payload)
     }
 
-    const schedule = (tour.departureSchedule || []).filter((day) => day && day.date)
-    if (!schedule.length) {
-      alert("Please add at least one departure date and time.")
-      return
-    }
-
-    const invalidSlot = schedule.some((day) => !day.times || !day.times.length || day.times.some((slot) => !slot.time || !slot.time.trim() || Number(slot.seatsAvailable || 0) <= 0 || Number(slot.price || 0) <= 0))
-    if (invalidSlot) {
-      alert("Each departure time must include a valid time, seats, and price.")
-      return
-    }
-
-    const pastDay = findPastSlot(schedule)
-    if (pastDay) {
-      alert(`Departure on ${pastDay.date} has already passed. Please choose a future date and time.`)
-      return
-    }
-
-    const allSlots = schedule.flatMap((day) => day.times || [])
-    const maxSeats = allSlots.reduce((max, slot) => Math.max(max, Number(slot.seatsAvailable || 0)), 0)
-    const maxPrice = allSlots.reduce((max, slot) => Math.max(max, Number(slot.price || 0)), 0)
-
-    const companyId = tour.companyId || (sessionCompany ? sessionCompany.id : null);
-    await saveTour({
-      ...tour,
-      companyId,
-      price: maxPrice,
-      seats: maxSeats,
-      departureSchedule: schedule,
-    });
     setSaved(true);
     navigate("/trips");
   };

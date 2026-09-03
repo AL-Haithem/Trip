@@ -2,8 +2,8 @@ import {useState, useRef} from "react"
 
 import MainMap from "../Maps/MainMap.jsx"
 import EditMode from "../Editor/EditMode.jsx"
-import {createEmptyTour, isValidTour, DEFAULT_SERVICES} from "../data/models.js"
-import {saveTour} from "../data/tourStore.js"
+import {createEmptyTour, toCreateTripPayload, DEFAULT_SERVICES} from "../data/models.js"
+import {createTrip} from "../services/tripApi.js"
 import {graphicsToGeoJSON} from "../Editor/storage.js"
 
 function CreateTrip() {
@@ -47,12 +47,7 @@ function CreateTrip() {
       distanceKm,
     };
 
-    if (!isValidTour(finalTour)) {
-      alert("Please provide a title and draw at least one route before saving.");
-      return;
-    }
-
-    await saveTour(finalTour);
+    await createTrip(toCreateTripPayload(finalTour));
     setSaved(true);
   };
 
@@ -156,7 +151,7 @@ function CreateTrip() {
 
         {saved && (
           <p style={{color: "#4cff8a", fontSize: "13px", marginTop: "10px"}}>
-            Tour saved to local storage.
+            Tour sent to backend.
           </p>
         )}
       </div>

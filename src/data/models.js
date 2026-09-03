@@ -60,3 +60,23 @@ export function createEmptyTour() {
     createdAt: Date.now(),
   };
 }
+
+export function toCreateTripPayload(tour) {
+  return {
+    title: tour.title?.trim() || "",
+    description: tour.description?.trim() || "",
+    includedServices: (tour.includedServices || []).map((service) => service.trim()).filter(Boolean),
+    notIncludedServices: (tour.notIncludedServices || []).map((service) => service.trim()).filter(Boolean),
+    departureSchedule: (tour.departureSchedule || [])
+      .filter((day) => day && day.date)
+      .map((day) => ({
+        date: day.date,
+        times: (day.times || []).map((slot) => ({
+          time: slot.time,
+          seatsAvailable: Number(slot.seatsAvailable),
+          price: Number(slot.price),
+        })),
+      })),
+    status: tour.status || "draft",
+  };
+}

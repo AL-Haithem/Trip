@@ -1,4 +1,3 @@
-const SESSION_KEY = "geo_session";
 const FALLBACK_KEY = "geo_mock_backup";
 
 async function readLocalMockFallback() {
@@ -40,59 +39,6 @@ async function loadMockFile() {
 
 async function writeMockFile(mock) {
   return writeLocalMockFallback(mock);
-}
-
-export async function login(email, password) {
-  const session = {
-    email,
-    role: "company",
-    company: {email},
-    user: null,
-    loggedInAt: Date.now(),
-  };
-  try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  } catch (e) {
-    console.error("mockApi: failed to store session", e);
-  }
-  return session;
-}
-
-export async function register({email, password, name, phone}) {
-  const id = `user_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-  const profile = {id, name, email, phone: phone || ""};
-
-  const session = {
-    email,
-    role: "company",
-    company: profile,
-    user: null,
-    loggedInAt: Date.now(),
-  };
-  try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  } catch (e) {
-    console.error("mockApi: failed to store session", e);
-  }
-  return session;
-}
-
-export function logout() {
-  try {
-    localStorage.removeItem(SESSION_KEY);
-  } catch (e) {
-    console.error("mockApi: failed to clear session", e);
-  }
-}
-
-export function getSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    console.error("mockApi: failed to read session", e);
-    return null;
-  }
 }
 
 export async function getTours() {
@@ -148,50 +94,4 @@ export async function setPublished(id, published) {
   }
   tour.published = published;
   return saveTour(tour);
-}
-
-// Temporary in-memory OTP store for password reset (no real email service).
-const resetCodes = new Map();
-
-export async function requestPasswordReset(email) {
-  const mock = await loadMockFile();
-  const cred = (mock.auth?.credentials || []).find(
-    (c) => c.email === email.trim().toLowerCase()
-  );
-  if (!cred) {
-    const err = new Error("Email not found");
-    err.code = "AUTH_NOTFOUND";
-    throw err;
-  }
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  resetCodes.set(email.trim().toLowerCase(), code);
-  return {code};
-}
-
-export async function confirmPasswordReset(email, code, newPassword) {
-  const key = email.trim().toLowerCase();
-  const expected = resetCodes.get(key);
-  if (!expected || expected !== String(code).trim()) {
-    const err = new Error("Invalid or expired code");
-    err.code = "AUTH_BADCODE";
-    throw err;
-  }
-  const mock = await loadMockFile();
-  const creds = mock.auth?.credentials || [];
-  const cred = creds.find((c) => c.email === key);
-  if (!cred) {
-    const err = new Error("Email not found");
-    err.code = "AUTH_NOTFOUND";
-    throw err;
-  }
-  cred.password = newPassword;
-  mock.auth.credentials = creds;
-  const ok = await writeMockFile(mock);
-  if (!ok) {
-    const err = new Error("Failed to save password");
-    err.code = "AUTH_WRITE";
-    throw err;
-  }
-  resetCodes.delete(key);
-  return true;
 }

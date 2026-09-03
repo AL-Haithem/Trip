@@ -6,6 +6,7 @@ export const CDN_BASE_URL = trimTrailingSlash("https://pub-7e98b7cbd8d54f91a1f94
 export const API_ROUTES = {
   mock: "/api/mock",
   versions: "/api/public/versions",
+  tripCreate: "/api/trip/create",
 }
 
 export function backendUrl(route) {
