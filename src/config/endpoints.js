@@ -8,6 +8,7 @@ export const API_ROUTES = {
   versions: "/api/public/versions",
   tripCreate: "/api/trip/create",
   trips: "/api/trip/trips",
+  tripPublish: (id) => `/api/trip/trips/publish/${id}`,
 }
 
 export function backendUrl(route) {

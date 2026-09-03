@@ -9,3 +9,8 @@ export async function getTrips() {
   const response = await axios.get(backendUrl(API_ROUTES.trips))
   return response.data?.trips || []
 }
+
+export async function publishTrip(id) {
+  const response = await axios.post(backendUrl(API_ROUTES.tripPublish(id)))
+  return response.data
+}

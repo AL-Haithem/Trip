@@ -3,7 +3,7 @@ import {useState, useRef} from "react"
 import MainMap from "../Maps/MainMap.jsx"
 import EditMode from "../Editor/EditMode.jsx"
 import {createEmptyTour, toCreateTripPayload, DEFAULT_SERVICES} from "../data/models.js"
-import {createTrip} from "../services/tripApi.js"
+import {createTrip, getTrips} from "../services/tripApi.js"
 import {graphicsToGeoJSON} from "../Editor/storage.js"
 
 function CreateTrip() {
@@ -48,6 +48,7 @@ function CreateTrip() {
     };
 
     await createTrip(toCreateTripPayload(finalTour));
+    await getTrips();
     setSaved(true);
   };
 

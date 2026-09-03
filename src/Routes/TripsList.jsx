@@ -1,9 +1,8 @@
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
-import {getTrips} from "../services/tripApi.js"
-import {hasStartPoint, findPastSlot} from "../data/models.js"
-import {deleteTour, setPublished} from "../data/tourStore.js"
+import {getTrips, publishTrip} from "../services/tripApi.js"
+import {deleteTour} from "../data/tourStore.js"
 import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Icon from "../components/ui/Icon.jsx"
@@ -36,25 +35,15 @@ function TripsList() {
   };
 
   const handleTogglePublish = async (tour) => {
-    const next = tour.status !== "published";
-    if (next) {
-      if (!hasStartPoint(tour)) {
-        alert("You must draw a starting point for this trip before publishing. Use the Draw button to set it.");
-        return;
-      }
-      const pastDay = findPastSlot(tour.departureSchedule);
-      if (pastDay) {
-        alert(`Cannot publish: the departure on ${pastDay.date} has already passed. Edit the trip and choose a future date.`);
-        return;
-      }
-      const schedule = (tour.departureSchedule || []).filter((day) => day && day.date);
-      if (!schedule.length) {
-        alert("Cannot publish: add at least one valid departure date and time.");
-        return;
-      }
+    if (tour.status === "published") return;
+
+    try {
+      const response = await publishTrip(tour._id)
+      const status = response.data?.status || response.status || "published"
+      setTours(prev => prev.map(t => t._id === tour._id ? {...t, status} : t))
+    } catch (error) {
+      alert(error.response?.data?.message || error.message || "Could not publish the trip.")
     }
-    await setPublished(tour._id, next);
-    setTours(prev => prev.map(t => t._id === tour._id ? {...t, status: next ? "published" : "draft"} : t));
   };
 
   const handleEditImage = (tourId) => {
