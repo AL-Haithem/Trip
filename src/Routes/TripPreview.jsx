@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Map, { Marker, Source, Layer } from "react-map-gl/maplibre"
 import { useNavigate, useParams } from "react-router"
 import maplibregl from "maplibre-gl"
@@ -138,31 +138,32 @@ function TripPreview() {
   }
   const interpolateAngle = (from, to, ratio) => normalizeAngle(from + shortestAngleDelta(from, to) * ratio)
 
+  const routeBearings = useMemo(() => {
+    if (routeData.coords.length < 2) return []
+
+    return routeData.coords.slice(0, -1).map((point, index) =>
+      getBearingToTarget(point, routeData.coords[index + 1]),
+    )
+  }, [routeData.coords])
+
+  const getRouteHeading = useCallback((index, ratio) => {
+    const currentBearing = routeBearings[index] ?? 24
+    const nextBearing = routeBearings[index + 1] ?? currentBearing
+    const turnProgress = clamp((ratio - 0.1) / 0.8, 0, 1)
+    const smoothTurn = turnProgress * turnProgress * (3 - 2 * turnProgress)
+    return interpolateAngle(currentBearing, nextBearing, smoothTurn)
+  }, [routeBearings])
+
   const currentTravelPoint = useMemo(() => routeData.coords.length > 1
     ? interpolatePoint(routeData.coords[segmentIndex], routeData.coords[segmentIndex + 1], segmentProgress)
     : routeData.coords[0], [routeData.coords, segmentIndex, segmentProgress])
-  const nextTravelPoint = useMemo(() => routeData.coords.length > 1
-    ? routeData.coords[Math.min(segmentIndex + 1, routeData.coords.length - 1)]
-    : routeData.coords[0], [routeData.coords, segmentIndex])
   const currentStop = routeData.stops[currentIndex] || routeData.stops[0]
 
   const startPoint = routeData.coords[0]
 
-  const currentHeading = currentTravelPoint && nextTravelPoint
-    ? getBearingToTarget(currentTravelPoint, nextTravelPoint)
+  const cameraBearing = routeData.coords.length > 1
+    ? getRouteHeading(segmentIndex, segmentProgress)
     : 24
-
-  const previousTravelPoint = routeData.coords[Math.max(segmentIndex - 1, 0)] || currentTravelPoint
-  const previousHeading = previousTravelPoint && currentTravelPoint
-    ? getBearingToTarget(previousTravelPoint, currentTravelPoint)
-    : currentHeading
-
-  const turnBlend = routeData.coords.length > 2
-    ? clamp((segmentProgress - 0.25) / 0.55, 0, 1)
-    : 1
-  const cameraBearing = routeData.coords.length > 2
-    ? interpolateAngle(previousHeading, currentHeading, turnBlend)
-    : currentHeading
 
   const cameraCenter = useMemo(() => currentTravelPoint || startPoint || [0, 0], [currentTravelPoint, startPoint])
   const routeGeoJson = useMemo(() => ({
@@ -202,7 +203,7 @@ function TripPreview() {
       animate: false,
       essential: true,
     })
-  }, [cameraBearing, cameraCenter, currentTravelPoint, playing, routeData.coords.length])
+  }, [cameraBearing, cameraCenter, currentTravelPoint, getRouteHeading, playing, routeData.coords.length])
 
   useEffect(() => {
     if (!playing || !routeData.coords.length) return
@@ -235,7 +236,7 @@ function TripPreview() {
           center,
           zoom: 16,
           pitch: 62,
-          bearing: getBearingToTarget(center, to),
+          bearing: getRouteHeading(segment, ratio),
           animate: false,
           essential: true,
         })
@@ -258,7 +259,7 @@ function TripPreview() {
     return () => {
       if (frameId) cancelAnimationFrame(frameId)
     }
-  }, [busSpeed, playing, playbackDurationMs, routeLength, routeData.coords])
+  }, [busSpeed, getRouteHeading, playing, playbackDurationMs, routeLength, routeData.coords])
 
   useEffect(() => {
     if (!activeStepRef.current) return
@@ -397,6 +398,7 @@ function TripPreview() {
                   type="button"
                   onClick={() => {
                     const next = routeData.stops.length > 1 ? index / routeLength : 0
+                    progressRef.current = next
                     setProgress(next)
                     setPlaying(false)
                   }}
