@@ -7,6 +7,7 @@ export const API_ROUTES = {
   mock: "/api/mock",
   versions: "/api/public/versions",
   tripCreate: "/api/trip/create",
+  trips: "/api/trip/trips",
 }
 
 export function backendUrl(route) {

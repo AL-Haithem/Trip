@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react"
 import {useNavigate} from "react-router"
 import {brand} from "../content/siteContent.js"
-import {getTours} from "../services/mockApi.js"
+import {getTrips} from "../services/tripApi.js"
 import {hasStartPoint, findPastSlot} from "../data/models.js"
 import {deleteTour, setPublished} from "../data/tourStore.js"
 import Button from "../components/ui/Button.jsx"
@@ -21,7 +21,7 @@ function TripsList() {
 
   useEffect(() => {
     let mounted = true;
-    getTours().then((data) => {
+    getTrips().then((data) => {
       if (!mounted) return;
       setTours(data || []);
       setLoading(false);
@@ -36,7 +36,7 @@ function TripsList() {
   };
 
   const handleTogglePublish = async (tour) => {
-    const next = !tour.published;
+    const next = tour.status !== "published";
     if (next) {
       if (!hasStartPoint(tour)) {
         alert("You must draw a starting point for this trip before publishing. Use the Draw button to set it.");
@@ -53,8 +53,8 @@ function TripsList() {
         return;
       }
     }
-    await setPublished(tour.id, next);
-    setTours(prev => prev.map(t => t.id === tour.id ? {...t, published: next} : t));
+    await setPublished(tour._id, next);
+    setTours(prev => prev.map(t => t._id === tour._id ? {...t, status: next ? "published" : "draft"} : t));
   };
 
   const handleEditImage = (tourId) => {
@@ -79,8 +79,14 @@ function TripsList() {
         <p className="tl-msg">{copy.empty}</p>
       ) : (
         <div className="tl-grid">
-          {tours.map((tour, idx) => (
-            <div key={tour.id} className="tl-card" style={{animationDelay: `${idx * 0.1}s`}}>
+          {tours.map((tour, idx) => {
+            const firstSlot = tour.departureSchedule?.flatMap((day) => day.times || [])[0]
+            const seats = tour.departureSchedule?.flatMap((day) => day.times || [])
+              .reduce((total, slot) => total + Number(slot.seatsAvailable || 0), 0) || 0
+            const isPublished = tour.status === "published"
+
+            return (
+            <div key={tour._id} className="tl-card" style={{animationDelay: `${idx * 0.1}s`}}>
               <div className="tl-card-img-wrap">
                 <img 
                   src={tour.image || `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -101,7 +107,7 @@ function TripsList() {
                   alt={tour.title || "Trip image"}
                 />
                 <div className="tl-card-img-overlay">
-                  <button className="tl-edit-img-btn" onClick={() => handleEditImage(tour.id)} title="Change image">
+                  <button className="tl-edit-img-btn" onClick={() => handleEditImage(tour._id)} title="Change image">
                     <Icon name="pencil" />
                   </button>
                 </div>
@@ -110,7 +116,7 @@ function TripsList() {
               <div className="tl-card-body">
                 <div className="tl-card-head">
                   <h3 className="tl-card-title">{tour.title}</h3>
-                  <Chip green={tour.published}>{tour.published ? copy.published : copy.draft}</Chip>
+                  <Chip green={isPublished}>{isPublished ? copy.published : copy.draft}</Chip>
                 </div>
                 
                 <p className="tl-card-desc">
@@ -119,37 +125,38 @@ function TripsList() {
 
                 <div className="tl-card-meta">
                   <div className="tl-meta-item">
-                    <Icon name="dollar-sign" /> {copy.price(tour.price || 0)}
+                    <Icon name="dollar-sign" /> {copy.price(firstSlot?.price || 0)}
                   </div>
                   <div className="tl-meta-item">
                     <Icon name="road" /> {copy.distance(tour.distanceKm || 0)}
                   </div>
                   <div className="tl-meta-item">
-                    <Icon name="users" /> {copy.seats(tour.seats || 0)}
+                    <Icon name="users" /> {copy.seats(seats)}
                   </div>
                 </div>
 
                 <div className="tl-card-actions">
-                  <Button variant="info" size="sm" onClick={() => navigate(`/trips/edit/${tour.id}`)}>
+                  <Button variant="info" size="sm" onClick={() => navigate(`/trips/edit/${tour._id}`)}>
                     <Icon name="pencil" /> {copy.edit}
                   </Button>
-                  <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour.id}`)}>
+                  <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour._id}`)}>
                     <Icon name="map-location-dot" /> {copy.draw}
                   </Button>
                   <Button
-                    variant={tour.published ? "warning" : "primary"}
+                    variant={isPublished ? "warning" : "primary"}
                     size="sm"
                     onClick={() => handleTogglePublish(tour)}
                   >
-                    <Icon name={tour.published ? "eye-slash" : "eye"} /> {tour.published ? copy.unpublish : copy.publish}
+                    <Icon name={isPublished ? "eye-slash" : "eye"} /> {isPublished ? copy.unpublish : copy.publish}
                   </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(tour.id)}>
+                  <Button variant="danger" size="sm" onClick={() => handleDelete(tour._id)}>
                     <Icon name="trash" /> {copy.delete}
                   </Button>
                 </div>
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>
