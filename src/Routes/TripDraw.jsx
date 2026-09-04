@@ -23,12 +23,14 @@ function TripDraw() {
   const [pointMode, setPointMode] = useState(null)
   const [routeError, setRouteError] = useState("")
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [distanceKm, setDistanceKm] = useState(0)
 
 
   // Initial editor load data (read once) //
   const [initialData, setInitialData] = useState(null)
 
   const editorRef = useRef(null)
+  const allowNavigationRef = useRef(false)
 
   useEffect(() => {
     let mounted = true
@@ -97,7 +99,29 @@ function TripDraw() {
       confirmLabel: "Leave",
       icon: "triangle-exclamation",
     })
-    if (confirmed) navigate(destination)
+    if (confirmed) {
+      allowNavigationRef.current = true
+      navigate(destination)
+    }
+  }
+
+  const handlePreview = () => {
+    const editorData = editorRef.current?.getData()
+    if (!editorData?.route || !editorData.startPoint) {
+      showPopup("Add a start point and at least one route segment before previewing.")
+      return
+    }
+    allowNavigationRef.current = true
+    navigate(`/Preview/${id}`, {
+      state: {
+        previewData: {
+          title: tour.title,
+          route: editorData.route,
+          startPoint: editorData.startPoint,
+          distanceKm: editorData.distanceKm,
+        },
+      },
+    })
   }
 
   useEffect(() => {
@@ -130,6 +154,7 @@ function TripDraw() {
           setPointMode={setPointMode}
           onPlace={() => setPointMode(null)}
           onDirtyChange={setHasUnsavedChanges}
+          onDistanceChange={setDistanceKm}
         />
       </div>
 
@@ -147,7 +172,7 @@ function TripDraw() {
           <button onClick={handleSaveRoute} className="td-float-save">
             {saved ? copy.saved : copy.save}
           </button>
-          <button onClick={() => confirmLeave(`/Preview/${id}`)} className="td-float-preview" title="Preview trip">
+          <button onClick={handlePreview} className="td-float-preview" title="Preview trip">
             <Icon name="eye" />
           </button>
           <div className="td-float-name" title={tour.title}>{tour.title}</div>
@@ -156,6 +181,8 @@ function TripDraw() {
           <p className="td-float-saved">{copy.savedMessage}</p>
         )}
       </div>
+
+      <div className="td-distance-badge">Distance: {distanceKm.toFixed(1)} km</div>
 
     </div>
   )

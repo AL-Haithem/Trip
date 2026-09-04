@@ -46,7 +46,7 @@ export function PopupProvider({children}) {
               </div>
               <div className="popup-confirm-actions">
                 <button type="button" className="popup-action popup-action-cancel" onClick={() => resolveConfirmation(false)}>Cancel</button>
-                <button type="button" className="popup-action popup-action-delete" onClick={() => resolveConfirmation(true)}>{popup.confirmLabel || "Confirm"}</button>
+                <button type="button" className="popup-action popup-action-confirm" onClick={() => resolveConfirmation(true)}>{popup.confirmLabel || "Confirm"}</button>
               </div>
             </div>
           ) : (

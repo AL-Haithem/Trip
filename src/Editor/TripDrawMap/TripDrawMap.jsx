@@ -156,7 +156,7 @@ function composeRoute(s) {
 }
 
 const TripDrawMap = forwardRef(function TripDrawMap(
-  {initialRoute, initialStart, initialEnd, pointMode, setPointMode, onPointsChange, onPlace},
+  {initialRoute, initialStart, initialEnd, pointMode, setPointMode, onPointsChange, onDirtyChange, onDistanceChange, onPlace},
   ref
 ) {
   const {mapStyle} = useMapController()
@@ -181,11 +181,24 @@ const TripDrawMap = forwardRef(function TripDrawMap(
 
   const stateRef = useRef({})
   const historyRef = useRef([])
+  const initialStateSignature = useRef(null)
 
   useEffect(() => {
     stateRef.current = {waypoints, verts, startPoint, endPoint, activeTool, pointMode, selWaypoint, selVertex}
     historyRef.current = history
   })
+
+  useEffect(() => {
+    const signature = JSON.stringify({waypoints, verts, startPoint, endPoint})
+    if (initialStateSignature.current === null) {
+      initialStateSignature.current = signature
+      onDirtyChange?.(false)
+    } else {
+      onDirtyChange?.(signature !== initialStateSignature.current)
+    }
+    const route = composeRoute({startPoint, verts})
+    onDistanceChange?.(route.length >= 2 ? Number(computeDistance(route)) : 0)
+  }, [endPoint, onDirtyChange, onDistanceChange, startPoint, verts, waypoints])
 
   useEffect(() => {
     if (onPointsChange) onPointsChange(!!startPoint)
@@ -251,7 +264,7 @@ const TripDrawMap = forwardRef(function TripDrawMap(
       })
       onDirtyChange?.(false)
     },
-  }), [])
+  }), [onDirtyChange])
 
   const setDataLive = useCallback(() => {
     const src = routeSourceRef.current

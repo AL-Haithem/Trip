@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Map, { Marker, Source, Layer } from "react-map-gl/maplibre"
-import { useNavigate, useParams } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router"
 import maplibregl from "maplibre-gl"
 
 import { getTrip } from "../services/tripApi.js"
@@ -23,11 +23,13 @@ function TripPreview() {
   }, [])
 
   const { id } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const mapRef = useRef(null)
   const { mapStyle } = useMapController()
 
-  const [tour, setTour] = useState(null)
+  const previewData = location.state?.previewData
+  const [tour, setTour] = useState(previewData || null)
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [busSpeed, setBusSpeed] = useState(1)
@@ -40,13 +42,13 @@ function TripPreview() {
     let mounted = true
 
     getTrip(id).then((data) => {
-      if (mounted) setTour(data)
+      if (mounted) setTour(previewData ? { ...data, ...previewData } : data)
     })
 
     return () => {
       mounted = false
     }
-  }, [id])
+  }, [id, previewData])
 
   const routeData = useMemo(() => {
     if (!tour || !tour.route || !tour.route.features) {
