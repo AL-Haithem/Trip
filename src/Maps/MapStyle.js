@@ -33,7 +33,10 @@ export function buildPMTilesStyle(versions) {
 
       openfreemap: {
         type: 'vector',
-        url: 'https://tiles.openfreemap.org/planet'
+        url: 'https://tiles.openfreemap.org/planet',
+        // OpenFreeMap detail is currently needed only for the Algeria coverage.
+        // This prevents MapLibre from requesting tiles outside its bounding box.
+        bounds: [-8.67, 18.96, 11.99, 37.09]
       },
 
       hillshadeDEM: {
