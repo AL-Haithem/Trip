@@ -9,7 +9,6 @@ import { useMapHover } from "./UseStates/useMapHover.js"
 import { getMapTrips } from "../services/tripApi.js"
 import Icon from "../components/ui/Icon.jsx"
 import { FpsMeter } from "../components/ui/FpsMeter.jsx"
-import { isSmallScreen, setBuilding3DVisibility } from "./building3d.js"
 
 function getStartCoords(tour) {
   const spc = tour.startPoint?.coordinates
@@ -43,13 +42,11 @@ function computeClusters(points, zoom) {
   })
 }
 
-function MapControls({ minZoom, maxZoom, hasClusters }) {
+function MapControls({ minZoom, maxZoom }) {
   const { current: map } = useMap()
   const [zoom, setZoom] = useState(minZoom)
   const [is3D, setIs3D] = useState(false)
   const zoomThumbRef = useRef(null)
-  const smallScreen = isSmallScreen()
-  const canUse3D = !smallScreen && zoom >= 15 && !hasClusters
 
   useEffect(() => {
     if (!map) return;
@@ -69,21 +66,11 @@ function MapControls({ minZoom, maxZoom, hasClusters }) {
     }
   }, [map]);
 
-  useEffect(() => {
-    if (!map) return
-    const syncBuildings = () => setBuilding3DVisibility(map, canUse3D && is3D, zoom)
-    if (!canUse3D && is3D) {
-      map.easeTo({ pitch: 0, bearing: 0, duration: 500 })
-      setIs3D(false)
-    }
-    syncBuildings()
-  }, [canUse3D, hasClusters, is3D, map, zoom])
-
   const zoomIn = () => map && map.zoomTo(Math.min(zoom + 1, maxZoom), { duration: 300 })
   const zoomOut = () => map && map.zoomTo(Math.max(zoom - 1, minZoom), { duration: 300 })
 
   const toggle3D = () => {
-    if (!map || !canUse3D) return
+    if (!map) return
     if (is3D) {
       map.easeTo({ pitch: 0, bearing: 0, duration: 800 })
     } else {
@@ -133,7 +120,7 @@ function MapControls({ minZoom, maxZoom, hasClusters }) {
         <button type="button" className="map-zoom-btn" onClick={zoomOut}>−</button>
       </div>
 
-      <button className="map-toggle-btn glass" onClick={toggle3D} disabled={!canUse3D} data-tooltip={canUse3D ? (is3D ? "2D" : "3D") : "3D available at zoom 15+"} style={{
+      <button className="map-toggle-btn glass" onClick={toggle3D} data-tooltip={is3D ? "2D" : "3D"} style={{
         width: 36, height: 36, borderRadius: 8, fontWeight: 'bold', fontSize: 12,
         background: is3D ? "var(--accent)" : "rgba(15,18,24,0.6)",
         color: is3D ? "var(--accent-ink)" : "var(--text)"
@@ -328,7 +315,6 @@ function TripDetailsPanel({ tour, onClose, onPreview }) {
 function HomeMap() {
   const minZoom = 1.9;
   const maxZoom = 20;
-  const smallScreen = isSmallScreen()
 
   const { mapStyle } = useMapController();
   const mapInstance = useRef(null)
@@ -394,8 +380,8 @@ function HomeMap() {
           mapLib={maplibregl}
           style={{ width: '100%', height: '100%', position: "relative" }}
           doubleClickZoom={false}
-          dragRotate={!smallScreen}
-          touchZoomRotate={!smallScreen}
+          dragRotate={true}
+          touchZoomRotate={true}
           attributionControl={false}
 
           onLoad={(event) => { mapInstance.current = event.target }}
@@ -413,7 +399,7 @@ function HomeMap() {
             setZoom(event.target.getZoom())
           }}
         >
-          <MapControls minZoom={minZoom} maxZoom={maxZoom} hasClusters={clusters.some((cluster) => cluster.points.length > 1)} />
+          <MapControls minZoom={minZoom} maxZoom={maxZoom} />
           <MapInfoPanel />
 
           {clusters.map((cl) => {

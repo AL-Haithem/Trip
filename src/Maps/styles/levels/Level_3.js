@@ -133,9 +133,6 @@ export function buildLevel_3(colors) {
     {
       id: 'ofm-buildings-3d',
       type: 'fill-extrusion',
-      layout: {
-        visibility: 'none'
-      },
 
       source: 'openfreemap',
       'source-layer': 'building',
