@@ -45,7 +45,7 @@ function getAreaName(feature) {
 }
 
 function getAreaCounts(map, tours, layerId) {
-  const groups = new Map()
+  const groups = new globalThis.Map()
 
   tours.forEach((tour) => {
     const coords = getStartCoords(tour)
