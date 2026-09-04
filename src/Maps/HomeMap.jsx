@@ -77,8 +77,6 @@ function MapControls({ minZoom, maxZoom, hasClusters }) {
       setIs3D(false)
     }
     syncBuildings()
-    map.on("styledata", syncBuildings)
-    return () => map.off("styledata", syncBuildings)
   }, [canUse3D, hasClusters, is3D, map, zoom])
 
   const zoomIn = () => map && map.zoomTo(Math.min(zoom + 1, maxZoom), { duration: 300 })

@@ -36,8 +36,6 @@ function MapControls({ minZoom, maxZoom }) {
       setIs3D(false)
     }
     syncBuildings()
-    map.on("styledata", syncBuildings)
-    return () => map.off("styledata", syncBuildings)
   }, [canUse3D, is3D, map, zoom])
 
   const zoomIn = () => map && map.zoomTo(Math.min(zoom + 1, maxZoom), { duration: 300 })

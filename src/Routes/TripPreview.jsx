@@ -55,8 +55,6 @@ function TripPreview() {
     const map = mapRef.current
     const syncBuildings = () => setBuilding3DVisibility(map, viewMode === "3d" && canUse3D, 16)
     syncBuildings()
-    map.on("styledata", syncBuildings)
-    return () => map.off("styledata", syncBuildings)
   }, [canUse3D, viewMode])
 
   useEffect(() => {
