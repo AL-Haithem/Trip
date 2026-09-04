@@ -359,6 +359,7 @@
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
   font-size: 18px;
+  color: var(--accent);
 }
 
 .rp-timeline {

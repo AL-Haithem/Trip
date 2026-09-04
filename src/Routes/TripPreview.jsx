@@ -506,7 +506,7 @@ function TripPreview() {
 
           {currentTravelPoint && (
             <div className="rp-vehicle-overlay" aria-label="Bus position">
-              <div className="rp-vehicle">🚌</div>
+              <div className="rp-vehicle"><Icon name="bus" /></div>
             </div>
           )}
 

@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from "react"
+import {useState, useEffect, useRef, useCallback} from "react"
 import {useParams, useNavigate, useLocation} from "react-router"
 
 import TripDrawMap from "../Editor/TripDrawMap/TripDrawMap.jsx"
@@ -31,8 +31,31 @@ function TripDraw() {
 
   const editorRef = useRef(null)
   const allowNavigationRef = useRef(false)
+  const draftStorageKey = `trip-draw-draft:${id}`
+
+  const readDraft = useCallback(() => {
+    const stateDraft = location.state?.previewData
+    if (stateDraft) return stateDraft
+
+    try {
+      return JSON.parse(sessionStorage.getItem(draftStorageKey) || "null")
+    } catch {
+      return null
+    }
+  }, [draftStorageKey, location.state])
 
   useEffect(() => {
+    const draft = readDraft()
+    if (draft?.route && draft.startPoint) {
+      setInitialData({
+        route: draft.route,
+        start: draft.startPoint,
+        distanceKm: draft.distanceKm || 0,
+      })
+      setTour((prev) => ({...prev, title: draft.title || prev.title}))
+      return undefined
+    }
+
     let mounted = true
     getTripRoute(id).then((response) => {
       if (mounted && response?.data) {
@@ -55,7 +78,7 @@ function TripDraw() {
       showPopup(message)
     })
     return () => { mounted = false }
-  }, [id])
+  }, [id, readDraft, showPopup])
 
   // When opening the page with no starting point, automatically enter start-drawing mode
   useEffect(() => {
@@ -80,6 +103,7 @@ function TripDraw() {
       })
       setTour(prev => ({...prev, route: editorData.route, startPoint: editorData.startPoint, distanceKm: response.data?.distanceKm || editorData.distanceKm}))
       editorRef.current?.markSaved()
+      sessionStorage.removeItem(draftStorageKey)
       setHasUnsavedChanges(false)
       setSaved(true)
       showPopup(response.message || "Trip route saved successfully", "success")
@@ -91,6 +115,7 @@ function TripDraw() {
 
   const confirmLeave = async (destination) => {
     if (!hasUnsavedChanges) {
+      if (!destination.includes(`/Preview/${id}`)) sessionStorage.removeItem(draftStorageKey)
       navigate(destination)
       return
     }
@@ -100,6 +125,7 @@ function TripDraw() {
       icon: "triangle-exclamation",
     })
     if (confirmed) {
+      if (!destination.includes(`/Preview/${id}`)) sessionStorage.removeItem(draftStorageKey)
       allowNavigationRef.current = true
       navigate(destination)
     }
@@ -112,6 +138,12 @@ function TripDraw() {
       return
     }
     allowNavigationRef.current = true
+    sessionStorage.setItem("trip-draw-draft:" + id, JSON.stringify({
+      title: tour.title,
+      route: editorData.route,
+      startPoint: editorData.startPoint,
+      distanceKm: editorData.distanceKm,
+    }))
     navigate(`/Preview/${id}`, {
       state: {
         previewData: {
