@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "generate:map-tiles": "node scripts/generate-map-tiles.mjs --minZoom=0 --maxZoom=10",
-    "prebuild": "node scripts/bump-version.mjs",
     "build": "vite build",
+    "version:bump": "node scripts/bump-version.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },

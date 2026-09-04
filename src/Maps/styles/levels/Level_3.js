@@ -63,6 +63,71 @@ export function buildLevel_3(colors) {
         'text-halo-width': .2
       }
     },
+
+    // District and neighbourhood labels from OpenFreeMap //
+    {
+      id: 'ofm-district-labels',
+      type: 'symbol',
+      source: 'openfreemap',
+      'source-layer': 'place',
+      minzoom: 13,
+      filter: [
+        'in',
+        ['get', 'class'],
+        ['literal', ['district', 'suburb', 'locality']]
+      ],
+      layout: {
+        'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']],
+        'text-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          13, 12,
+          16, 15,
+          20, 18
+        ],
+        'text-anchor': 'center',
+        'text-variable-anchor': ['center', 'left', 'right'],
+        'symbol-sort-key': ['coalesce', ['get', 'rank'], 99]
+      },
+      paint: {
+        'text-color': colors.label,
+        'text-halo-color': colors.labelHalo,
+        'text-halo-width': 1
+      }
+    },
+
+    {
+      id: 'ofm-neighbourhood-labels',
+      type: 'symbol',
+      source: 'openfreemap',
+      'source-layer': 'place',
+      minzoom: 13,
+      filter: [
+        'in',
+        ['get', 'class'],
+        ['literal', ['neighbourhood', 'quarter']]
+      ],
+      layout: {
+        'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']],
+        'text-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          13, 10,
+          16, 12,
+          20, 15
+        ],
+        'text-anchor': 'center',
+        'text-variable-anchor': ['center', 'left', 'right'],
+        'symbol-sort-key': ['coalesce', ['get', 'rank'], 99]
+      },
+      paint: {
+        'text-color': colors.countryLabel,
+        'text-halo-color': colors.labelHalo,
+        'text-halo-width': 0.8
+      }
+    },
     
     // Buildings 3D
     {

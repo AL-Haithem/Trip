@@ -8,6 +8,9 @@ if (!match) {
   throw new Error("APP_VERSION must use major.minor.patch format")
 }
 
-const nextVersion = `${match[1]}.${match[2]}.${Number(match[3]) + 1}`
+const nextPatch = process.env.GITHUB_RUN_NUMBER
+  ? Number(process.env.GITHUB_RUN_NUMBER)
+  : Number(match[3]) + 1
+const nextVersion = `${match[1]}.${match[2]}.${nextPatch}`
 await writeFile(versionPath, `export const APP_VERSION = "${nextVersion}"\n`)
 console.log(`Version bumped to ${nextVersion}`)
