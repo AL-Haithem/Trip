@@ -5,6 +5,7 @@ import maplibregl from "maplibre-gl"
 
 import { getTrip } from "../services/tripApi.js"
 import { useMapController } from "../Maps/UseStates/useMapController.js"
+import { isSmallScreen, setBuilding3DVisibility } from "../Maps/building3d.js"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
 import { START_ICON, END_ICON } from "../Editor/TripDrawMap/theme.js"
 import { flagSvg, pinSvg } from "../Editor/TripDrawMap/TripDrawMap.jsx"
@@ -38,6 +39,8 @@ function TripPreview() {
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const activeStepRef = useRef(null)
   const progressRef = useRef(0)
+  const smallScreen = isSmallScreen()
+  const canUse3D = !smallScreen
 
   const handleBack = () => {
     if (isEditorPreview) {
@@ -46,6 +49,15 @@ function TripPreview() {
     }
     navigate(-1)
   }
+
+  useEffect(() => {
+    if (!mapRef.current) return
+    const map = mapRef.current
+    const syncBuildings = () => setBuilding3DVisibility(map, viewMode === "3d" && canUse3D, 16)
+    syncBuildings()
+    map.on("styledata", syncBuildings)
+    return () => map.off("styledata", syncBuildings)
+  }, [canUse3D, viewMode])
 
   useEffect(() => {
     let mounted = true
@@ -316,7 +328,8 @@ function TripPreview() {
 
           <button
             className="rp-control-btn rp-view-toggle"
-            onClick={() => setViewMode((mode) => mode === "2d" ? "3d" : "2d")}
+            onClick={() => canUse3D && setViewMode((mode) => mode === "2d" ? "3d" : "2d")}
+            disabled={!canUse3D}
             type="button"
             title={`Switch to ${viewMode === "2d" ? "3D" : "2D"} view`}
           >

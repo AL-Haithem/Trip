@@ -26,7 +26,7 @@ export function buildPoisStyle(colors) {
       source: 'openfreemap',
       'source-layer': 'poi',
 
-      minzoom: 12,
+      minzoom: 15,
 
       filter: ['<=', ['coalesce', ['get', 'rank'], 6], 4],
 
@@ -54,7 +54,7 @@ export function buildPoisStyle(colors) {
           'interpolate',
           ['linear'],
           ['zoom'],
-          12, 3.5,
+          14, 3.5,
           16, 6,
           19, 9
         ],
@@ -73,9 +73,9 @@ export function buildPoisStyle(colors) {
       source: 'openfreemap',
       'source-layer': 'poi',
 
-      minzoom: 14,
+      minzoom: 16,
 
-      filter: ['<=', ['coalesce', ['get', 'rank'], 6], 2],
+      filter: ['<=', ['coalesce', ['get', 'rank'], 6], 3],
 
       layout: {
         'text-field': [
@@ -88,7 +88,7 @@ export function buildPoisStyle(colors) {
           'interpolate',
           ['linear'],
           ['zoom'],
-          14, 10,
+          16, 10,
           19, 13
         ],
         'text-anchor': 'left',
@@ -101,29 +101,6 @@ export function buildPoisStyle(colors) {
         'text-color': colors.poi.label,
         'text-halo-color': colors.labelHalo,
         'text-halo-width': 1.2
-      }
-    },
-
-    {
-      id: 'ofm-poi-labels-secondary',
-      type: 'symbol',
-      source: 'openfreemap',
-      'source-layer': 'poi',
-      minzoom: 17,
-      filter: ['==', ['coalesce', ['get', 'rank'], 6], 3],
-      layout: {
-        'text-field': ['coalesce', ['get', 'name:ar'], ['get', 'name:fr'], ['get', 'name:en'], ['get', 'name']],
-        'text-size': ['interpolate', ['linear'], ['zoom'], 17, 10, 20, 13],
-        'text-anchor': 'left',
-        'text-offset': [0.6, 0],
-        'text-optional': true,
-        'symbol-sort-key': ['get', 'rank']
-      },
-      paint: {
-        'text-color': colors.poi.label,
-        'text-halo-color': colors.labelHalo,
-        'text-halo-width': 1.2,
-        'text-opacity': 0.82
       }
     }
 

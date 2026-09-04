@@ -6,6 +6,7 @@ import maplibregl from "maplibre-gl"
 import { useMapController } from "../Maps/useMapController.js"
 import { FpsMeter } from "../components/ui/FpsMeter.jsx"
 import { CountryHoverLayer, WilayaHoverLayer } from "../Maps/HoverLayers.jsx"
+import { isSmallScreen, setBuilding3DVisibility } from "../Maps/building3d.js"
 
 // ─── Zoom Slider ───────────────────────────────────────────────────────────────
 function MapControls({ minZoom, maxZoom }) {
@@ -13,6 +14,8 @@ function MapControls({ minZoom, maxZoom }) {
   const [zoom, setZoom] = useState(minZoom)
   const [is3D, setIs3D] = useState(false)
   const zoomThumbRef = useRef(null)
+  const smallScreen = isSmallScreen()
+  const canUse3D = !smallScreen && zoom >= 15
 
   useEffect(() => {
     if (!map) return
@@ -25,11 +28,23 @@ function MapControls({ minZoom, maxZoom }) {
     return () => { map.off("zoom", onZoom); map.off("pitch", onPitch) }
   }, [map])
 
+  useEffect(() => {
+    if (!map) return
+    const syncBuildings = () => setBuilding3DVisibility(map, canUse3D && is3D, zoom)
+    if (!canUse3D && is3D) {
+      map.easeTo({ pitch: 0, bearing: 0, duration: 500 })
+      setIs3D(false)
+    }
+    syncBuildings()
+    map.on("styledata", syncBuildings)
+    return () => map.off("styledata", syncBuildings)
+  }, [canUse3D, is3D, map, zoom])
+
   const zoomIn = () => map && map.zoomTo(Math.min(zoom + 1, maxZoom), { duration: 300 })
   const zoomOut = () => map && map.zoomTo(Math.max(zoom - 1, minZoom), { duration: 300 })
   
   const toggle3D = () => {
-    if (!map) return
+    if (!map || !canUse3D) return
     if (is3D) {
       map.easeTo({ pitch: 0, bearing: 0, duration: 800 })
     } else {
@@ -66,7 +81,7 @@ function MapControls({ minZoom, maxZoom }) {
         <button type="button" className="map-zoom-btn" onClick={zoomOut}>−</button>
       </div>
       
-      <button className="map-toggle-btn glass" onClick={toggle3D} data-tooltip={is3D ? "2D" : "3D"} style={{
+      <button className="map-toggle-btn glass" onClick={toggle3D} disabled={!canUse3D} data-tooltip={canUse3D ? (is3D ? "2D" : "3D") : "3D available at zoom 15+"} style={{
         width: 36, height: 36, borderRadius: 8, fontWeight: 'bold', fontSize: 12,
         background: is3D ? "var(--accent)" : "rgba(15,18,24,0.6)",
         color: is3D ? "var(--accent-ink)" : "var(--text)"
@@ -149,6 +164,7 @@ function DrawingLayer({ mode, points, line }) {
 export default function DrawPage() {
   const minZoom = 3
   const maxZoom = 20
+  const smallScreen = isSmallScreen()
   const { mapStyle, showPOIs, togglePOIs } = useMapController()
 
   // mode: null | "point" | "line"
@@ -215,8 +231,8 @@ export default function DrawPage() {
             mapStyle={mapStyle}
             mapLib={maplibregl}
             style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-            dragRotate={true}
-            touchZoomRotate={true}
+            dragRotate={!smallScreen}
+            touchZoomRotate={!smallScreen}
             attributionControl={false}
             cursor={mode ? "crosshair" : "grab"}
             onClick={handleMapClick}

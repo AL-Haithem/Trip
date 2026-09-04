@@ -286,8 +286,6 @@
   color: #ffffff;
   border: 2px solid #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  flex-direction: column;
-  gap: 0;
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
@@ -297,39 +295,6 @@
   z-index: 1;
   transform: scale(var(--hm-scale, 1));
   transition: transform 0.2s ease;
-}
-
-.hm-cluster-marker span {
-  font-size: 8px;
-  font-weight: 600;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.hm-area-count {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 120px;
-  padding: 7px 10px;
-  border: 1px solid var(--accent);
-  border-radius: 8px;
-  background: rgba(15, 18, 24, 0.9);
-  box-shadow: var(--shadow);
-  color: var(--text);
-  pointer-events: none;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.hm-area-count strong {
-  color: var(--accent);
-  font-size: 12px;
-}
-
-.hm-area-count span {
-  color: var(--text-muted);
-  font-size: 10px;
 }
 
 .hm-cluster-marker:hover {
