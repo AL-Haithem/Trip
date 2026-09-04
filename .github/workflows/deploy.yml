@@ -45,7 +45,9 @@ jobs:
           fi
 
       - name: Build
-        run: npm run build
+        run: |
+          npm run version:bump
+          npm run build
         env:
           VITE_BASE: ${{ env.BASE }}
 
