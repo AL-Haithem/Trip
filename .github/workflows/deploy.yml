@@ -33,7 +33,7 @@ jobs:
           cache: npm
 
       - name: Install Packages
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: Configure GitHub Pages Base URL
         run: |

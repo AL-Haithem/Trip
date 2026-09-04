@@ -195,6 +195,12 @@ function TripPreview() {
     setPlaying((value) => !value)
   }
 
+  const handleRestart = () => {
+    progressRef.current = 0
+    setProgress(0)
+    setPlaying(true)
+  }
+
   useEffect(() => {
     if (playing || !routeData.coords.length || !mapRef.current || !currentTravelPoint) return
 
@@ -291,6 +297,10 @@ function TripPreview() {
         <div className="rp-controls-stack" aria-label="Route controls">
           <button className="rp-control-btn rp-control-btn-icon" onClick={handlePlayToggle} type="button" title={playing ? "Pause" : "Play route"}>
             <Icon name={playing ? "pause" : "play"} />
+          </button>
+
+          <button className="rp-control-btn rp-control-btn-icon" onClick={handleRestart} type="button" title="Restart route" aria-label="Restart route">
+            <Icon name="rotate-left" />
           </button>
 
           <button
@@ -393,7 +403,8 @@ function TripPreview() {
           </div>
 
           <div className="rp-steps">
-            {routeData.stops.map((stop, index) => {
+            {routeData.stops.filter((stop) => stop.type !== "normal").map((stop) => {
+              const index = stop.id
               const isActive = index <= currentIndex
               const typeMeta = WAYPOINT_TYPES.find((item) => item.id === stop.type) || WAYPOINT_TYPES[0]
               const isStart = index === 0

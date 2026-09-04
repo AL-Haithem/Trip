@@ -242,6 +242,15 @@ const TripDrawMap = forwardRef(function TripDrawMap(
         endPoint: lastVert ? {type: "Point", coordinates: [lastVert.lng, lastVert.lat]} : null,
       }
     },
+    markSaved() {
+      initialStateSignature.current = JSON.stringify({
+        waypoints: stateRef.current.waypoints,
+        verts: stateRef.current.verts,
+        startPoint: stateRef.current.startPoint,
+        endPoint: stateRef.current.endPoint,
+      })
+      onDirtyChange?.(false)
+    },
   }), [])
 
   const setDataLive = useCallback(() => {

@@ -131,12 +131,15 @@ export const tripsList = {
   distance: (km) => `${km} km`,
   seats: (seats) => `${seats}`,
   viewTrip: "View Trip",
+  preview: "Preview",
   edit: "Edit",
   draw: "Draw On Map",
   publish: "Publish",
   unpublish: "Unpublish",
   delete: "Delete",
   deleteConfirm: "Are you sure you want to delete this trip?",
+  publishConfirm: "Publish this trip so travelers can discover and book it?",
+  incomplete: (fields) => `Missing: ${fields.join(", ")}`,
   noDescription: "No description.",
 }
 

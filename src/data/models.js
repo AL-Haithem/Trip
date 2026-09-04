@@ -39,7 +39,25 @@ export function findPastSlot(schedule) {
 }
 
 export function hasStartPoint(tour) {
-  return Boolean(tour && tour.startPoint && tour.startPoint.features && tour.startPoint.features.length);
+  const point = tour?.startPoint
+  return Boolean(point?.type === "Point" && point.coordinates?.length === 2 || point?.features?.length);
+}
+
+export function getTripMissingFields(tour) {
+  const missing = []
+  const hasRoute = tour?.route?.features?.some((feature) =>
+    feature.geometry?.type === "LineString" && feature.geometry.coordinates?.length >= 2
+  )
+  const hasSchedule = tour?.departureSchedule?.some((day) =>
+    day?.date && day.times?.some((slot) => slot?.time && Number(slot.seatsAvailable) > 0 && Number(slot.price) >= 0)
+  )
+
+  if (!tour?.title?.trim()) missing.push("title")
+  if (!tour?.description?.trim()) missing.push("description")
+  if (!hasSchedule) missing.push("departure date and time")
+  if (!hasStartPoint(tour)) missing.push("start point")
+  if (!hasRoute) missing.push("route")
+  return missing
 }
 
 export function createEmptyTour() {

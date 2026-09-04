@@ -87,6 +87,21 @@
   filter: brightness(1.08);
 }
 
+.td-float-preview {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--btn-icon-border);
+  background: var(--bg-panel);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.td-float-preview:hover {
+  background: var(--chip-bg);
+}
+
 .td-float-back {
   width: 38px;
   height: 38px;

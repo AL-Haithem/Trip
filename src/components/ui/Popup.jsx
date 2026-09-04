@@ -14,9 +14,9 @@ export function PopupProvider({children}) {
 
   const closePopup = () => setPopup(null)
 
-  const confirmPopup = (message) => new Promise((resolve) => {
+  const confirmPopup = (message, options = {}) => new Promise((resolve) => {
     confirmResolver.current = resolve
-    setPopup({message, type: "confirm"})
+    setPopup({message, type: "confirm", ...options})
   })
 
   const resolveConfirmation = (result) => {
@@ -39,14 +39,14 @@ export function PopupProvider({children}) {
         <div className={`popup popup-${popup.type}`} role={popup.type === "confirm" ? "dialog" : "alert"} aria-modal={popup.type === "confirm" || undefined}>
           {popup.type === "confirm" ? (
             <div className="popup-confirm-content">
-              <div className="popup-confirm-icon"><Icon name="trash" /></div>
+              <div className="popup-confirm-icon"><Icon name={popup.icon || "circle-question"} /></div>
               <div className="popup-confirm-copy">
-                <strong>Delete trip?</strong>
+                <strong>{popup.title || "Are you sure?"}</strong>
                 <span>{popup.message}</span>
               </div>
               <div className="popup-confirm-actions">
                 <button type="button" className="popup-action popup-action-cancel" onClick={() => resolveConfirmation(false)}>Cancel</button>
-                <button type="button" className="popup-action popup-action-delete" onClick={() => resolveConfirmation(true)}>Delete</button>
+                <button type="button" className="popup-action popup-action-delete" onClick={() => resolveConfirmation(true)}>{popup.confirmLabel || "Confirm"}</button>
               </div>
             </div>
           ) : (

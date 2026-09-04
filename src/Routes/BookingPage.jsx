@@ -9,12 +9,15 @@ import Chip from "../components/ui/Chip.jsx"
 import Icon from "../components/ui/Icon.jsx"
 import "../styles/booking.css"
 
-const formatDate = (dateStr) =>
-  new Date(`${dateStr}T00:00:00`).toLocaleDateString(undefined, {
+const formatDate = (dateStr) => {
+  const date = new Date(`${String(dateStr).slice(0, 10)}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return "Date unavailable"
+  return date.toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
     day: "numeric",
   })
+}
 
 function BookingPage() {  useEffect(() => {
     document.title = `Book Trip - ${brand.name}`

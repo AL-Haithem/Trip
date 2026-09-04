@@ -159,6 +159,16 @@
   height: 42px;
 }
 
+.tl-completeness {
+  margin: -4px 0 0;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.tl-completeness-warning {
+  color: #ffbf69;
+}
+
 .tl-card-meta {
   display: flex;
   gap: 16px;

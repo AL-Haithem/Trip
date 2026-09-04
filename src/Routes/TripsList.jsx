@@ -6,6 +6,7 @@ import Button from "../components/ui/Button.jsx"
 import Chip from "../components/ui/Chip.jsx"
 import Icon from "../components/ui/Icon.jsx"
 import {tripsList as copy} from "../content/siteContent.js"
+import {getTripMissingFields} from "../data/models.js"
 import {usePopup} from "../components/ui/Popup.jsx"
 import "../styles/tripsList.css"
 
@@ -43,6 +44,21 @@ function TripsList() {
 
   const handleTogglePublish = async (tour) => {
     const isPublished = tour.status === "published"
+
+    if (!isPublished) {
+      const missingFields = getTripMissingFields(tour)
+      if (missingFields.length) {
+        showPopup(copy.incomplete(missingFields))
+        return
+      }
+
+      const confirmed = await confirmPopup(copy.publishConfirm, {
+        title: "Publish trip?",
+        confirmLabel: "Publish",
+        icon: "paper-plane",
+      })
+      if (!confirmed) return
+    }
 
     try {
       const response = isPublished
@@ -83,6 +99,7 @@ function TripsList() {
             const seats = tour.departureSchedule?.flatMap((day) => day.times || [])
               .reduce((total, slot) => total + Number(slot.seatsAvailable || 0), 0) || 0
             const isPublished = tour.status === "published"
+            const missingFields = getTripMissingFields(tour)
 
             return (
             <div key={tour._id} className="tl-card" style={{animationDelay: `${idx * 0.1}s`}}>
@@ -117,6 +134,10 @@ function TripsList() {
                   <h3 className="tl-card-title">{tour.title}</h3>
                   <Chip green={isPublished}>{isPublished ? copy.published : copy.draft}</Chip>
                 </div>
+
+                <p className={missingFields.length ? "tl-completeness tl-completeness-warning" : "tl-completeness"}>
+                  {missingFields.length ? copy.incomplete(missingFields) : "Ready to publish"}
+                </p>
                 
                 <p className="tl-card-desc">
                   {tour.description || copy.noDescription}
@@ -140,6 +161,9 @@ function TripsList() {
                   </Button>
                   <Button variant="primary" size="sm" onClick={() => navigate(`/trips/draw/${tour._id}`, {state: {title: tour.title}})}>
                     <Icon name="map-location-dot" /> {copy.draw}
+                  </Button>
+                  <Button variant="info" size="sm" onClick={() => navigate(`/Preview/${tour._id}`)}>
+                    <Icon name="eye" /> {copy.preview}
                   </Button>
                   <Button
                     variant={isPublished ? "warning" : "primary"}

@@ -16,13 +16,13 @@ function TripDraw() {
   const {id} = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const {showPopup} = usePopup()
+  const {showPopup, confirmPopup} = usePopup()
 
   const [tour, setTour] = useState({title: location.state?.title || ""})
   const [saved, setSaved] = useState(false)
   const [pointMode, setPointMode] = useState(null)
-  const [hasStart, setHasStart] = useState(false)
   const [routeError, setRouteError] = useState("")
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
 
   // Initial editor load data (read once) //
@@ -39,7 +39,6 @@ function TripDraw() {
           start: response.data.startPoint || null,
           distanceKm: response.data.distanceKm || 0,
         })
-        setHasStart(Boolean(response.data.startPoint?.coordinates?.length === 2))
       }
     }).catch((error) => {
       if (!mounted) return
@@ -47,7 +46,6 @@ function TripDraw() {
 
       if (message === "Trip route not found") {
         setInitialData({route: null, start: null, distanceKm: 0})
-        setHasStart(false)
         return
       }
 
@@ -79,6 +77,8 @@ function TripDraw() {
         startPoint: editorData.startPoint,
       })
       setTour(prev => ({...prev, route: editorData.route, startPoint: editorData.startPoint, distanceKm: response.data?.distanceKm || editorData.distanceKm}))
+      editorRef.current?.markSaved()
+      setHasUnsavedChanges(false)
       setSaved(true)
       showPopup(response.message || "Trip route saved successfully", "success")
       setTimeout(() => setSaved(false), 1500)
@@ -86,6 +86,29 @@ function TripDraw() {
       showPopup(error.response?.data?.message || error.message || "Could not save the trip route.")
     }
   }
+
+  const confirmLeave = async (destination) => {
+    if (!hasUnsavedChanges) {
+      navigate(destination)
+      return
+    }
+    const confirmed = await confirmPopup("You have unsaved route changes. Leave without saving?", {
+      title: "Leave without saving?",
+      confirmLabel: "Leave",
+      icon: "triangle-exclamation",
+    })
+    if (confirmed) navigate(destination)
+  }
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (!hasUnsavedChanges) return
+      event.preventDefault()
+      event.returnValue = ""
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+  }, [hasUnsavedChanges])
 
   if (routeError) {
     return <div className="td-loading">{routeError}</div>
@@ -106,13 +129,13 @@ function TripDraw() {
           pointMode={pointMode}
           setPointMode={setPointMode}
           onPlace={() => setPointMode(null)}
-          onPointsChange={(s) => {setHasStart(s)}}
+          onDirtyChange={setHasUnsavedChanges}
         />
       </div>
 
       <div className="td-float-left">
         <div className="td-float-row">
-          <button onClick={() => navigate("/trips")} className="td-float-back" title={copy.back}>
+          <button onClick={() => confirmLeave("/trips")} className="td-float-back" title={copy.back}>
             <Icon name="arrow-left" />
           </button>
           <div className="td-wm-title">{copy.editorTitle}</div>
@@ -123,6 +146,9 @@ function TripDraw() {
         <div className="td-float-row">
           <button onClick={handleSaveRoute} className="td-float-save">
             {saved ? copy.saved : copy.save}
+          </button>
+          <button onClick={() => confirmLeave(`/Preview/${id}`)} className="td-float-preview" title="Preview trip">
+            <Icon name="eye" />
           </button>
           <div className="td-float-name" title={tour.title}>{tour.title}</div>
         </div>
