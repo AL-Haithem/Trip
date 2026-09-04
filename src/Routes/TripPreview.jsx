@@ -29,6 +29,7 @@ function TripPreview() {
   const { mapStyle } = useMapController()
 
   const previewData = location.state?.previewData
+  const isEditorPreview = Boolean(previewData)
   const [tour, setTour] = useState(previewData || null)
   const [progress, setProgress] = useState(0)
   const [playing, setPlaying] = useState(true)
@@ -37,6 +38,14 @@ function TripPreview() {
   const [scheduleOpen, setScheduleOpen] = useState(false)
   const activeStepRef = useRef(null)
   const progressRef = useRef(0)
+
+  const handleBack = () => {
+    if (isEditorPreview) {
+      navigate(`/trips/draw/${id}`, {state: {previewData}})
+      return
+    }
+    navigate(-1)
+  }
 
   useEffect(() => {
     let mounted = true
@@ -289,7 +298,7 @@ function TripPreview() {
     <div className="rp-page">
       <header className="rp-editor-header">
         <div className="rp-header-left">
-          <button className="rp-nav-btn rp-back" onClick={() => navigate(-1)} type="button" aria-label="Back">
+          <button className="rp-nav-btn rp-back" onClick={handleBack} type="button" aria-label={isEditorPreview ? "Back to drawing" : "Back"} title={isEditorPreview ? "Back to drawing" : "Back"}>
             <Icon name="arrow-left" />
           </button>
 
@@ -324,15 +333,17 @@ function TripPreview() {
           </button>
         </div>
 
-        <div className="rp-header-right">
+        <div className={`rp-header-right ${isEditorPreview ? "rp-header-right-editor" : ""}`}>
           <span className="rp-trip-name">{tour.title}</span>
-          <button
-            className="rp-save-btn rp-booking-btn"
-            type="button"
-            onClick={() => navigate(`/booking/${tour._id}`)}
-          >
-            <Icon name="calendar-check" /> Book Now
-          </button>
+          {!isEditorPreview && (
+            <button
+              className="rp-save-btn rp-booking-btn"
+              type="button"
+              onClick={() => navigate(`/booking/${tour._id}`)}
+            >
+              <Icon name="calendar-check" /> Book Now
+            </button>
+          )}
         </div>
       </header>
 

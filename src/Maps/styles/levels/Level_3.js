@@ -43,7 +43,7 @@ export function buildLevel_3(colors) {
       ],
 
       layout: {
-        'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']],
+        'text-field': ['coalesce', ['get', 'name:ar'], ['get', 'name:fr'], ['get', 'name:en'], ['get', 'name']],
         'text-size': [
           'interpolate',
           ['linear'],
@@ -70,19 +70,19 @@ export function buildLevel_3(colors) {
       type: 'symbol',
       source: 'openfreemap',
       'source-layer': 'place',
-      minzoom: 13,
+      minzoom: 12,
       filter: [
         'in',
         ['get', 'class'],
         ['literal', ['district', 'suburb', 'locality']]
       ],
       layout: {
-        'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']],
+        'text-field': ['coalesce', ['get', 'name:ar'], ['get', 'name:fr'], ['get', 'name:en'], ['get', 'name']],
         'text-size': [
           'interpolate',
           ['linear'],
           ['zoom'],
-          13, 12,
+          12, 12,
           16, 15,
           20, 18
         ],
@@ -102,19 +102,19 @@ export function buildLevel_3(colors) {
       type: 'symbol',
       source: 'openfreemap',
       'source-layer': 'place',
-      minzoom: 13,
+      minzoom: 12,
       filter: [
         'in',
         ['get', 'class'],
         ['literal', ['neighbourhood', 'quarter']]
       ],
       layout: {
-        'text-field': ['coalesce', ['get', 'name:en'], ['get', 'name']],
+        'text-field': ['coalesce', ['get', 'name:ar'], ['get', 'name:fr'], ['get', 'name:en'], ['get', 'name']],
         'text-size': [
           'interpolate',
           ['linear'],
           ['zoom'],
-          13, 10,
+          12, 10,
           16, 12,
           20, 15
         ],
@@ -137,7 +137,7 @@ export function buildLevel_3(colors) {
       source: 'openfreemap',
       'source-layer': 'building',
 
-      minzoom: 15,
+      minzoom: 16,
 
       paint: {
 
@@ -152,7 +152,33 @@ export function buildLevel_3(colors) {
           ['get', 'render_min_height'],
           0
         ],
-        'fill-extrusion-opacity': 0.9
+        'fill-extrusion-opacity': 0.72
+      }
+    },
+
+    // Major street names only at the highest zoom levels //
+    {
+      id: 'ofm-major-street-labels',
+      type: 'symbol',
+      source: 'openfreemap',
+      'source-layer': 'transportation_name',
+      minzoom: 16,
+      filter: [
+        'in',
+        ['get', 'class'],
+        ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]
+      ],
+      layout: {
+        'text-field': ['coalesce', ['get', 'name:ar'], ['get', 'name:fr'], ['get', 'name:en'], ['get', 'name']],
+        'symbol-placement': 'line',
+        'text-size': ['interpolate', ['linear'], ['zoom'], 16, 10, 20, 13],
+        'text-optional': true,
+        'symbol-sort-key': ['coalesce', ['get', 'rank'], 99]
+      },
+      paint: {
+        'text-color': colors.label,
+        'text-halo-color': colors.labelHalo,
+        'text-halo-width': 1
       }
     },
 

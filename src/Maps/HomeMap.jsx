@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import Map, { useMap, Marker } from "react-map-gl/maplibre"
+import Map, { useMap, Marker, Source, Layer } from "react-map-gl/maplibre"
 import { useNavigate } from "react-router"
 import "maplibre-gl/dist/maplibre-gl.css"
 import "../styles/maps.css"
@@ -18,6 +18,54 @@ function getStartCoords(tour) {
   const rc = line && line.geometry.coordinates && line.geometry.coordinates[0]
   if (Array.isArray(rc) && rc.length >= 2) return [rc[0], rc[1]]
   return null
+}
+
+function getRouteFeature(tour) {
+  return tour?.route?.features?.find((feature) => feature.geometry?.type === "LineString") || null
+}
+
+function getRoutePointFeatures(tour) {
+  const route = getRouteFeature(tour)
+  if (!route) return []
+  const vertices = route.properties?.vertices || []
+  return route.geometry.coordinates
+    .map((coordinates, index) => ({
+      type: "Feature",
+      geometry: {type: "Point", coordinates},
+      properties: {
+        type: index === 0 ? "start" : index === route.geometry.coordinates.length - 1 ? "end" : (vertices[index]?.type || "normal").toLowerCase(),
+      },
+    }))
+    .filter((feature) => feature.properties.type !== "normal")
+}
+
+function getAreaName(feature) {
+  const properties = feature?.properties || {}
+  return properties.name || properties["name:en"] || properties.NAME_1 || properties.NAME || properties.admin || "Area"
+}
+
+function getAreaCounts(map, tours, layerId) {
+  const groups = new Map()
+
+  tours.forEach((tour) => {
+    const coords = getStartCoords(tour)
+    if (!coords) return
+    const features = map.queryRenderedFeatures(map.project(coords), {layers: [layerId]})
+    const name = getAreaName(features[0])
+    if (!features.length || name === "Area") return
+
+    const current = groups.get(name) || {name, count: 0, lng: 0, lat: 0}
+    current.count += 1
+    current.lng += coords[0]
+    current.lat += coords[1]
+    groups.set(name, current)
+  })
+
+  return Array.from(groups.values()).map((group) => ({
+    ...group,
+    lng: group.lng / group.count,
+    lat: group.lat / group.count,
+  }))
 }
 
 // Group nearby published trips into clusters based on the current zoom.
@@ -71,6 +119,10 @@ function MapControls({ minZoom, maxZoom }) {
 
   const toggle3D = () => {
     if (!map) return
+    if (!is3D && zoom < 15) {
+      map.easeTo({zoom: 15, pitch: 60, duration: 800})
+      return
+    }
     if (is3D) {
       map.easeTo({ pitch: 0, bearing: 0, duration: 800 })
     } else {
@@ -324,6 +376,8 @@ function HomeMap() {
   const [tours, setTours] = useState([])
   const [zoom, setZoom] = useState(minZoom)
   const [selectedTour, setSelectedTour] = useState(null)
+  const [areaCounts, setAreaCounts] = useState([])
+  const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => { document.documentElement.setAttribute("data-theme", "dark") }, [])
 
@@ -355,6 +409,73 @@ function HomeMap() {
     })
     .filter(Boolean)
   const clusters = computeClusters(clusterPoints, zoom)
+  const selectedRoute = getRouteFeature(selectedTour)
+  const selectedRoutePoints = getRoutePointFeatures(selectedTour)
+
+  useEffect(() => {
+    const map = mapInstance.current
+    if (!mapReady || !map || !tours.length || !map.isStyleLoaded() || zoom >= 9) {
+      setAreaCounts([])
+      return undefined
+    }
+
+    const layerId = zoom < 5 ? "countries" : "wilayas"
+    const updateCounts = () => setAreaCounts(getAreaCounts(map, tours, layerId))
+    updateCounts()
+    map.once("idle", updateCounts)
+    return () => map.off("idle", updateCounts)
+  }, [mapReady, tours, zoom])
+
+  useEffect(() => {
+    const map = mapInstance.current
+    if (!map || !map.isStyleLoaded()) return undefined
+
+    const dimmedLayers = [
+      ["ofm-roads-minor", "line-opacity", 0.25],
+      ["ofm-roads-major", "line-opacity", 0.35],
+      ["ofm-roads-major-casing", "line-opacity", 0.3],
+      ["ofm-poi-dots", "circle-opacity", 0.22],
+      ["ofm-poi-labels", "text-opacity", 0.2],
+      ["ofm-poi-labels-secondary", "text-opacity", 0.2],
+      ["ofm-place-labels", "text-opacity", 0.45],
+      ["ofm-district-labels", "text-opacity", 0.35],
+      ["ofm-neighbourhood-labels", "text-opacity", 0.35],
+    ]
+
+    dimmedLayers.forEach(([layerId, property, value]) => {
+      if (map.getLayer(layerId)) map.setPaintProperty(layerId, property, selectedTour ? value : 1)
+    })
+
+    return () => {
+      dimmedLayers.forEach(([layerId, property]) => {
+        if (map.getLayer(layerId)) map.setPaintProperty(layerId, property, 1)
+      })
+    }
+  }, [selectedTour])
+
+  useEffect(() => {
+    const map = mapInstance.current
+    if (!map || !selectedRoute?.geometry?.coordinates?.length) return
+
+    const bounds = new maplibregl.LngLatBounds()
+    selectedRoute.geometry.coordinates.forEach((coordinate) => bounds.extend(coordinate))
+    map.fitBounds(bounds, {padding: {top: 120, right: 430, bottom: 100, left: 80}, maxZoom: 15, duration: 900})
+  }, [selectedRoute])
+
+  useEffect(() => {
+    const map = mapInstance.current
+    if (!map || !selectedTour) return undefined
+
+    let frameId
+    const startedAt = performance.now()
+    const animate = (timestamp) => {
+      const opacity = 0.86 + Math.sin((timestamp - startedAt) / 650) * 0.1
+      if (map.getLayer("selected-route-inner")) map.setPaintProperty("selected-route-inner", "line-opacity", opacity)
+      frameId = requestAnimationFrame(animate)
+    }
+    frameId = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(frameId)
+  }, [selectedTour])
 
   const zoomToCluster = (cl) => {
     const map = mapInstance.current
@@ -384,7 +505,7 @@ function HomeMap() {
           touchZoomRotate={true}
           attributionControl={false}
 
-          onLoad={(event) => { mapInstance.current = event.target }}
+          onLoad={(event) => { mapInstance.current = event.target; setMapReady(true) }}
           onMouseMove={(event) => {
             if (!mapInstance.current) return
             handleMouseMove(event, mapInstance.current)
@@ -398,9 +519,87 @@ function HomeMap() {
             handleZoom(event.target)
             setZoom(event.target.getZoom())
           }}
+          onPitch={(event) => {
+            if (event.target.getZoom() < 15 && event.target.getPitch() > 0) {
+              event.target.jumpTo({pitch: 0, bearing: 0})
+            }
+          }}
         >
           <MapControls minZoom={minZoom} maxZoom={maxZoom} />
           <MapInfoPanel />
+
+          {selectedRoute && (
+            <Source
+              id="selected-route-source"
+              type="geojson"
+              data={{type: "FeatureCollection", features: [selectedRoute]}}
+            >
+              <Layer
+                id="selected-route-casing"
+                type="line"
+                paint={{
+                  "line-color": "#111827",
+                  "line-width": ["interpolate", ["linear"], ["zoom"], 5, 7, 12, 11, 18, 15],
+                  "line-opacity": 0.95,
+                  "line-blur": 0.5,
+                }}
+              />
+              <Layer
+                id="selected-route-inner"
+                type="line"
+                paint={{
+                  "line-color": "#7cffb2",
+                  "line-width": ["interpolate", ["linear"], ["zoom"], 5, 3, 12, 6, 18, 9],
+                  "line-opacity": 0.9,
+                }}
+              />
+              <Layer
+                id="selected-route-arrows"
+                type="symbol"
+                layout={{
+                  "symbol-placement": "line",
+                  "symbol-spacing": 90,
+                  "text-field": "➜",
+                  "text-size": ["interpolate", ["linear"], ["zoom"], 5, 11, 14, 16],
+                  "text-keep-upright": false,
+                  "text-allow-overlap": true,
+                }}
+                paint={{
+                  "text-color": "#ffffff",
+                  "text-halo-color": "#111827",
+                  "text-halo-width": 1.5,
+                }}
+              />
+            </Source>
+          )}
+
+          {selectedRoutePoints.length > 0 && (
+            <Source
+              id="selected-route-points-source"
+              type="geojson"
+              data={{type: "FeatureCollection", features: selectedRoutePoints}}
+            >
+              <Layer
+                id="selected-route-points"
+                type="circle"
+                paint={{
+                  "circle-color": ["match", ["get", "type"], "start", "#ffffff", "end", "#ff4c4c", "#7cffb2"],
+                  "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 4, 14, 7, 20, 10],
+                  "circle-stroke-color": "#111827",
+                  "circle-stroke-width": 2,
+                }}
+              />
+            </Source>
+          )}
+
+          {areaCounts.map((area) => (
+            <Marker key={area.name} longitude={area.lng} latitude={area.lat} anchor="center">
+              <div className="hm-area-count">
+                <strong>{area.name}</strong>
+                <span>{area.count} available trips</span>
+              </div>
+            </Marker>
+          ))}
 
           {clusters.map((cl) => {
             if (cl.points.length === 1) {
@@ -436,7 +635,8 @@ function HomeMap() {
                 onClick={() => zoomToCluster(cl)}
               >
                 <div className="hm-cluster-marker" style={{ "--hm-scale": markerScale }}>
-                  {cl.points.length}
+                  <strong>{cl.points.length}</strong>
+                  <span>{zoom < 9 ? "available trips" : "trips"}</span>
                 </div>
               </Marker>
             )
