@@ -78,6 +78,47 @@
   display: flex;
   gap: 16px;
   justify-content: center;
+  align-items: stretch;
+}
+
+.lp-map-choice {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.lp-country-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: -16px;
+  padding: 0 12px;
+  border: 1px solid var(--accent);
+  border-left: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.lp-country-select i {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  font-size: 11px;
+}
+
+.lp-country-select select {
+  min-width: 24px;
+  width: 24px;
+  height: 100%;
+  padding: 0 14px 0 0;
+  border: 0;
+  outline: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.lp-map-choice .btn-primary {
+  border-radius: var(--r-md) 0 0 var(--r-md);
 }
 
 @keyframes lpHeroFadeIn {

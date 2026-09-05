@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Navbar from "../components/Navbar.jsx"
 import Button from "../components/ui/Button.jsx"
 import Card from "../components/ui/Card.jsx"
@@ -8,6 +8,7 @@ import Icon from "../components/ui/Icon.jsx"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
 import { brand, landing } from "../content/siteContent.js"
 import { useCdnAssets } from "../services/cdnAssets.jsx"
+import { ALL_COUNTRIES_CODE, SUPPORTED_COUNTRIES } from "../Maps/countries.js"
 import "../styles/landing.css"
 
 function sectionEyebrow({ eyebrow }) {
@@ -20,6 +21,15 @@ function sectionEyebrow({ eyebrow }) {
 
 function LandingPage() {
   const {assetUrl} = useCdnAssets()
+  const [country, setCountry] = useState(ALL_COUNTRIES_CODE)
+
+  useEffect(() => {
+    const region = new Intl.Locale(navigator.language || "").region
+    const isSupported = SUPPORTED_COUNTRIES.some((item) => item.code === region && item.enabled)
+    if (isSupported) setCountry(region)
+  }, [])
+
+  const mapUrl = `/map?country=${country}`
   useEffect(() => {
     document.title = `${brand.name} ${brand.separator} ${brand.suffix}`
   }, [])
@@ -50,9 +60,20 @@ function LandingPage() {
           <p className="lp-hero-subtitle">{landing.hero.subtitle}</p>
 
           <div className="lp-hero-actions">
-            <Button as="link" to="/map" variant="primary" size="lg">
-              <Icon name="compass" /> {landing.hero.primaryCta}
-            </Button>
+            <div className="lp-map-choice">
+              <Button as="link" to={mapUrl} variant="primary" size="lg">
+                <Icon name="compass" /> {landing.hero.primaryCta}
+              </Button>
+              <label className="lp-country-select" title="Choose a country">
+                <Icon name="chevron-down" />
+                <select value={country} onChange={(event) => setCountry(event.target.value)} aria-label="Map country">
+                  <option value={ALL_COUNTRIES_CODE}>All countries</option>
+                  {SUPPORTED_COUNTRIES.filter((item) => item.enabled).map((item) => (
+                    <option key={item.code} value={item.code}>{item.label}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
             <Button as="link" to="/map" variant="ghost" size="lg">
               <Icon name="map" /> {landing.hero.secondaryCta}
             </Button>

@@ -1,8 +1,16 @@
-// Supported country overlays.
-// Currently only DZA is enabled (data lives in TempFiles).
-// To add a country later (or wire to a backend), add an entry here:
-//   { code, label, file, enabled }
-// The frontend rendering logic stays unchanged.
 export const SUPPORTED_COUNTRIES = [
-  {code: "DZA", label: "Algeria", file: "/TempFiles/DZA.json", enabled: true},
+  {
+    code: "DZA",
+    label: "Algeria",
+    enabled: true,
+    bounds: [-8.67, 18.96, 11.99, 37.09],
+    center: [2.6, 28],
+    zoom: 5,
+  },
 ]
+
+export const ALL_COUNTRIES_CODE = "all"
+
+export function getSupportedCountry(code) {
+  return SUPPORTED_COUNTRIES.find((country) => country.code === code && country.enabled)
+}

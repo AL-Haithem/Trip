@@ -1,10 +1,17 @@
 import { getMapColors } from "./mapTheme"
 import { buildAllLayers } from "./styles"
 import { cdnUrl } from "../config/endpoints.js"
+import { getSupportedCountry } from "./countries.js"
 
-export function buildPMTilesStyle(versions) {
+function versionedCdnUrl(path, version) {
+  if (Number.isInteger(version)) return cdnUrl(path.replace("{version}", `v${version}`))
+  return cdnUrl(path.replace("/{version}", "").replace("-{version}", ""))
+}
+
+export function buildPMTilesStyle(versions, countryCode = "all") {
 
   const colors = getMapColors()
+  const country = getSupportedCountry(countryCode)
 
   return {
     version: 8,
@@ -13,22 +20,24 @@ export function buildPMTilesStyle(versions) {
 
       world: {
         type: 'vector',
-        url: `pmtiles://${cdnUrl(`trip data/world/v${versions.world}.pmtiles`)}`
+        url: `pmtiles://${versionedCdnUrl("trip data/world/{version}.pmtiles", versions.world)}`,
+        ...(country ? {bounds: country.bounds} : {}),
       },
 
       algeria: {
         type: 'vector',
-        url: `pmtiles://${cdnUrl(`trip data/DZA/v${versions.DZA}.pmtiles`)}`
+        url: `pmtiles://${versionedCdnUrl("trip data/DZA/{version}.pmtiles", versions.DZA)}`,
+        bounds: getSupportedCountry("DZA").bounds,
       },
 
       countryLabels: {
         type: "geojson",
-        data: cdnUrl(`trip data/labels/world-labels-v${versions.worldLabels}.json`)
+        data: versionedCdnUrl("trip data/labels/world-labels-{version}.json", versions.worldLabels)
       },
 
       WilayasLabels: {
         type: "geojson",
-        data: cdnUrl(`trip data/labels/DZA-labels-v${versions.DZALabels}.json`)
+        data: versionedCdnUrl("trip data/labels/DZA-labels-{version}.json", versions.DZALabels)
       },
 
       openfreemap: {

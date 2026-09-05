@@ -31,7 +31,7 @@ function MainMap({onViewReady}) {
 
     map.add(WorldLayer("dark"))
 
-    SUPPORTED_COUNTRIES.filter(country => country.enabled).forEach(country => {
+    SUPPORTED_COUNTRIES.filter(country => country.enabled && country.file).forEach(country => {
       map.add(CountryLayer("dark", country.file))
     })
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import Map, { useMap, Marker } from "react-map-gl/maplibre"
-import { useNavigate } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import "maplibre-gl/dist/maplibre-gl.css"
 import "../styles/maps.css"
 import maplibregl from "maplibre-gl"
@@ -9,6 +9,7 @@ import { useMapHover } from "./UseStates/useMapHover.js"
 import { getMapTrips } from "../services/tripApi.js"
 import Icon from "../components/ui/Icon.jsx"
 import { FpsMeter } from "../components/ui/FpsMeter.jsx"
+import { ALL_COUNTRIES_CODE, getSupportedCountry } from "./countries.js"
 
 function getStartCoords(tour) {
   const spc = tour.startPoint?.coordinates
@@ -316,29 +317,33 @@ function HomeMap() {
   const minZoom = 1.9;
   const maxZoom = 20;
 
-  const { mapStyle } = useMapController();
   const mapInstance = useRef(null)
   const navigate = useNavigate()
+  const location = useLocation()
+  const requestedCountry = new URLSearchParams(location.search).get("country") || ALL_COUNTRIES_CODE
+  const country = getSupportedCountry(requestedCountry) ? requestedCountry : ALL_COUNTRIES_CODE
+  const countryConfig = getSupportedCountry(country)
+  const { mapStyle } = useMapController(country)
   const { handleMouseMove, handleMouseLeave, tooltip, handleZoom } = useMapHover()
 
   const [tours, setTours] = useState([])
-  const [zoom, setZoom] = useState(minZoom)
+  const [zoom, setZoom] = useState(countryConfig?.zoom || minZoom)
   const [selectedTour, setSelectedTour] = useState(null)
 
   useEffect(() => { document.documentElement.setAttribute("data-theme", "dark") }, [])
 
   useEffect(() => {
     let mounted = true
-    getMapTrips().then((data) => {
+    getMapTrips(country).then((data) => {
       if (mounted) setTours(data || [])
     })
     return () => { mounted = false }
-  }, [])
+  }, [country])
 
   const initialViewState = {
-    longitude: 2.6,
-    latitude: 28,
-    zoom: minZoom,
+    longitude: countryConfig?.center?.[0] || 2.6,
+    latitude: countryConfig?.center?.[1] || 28,
+    zoom: countryConfig?.zoom || minZoom,
     minZoom,
     maxZoom,
     // pitch: 0,

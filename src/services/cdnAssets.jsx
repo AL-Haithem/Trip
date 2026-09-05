@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react"
 import axios from "axios"
 
-import { API_ROUTES, BACKEND_BASE_URL, CDN_BASE_URL, backendUrl, cdnUrl } from "../config/endpoints.js"
+import { API_ROUTES, CDN_BASE_URL, backendUrl, cdnUrl } from "../config/endpoints.js"
 
 const CDN_VERSIONS_STORAGE_KEY = "geo_cdn_versions"
 const CdnAssetsContext = createContext(null)
@@ -38,10 +38,20 @@ function haveSameVersions(first, second) {
   return [...keys].every((key) => first[key] === second[key])
 }
 
-function hasAllVersions(versions) {
-  return versions && REQUIRED_VERSION_KEYS.every((key) =>
-    Number.isInteger(versions[key]) && versions[key] >= 0
-  )
+function isVersion(value) {
+  return Number.isInteger(value) && value >= 0
+}
+
+function hasAnyVersions(versions) {
+  return versions && Object.values(versions).some(isVersion)
+}
+
+function mergeVersions(cached, incoming) {
+  const merged = {...cached}
+  REQUIRED_VERSION_KEYS.forEach((key) => {
+    if (incoming && isVersion(incoming[key])) merged[key] = incoming[key]
+  })
+  return merged
 }
 
 function logCdnResourceStats() {
@@ -50,15 +60,7 @@ function logCdnResourceStats() {
   const networkResources = resources.filter((entry) => entry.transferSize > 0)
   const cachedResources = resources.filter((entry) => entry.transferSize === 0)
 
-  console.groupCollapsed(`[CDN] ${resources.length} resources requested`)
-  console.info(`From CDN/network: ${networkResources.length}`)
-  console.info(`From browser cache: ${cachedResources.length}`)
-  console.table(resources.map((entry) => ({
-    source: entry.transferSize === 0 ? "browser cache" : "CDN/network",
-    resource: entry.name.replace(`${CDN_BASE_URL}/`, ""),
-    transferKB: Number((entry.transferSize / 1024).toFixed(1)),
-  })))
-  console.groupEnd()
+  console.info(`[CDN] ${resources.length} ${networkResources.length} ${cachedResources.length}`)
 }
 
 function ResourceError() {
@@ -75,8 +77,8 @@ function ResourceError() {
 
 export function CdnAssetsProvider({ children }) {
   const cachedVersionsRef = useRef(readCachedVersions())
-  const [versions, setVersions] = useState(() => hasAllVersions(cachedVersionsRef.current) ? cachedVersionsRef.current : null)
-  const [loading, setLoading] = useState(() => !hasAllVersions(cachedVersionsRef.current))
+  const [versions, setVersions] = useState(() => hasAnyVersions(cachedVersionsRef.current) ? cachedVersionsRef.current : null)
+  const [loading, setLoading] = useState(() => !hasAnyVersions(cachedVersionsRef.current))
   const [error, setError] = useState(false)
 
   useEffect(() => {
@@ -84,31 +86,39 @@ export function CdnAssetsProvider({ children }) {
     const cachedVersions = cachedVersionsRef.current
 
     if (cachedVersions) {
-      console.info("[CDN] Versions loaded from browser storage")
+      console.info("[CDN] 1")
     } else {
-      console.info("[CDN] No cached versions; requesting versions from API")
+      console.info("[CDN] 0")
     }
 
     axios.get(backendUrl(API_ROUTES.versions))
       .then(({ data }) => {
         if (!active) return
-        if (!hasAllVersions(data)) throw new Error("Invalid CDN versions response")
-        if (haveSameVersions(cachedVersions, data)) {
-          console.info("[CDN] Versions API unchanged; keeping browser cache")
+        if (!data || typeof data !== "object") throw new Error("Invalid CDN versions response")
+        const nextVersions = mergeVersions(cachedVersions, data)
+        const missingKeys = REQUIRED_VERSION_KEYS.filter((key) => !isVersion(nextVersions[key]))
+        if (missingKeys.length) {
+          console.warn(`[CDN] ${missingKeys.length}`)
+        }
+        if (!hasAnyVersions(nextVersions)) {
+          throw new Error("CDN versions response contains no usable versions")
+        }
+        if (haveSameVersions(cachedVersions, nextVersions)) {
+          console.info("[CDN] 0")
           setLoading(false)
+          if (!hasAnyVersions(nextVersions)) setError(true)
           return
         }
-        const nextVersions = data
         cacheVersions(nextVersions)
         setVersions(nextVersions)
         setLoading(false)
-        console.info("[CDN] New versions loaded from API; CDN asset URLs updated")
+        console.info("[CDN] 1")
       })
       .catch(() => {
         if (!active) return
-        console.warn(`[CDN] Versions request failed: ${BACKEND_BASE_URL}${API_ROUTES.versions}`)
+        console.warn("[CDN] 0")
         setLoading(false)
-        if (!hasAllVersions(cachedVersions)) setError(true)
+        if (!hasAnyVersions(cachedVersions)) setError(true)
       })
 
     return () => {
@@ -139,7 +149,8 @@ export function CdnAssetsProvider({ children }) {
   const value = useMemo(() => ({
     versions,
     assetUrl(assetName) {
-      const version = versions[assetName] ?? 0
+      const version = versions[assetName]
+      if (!isVersion(version)) return cdnUrl(`img/${assetName}`)
       const dot = assetName.lastIndexOf(".")
       const base = dot > 0 ? assetName.slice(0, dot) : assetName
       const extension = dot > 0 ? assetName.slice(dot) : ""

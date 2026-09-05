@@ -21,7 +21,7 @@ function registerPMTilesProtocol() {
   protocolRegistered = true
 }
 
-export function useMapController() {
+export function useMapController(countryCode = "all") {
 
   const {versions} = useCdnAssets()
   const [mapStyle, setMapStyle] = useState(null)
@@ -29,8 +29,8 @@ export function useMapController() {
   useEffect(() => {
 
     registerPMTilesProtocol()
-    setMapStyle(buildPMTilesStyle(versions))
-  }, [versions])
+    setMapStyle(buildPMTilesStyle(versions, countryCode))
+  }, [versions, countryCode])
 
   return {
     mapStyle
