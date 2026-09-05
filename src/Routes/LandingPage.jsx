@@ -65,6 +65,9 @@ function LandingPage() {
                 <Icon name="compass" /> {landing.hero.primaryCta}
               </Button>
               <label className="lp-country-select" title="Choose a country">
+                {country === ALL_COUNTRIES_CODE
+                  ? <Icon name="globe" className="lp-country-icon" />
+                  : <span className="lp-country-flag" role="img" aria-label="Algeria">🇩🇿</span>}
                 <Icon name="chevron-down" />
                 <select value={country} onChange={(event) => setCountry(event.target.value)} aria-label="Map country">
                   <option value={ALL_COUNTRIES_CODE}>All countries</option>

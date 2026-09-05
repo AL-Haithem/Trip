@@ -4,8 +4,8 @@ export const SUPPORTED_COUNTRIES = [
     label: "Algeria",
     enabled: true,
     bounds: [-8.67, 18.96, 11.99, 37.09],
-    center: [2.6, 28],
-    zoom: 5,
+    center: [1.66, 28.02],
+    zoom: 4.9,
   },
 ]
 

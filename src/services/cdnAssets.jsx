@@ -60,7 +60,7 @@ function logCdnResourceStats() {
   const networkResources = resources.filter((entry) => entry.transferSize > 0)
   const cachedResources = resources.filter((entry) => entry.transferSize === 0)
 
-  console.info(`[CDN] ${resources.length} ${networkResources.length} ${cachedResources.length}`)
+  console.info(`[CDN] resources=${resources.length} network=${networkResources.length} cached=${cachedResources.length}`)
 }
 
 function ResourceError() {
@@ -86,9 +86,9 @@ export function CdnAssetsProvider({ children }) {
     const cachedVersions = cachedVersionsRef.current
 
     if (cachedVersions) {
-      console.info("[CDN] 1")
+      console.info("[CDN] cached_versions=1")
     } else {
-      console.info("[CDN] 0")
+      console.info("[CDN] cached_versions=0")
     }
 
     axios.get(backendUrl(API_ROUTES.versions))
@@ -98,13 +98,13 @@ export function CdnAssetsProvider({ children }) {
         const nextVersions = mergeVersions(cachedVersions, data)
         const missingKeys = REQUIRED_VERSION_KEYS.filter((key) => !isVersion(nextVersions[key]))
         if (missingKeys.length) {
-          console.warn(`[CDN] ${missingKeys.length}`)
+          console.warn(`[CDN] missing_versions=${missingKeys.length}`)
         }
         if (!hasAnyVersions(nextVersions)) {
           throw new Error("CDN versions response contains no usable versions")
         }
         if (haveSameVersions(cachedVersions, nextVersions)) {
-          console.info("[CDN] 0")
+          console.info("[CDN] versions_changed=0")
           setLoading(false)
           if (!hasAnyVersions(nextVersions)) setError(true)
           return
@@ -112,11 +112,11 @@ export function CdnAssetsProvider({ children }) {
         cacheVersions(nextVersions)
         setVersions(nextVersions)
         setLoading(false)
-        console.info("[CDN] 1")
+        console.info("[CDN] versions_changed=1")
       })
       .catch(() => {
         if (!active) return
-        console.warn("[CDN] 0")
+        console.warn("[CDN] versions_request_failed=1")
         setLoading(false)
         if (!hasAnyVersions(cachedVersions)) setError(true)
       })

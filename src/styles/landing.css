@@ -101,9 +101,21 @@
 
 .lp-country-select i {
   position: absolute;
-  right: 10px;
+  right: 9px;
   pointer-events: none;
   font-size: 11px;
+}
+
+.lp-country-select .lp-country-icon,
+.lp-country-flag {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  font-size: 16px;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .lp-country-select select {
