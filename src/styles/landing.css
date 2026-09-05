@@ -91,7 +91,6 @@
   display: inline-flex;
   align-items: center;
   margin-left: -16px;
-  padding: 0 12px;
   border: 1px solid var(--accent);
   border-left: 1px solid rgba(0, 0, 0, 0.22);
   border-radius: 0 var(--r-md) var(--r-md) 0;
@@ -99,11 +98,22 @@
   color: var(--accent-ink);
 }
 
-.lp-country-select i {
-  position: absolute;
-  right: 9px;
-  pointer-events: none;
+.lp-country-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 68px;
+  height: 100%;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.lp-country-chevron {
   font-size: 11px;
+  pointer-events: none;
 }
 
 .lp-country-select .lp-country-icon,
@@ -112,21 +122,76 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  font-size: 16px;
+  width: 20px;
+  height: 14px;
   line-height: 1;
   pointer-events: none;
 }
 
-.lp-country-select select {
-  min-width: 24px;
-  width: 24px;
-  height: 100%;
-  padding: 0 14px 0 0;
+.lp-country-flag-dza {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #006233 0 50%, #fff 50% 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);
+}
+
+.lp-country-flag-dza::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 3px;
+  width: 6px;
+  height: 7px;
+  border: 2px solid #d21034;
+  border-left-color: transparent;
+  border-radius: 50%;
+  transform: scale(0.7);
+}
+
+.lp-country-flag-dza::after {
+  content: "*";
+  position: absolute;
+  left: 10px;
+  top: 2px;
+  color: #d21034;
+  font-size: 7px;
+  line-height: 10px;
+}
+
+.lp-country-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  min-width: 178px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-panel-solid);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+
+.lp-country-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
   border: 0;
-  outline: 0;
-  opacity: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
   cursor: pointer;
+}
+
+.lp-country-option:hover,
+.lp-country-option.is-selected {
+  background: var(--accent-tint);
+  color: var(--text);
 }
 
 .lp-map-choice .btn-primary {

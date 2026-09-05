@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Navbar from "../components/Navbar.jsx"
 import Button from "../components/ui/Button.jsx"
 import Card from "../components/ui/Card.jsx"
@@ -8,7 +8,7 @@ import Icon from "../components/ui/Icon.jsx"
 import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
 import { brand, landing } from "../content/siteContent.js"
 import { useCdnAssets } from "../services/cdnAssets.jsx"
-import { ALL_COUNTRIES_CODE, SUPPORTED_COUNTRIES } from "../Maps/countries.js"
+import { ALL_COUNTRIES_CODE, detectVisitorCountry, SUPPORTED_COUNTRIES } from "../Maps/countries.js"
 import "../styles/landing.css"
 
 function sectionEyebrow({ eyebrow }) {
@@ -22,14 +22,27 @@ function sectionEyebrow({ eyebrow }) {
 function LandingPage() {
   const {assetUrl} = useCdnAssets()
   const [country, setCountry] = useState(ALL_COUNTRIES_CODE)
+  const [countryMenuOpen, setCountryMenuOpen] = useState(false)
+  const countryMenuRef = useRef(null)
 
   useEffect(() => {
-    const region = new Intl.Locale(navigator.language || "").region
-    const isSupported = SUPPORTED_COUNTRIES.some((item) => item.code === region && item.enabled)
-    if (isSupported) setCountry(region)
+    let active = true
+    detectVisitorCountry().then((detectedCountry) => {
+      if (active) setCountry(detectedCountry)
+    })
+    return () => { active = false }
+  }, [])
+
+  useEffect(() => {
+    const closeMenu = (event) => {
+      if (!countryMenuRef.current?.contains(event.target)) setCountryMenuOpen(false)
+    }
+    document.addEventListener("pointerdown", closeMenu)
+    return () => document.removeEventListener("pointerdown", closeMenu)
   }, [])
 
   const mapUrl = `/map?country=${country}`
+  const selectedCountry = SUPPORTED_COUNTRIES.find((item) => item.code === country)
   useEffect(() => {
     document.title = `${brand.name} ${brand.separator} ${brand.suffix}`
   }, [])
@@ -64,18 +77,47 @@ function LandingPage() {
               <Button as="link" to={mapUrl} variant="primary" size="lg">
                 <Icon name="compass" /> {landing.hero.primaryCta}
               </Button>
-              <label className="lp-country-select" title="Choose a country">
-                {country === ALL_COUNTRIES_CODE
-                  ? <Icon name="globe" className="lp-country-icon" />
-                  : <span className="lp-country-flag" role="img" aria-label="Algeria">🇩🇿</span>}
-                <Icon name="chevron-down" />
-                <select value={country} onChange={(event) => setCountry(event.target.value)} aria-label="Map country">
-                  <option value={ALL_COUNTRIES_CODE}>All countries</option>
-                  {SUPPORTED_COUNTRIES.filter((item) => item.enabled).map((item) => (
-                    <option key={item.code} value={item.code}>{item.label}</option>
-                  ))}
-                </select>
-              </label>
+              <div className="lp-country-select" ref={countryMenuRef}>
+                <button
+                  type="button"
+                  className="lp-country-trigger"
+                  onClick={() => setCountryMenuOpen((open) => !open)}
+                  aria-label="Choose a country"
+                  aria-expanded={countryMenuOpen}
+                >
+                  {selectedCountry
+                    ? <span className="lp-country-flag lp-country-flag-dza" role="img" aria-label={selectedCountry.label} />
+                    : <Icon name="globe" className="lp-country-icon" />}
+                  <Icon name="chevron-down" className="lp-country-chevron" />
+                </button>
+                {countryMenuOpen && (
+                  <div className="lp-country-menu" role="menu">
+                    <button
+                      type="button"
+                      className={`lp-country-option${country === ALL_COUNTRIES_CODE ? " is-selected" : ""}`}
+                      onClick={() => { setCountry(ALL_COUNTRIES_CODE); setCountryMenuOpen(false) }}
+                      role="menuitemradio"
+                      aria-checked={country === ALL_COUNTRIES_CODE}
+                    >
+                      <Icon name="globe" />
+                      <span>All countries</span>
+                    </button>
+                    {SUPPORTED_COUNTRIES.filter((item) => item.enabled).map((item) => (
+                      <button
+                        key={item.code}
+                        type="button"
+                        className={`lp-country-option${country === item.code ? " is-selected" : ""}`}
+                        onClick={() => { setCountry(item.code); setCountryMenuOpen(false) }}
+                        role="menuitemradio"
+                        aria-checked={country === item.code}
+                      >
+                        <span className="lp-country-flag lp-country-flag-dza" role="img" aria-label={item.label} />
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <Button as="link" to="/map" variant="ghost" size="lg">
               <Icon name="map" /> {landing.hero.secondaryCta}
