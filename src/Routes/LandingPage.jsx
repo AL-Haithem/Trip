@@ -9,6 +9,7 @@ import { WAYPOINT_TYPES } from "../content/waypointTypes.js"
 import { brand, landing } from "../content/siteContent.js"
 import { useCdnAssets } from "../services/cdnAssets.jsx"
 import { ALL_COUNTRIES_CODE, detectVisitorCountry, SUPPORTED_COUNTRIES } from "../Maps/countries.js"
+import "flag-icons/css/flag-icons.min.css"
 import "../styles/landing.css"
 
 function sectionEyebrow({ eyebrow }) {
@@ -45,6 +46,11 @@ function LandingPage() {
   const selectedCountry = SUPPORTED_COUNTRIES.find((item) => item.code === country)
   useEffect(() => {
     document.title = `${brand.name} ${brand.separator} ${brand.suffix}`
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.classList.add("landing-scroll")
+    return () => document.documentElement.classList.remove("landing-scroll")
   }, [])
 
   const waypointChips = WAYPOINT_TYPES.map((t) => (
@@ -86,7 +92,7 @@ function LandingPage() {
                   aria-expanded={countryMenuOpen}
                 >
                   {selectedCountry
-                    ? <span className="lp-country-flag lp-country-flag-dza" role="img" aria-label={selectedCountry.label} />
+                    ? <span className="lp-country-flag fi fi-dz" role="img" aria-label={selectedCountry.label} />
                     : <Icon name="globe" className="lp-country-icon" />}
                   <Icon name="chevron-down" className="lp-country-chevron" />
                 </button>
@@ -111,7 +117,7 @@ function LandingPage() {
                         role="menuitemradio"
                         aria-checked={country === item.code}
                       >
-                        <span className="lp-country-flag lp-country-flag-dza" role="img" aria-label={item.label} />
+                        <span className="lp-country-flag fi fi-dz" role="img" aria-label={item.label} />
                         <span>{item.label}</span>
                       </button>
                     ))}

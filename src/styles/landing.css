@@ -1,3 +1,16 @@
+html.landing-scroll,
+html.landing-scroll body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html.landing-scroll::-webkit-scrollbar,
+html.landing-scroll body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .lp-page {
   background: var(--bg-panel-solid);
   color: var(--text);
@@ -117,46 +130,14 @@
 }
 
 .lp-country-select .lp-country-icon,
-.lp-country-flag {
+.lp-country-flag.fi {
   position: static;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   width: 20px;
   height: 14px;
-  line-height: 1;
+  line-height: 14px;
+  font-size: 14px;
   pointer-events: none;
-}
-
-.lp-country-flag-dza {
-  position: relative;
-  overflow: hidden;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #006233 0 50%, #fff 50% 100%);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);
-}
-
-.lp-country-flag-dza::before {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 3px;
-  width: 6px;
-  height: 7px;
-  border: 2px solid #d21034;
-  border-left-color: transparent;
-  border-radius: 50%;
-  transform: scale(0.7);
-}
-
-.lp-country-flag-dza::after {
-  content: "*";
-  position: absolute;
-  left: 10px;
-  top: 2px;
-  color: #d21034;
-  font-size: 7px;
-  line-height: 10px;
 }
 
 .lp-country-menu {

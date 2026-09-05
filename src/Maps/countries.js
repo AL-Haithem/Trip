@@ -3,7 +3,6 @@ export const SUPPORTED_COUNTRIES = [
     code: "DZA",
     region: "DZ",
     label: "Algeria",
-    flag: "🇩🇿",
     enabled: true,
     bounds: [-8.67, 18.96, 11.99, 37.09],
     center: [1.66, 28.02],
