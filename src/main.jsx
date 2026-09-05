@@ -6,6 +6,7 @@ import "./styles/maps.css"
 import "./styles/booking.css"
 import App from "./App.jsx"
 import {PopupProvider} from "./components/ui/Popup.jsx"
+import {CdnAssetsProvider} from "./services/cdnAssets.jsx"
 
 const redirect = sessionStorage.getItem("redirect")
 const basePath = import.meta.env.BASE_URL || "/"
@@ -16,7 +17,9 @@ if (redirect && location.pathname === basePath) {
 }
 
 createRoot(document.getElementById("root")).render(
-  <PopupProvider>
-    <App />
-  </PopupProvider>
+  <CdnAssetsProvider>
+    <PopupProvider>
+      <App />
+    </PopupProvider>
+  </CdnAssetsProvider>
 )
